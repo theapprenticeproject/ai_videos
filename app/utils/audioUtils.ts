@@ -1,6 +1,5 @@
 import * as fs from "fs";
-
-// You can also use: import fetch from "node-fetch"; if on Node 16 or below.
+import { ElevenLabsClient, play } from '@elevenlabs/elevenlabs-js';
 
 // The main text-to-speech function
 export async function textToSpeech(
@@ -61,3 +60,84 @@ export async function textToSpeech(
 // })();
 
 
+
+interface WordInfo {
+  word: string;
+  startTime: number;
+  endTime: number;
+}
+
+interface SpeechResult {
+  audioPath: string;
+  transcriptData: WordInfo[];  // ✅ YOUR EXACT FORMAT
+}
+
+/**
+ * ✅ Generate speech → Save MP3 → Return wordsArray in YOUR format
+ */
+export async function generateSpeechWithTranscript(
+  apiKey: string,
+  voiceId: string|"21m00Tcm4TlvDq8ikWAM",
+  text: string,
+  filename: string = "speech.mp3"
+): Promise<SpeechResult> {
+  const client = new ElevenLabsClient({ apiKey });
+
+  console.log(`🎤 Generating: "${text}"`);
+  
+  const response = await client.textToSpeech.convertWithTimestamps(voiceId, {
+    text,
+    modelId: "eleven_multilingual_v2",
+    outputFormat: "mp3_44100_128",
+  });
+
+  // ✅ SAVE AUDIO FILE
+  const audioBase64 = response.audioBase64!;
+  const audioBuffer = Buffer.from(audioBase64, "base64");
+  fs.writeFileSync(filename, audioBuffer);
+  console.log(`✅ SAVED: ${filename}`);
+
+  // ✅ YOUR EXACT FORMAT: wordsArray
+  const wordsArray: WordInfo[] = [];
+  
+  const characters = response.alignment?.characters || [];
+  const startTimes = response.alignment?.characterStartTimesSeconds || [];
+  const endTimes = response.alignment?.characterEndTimesSeconds || [];
+  
+  // ✅ EXACT MATCH: wordsArray.push({ word, startTime, endTime })
+  let currentWord = "";
+  let wordStart = 0;
+
+  for (let i = 0; i < characters.length; i++) {
+    const char = characters[i];
+    if (char.trim() !== "") {
+      if (currentWord === "") wordStart = startTimes[i];
+      currentWord += char;
+    } else if (currentWord !== "") {
+      const start = wordStart;
+      const end = endTimes[i - 1];
+      wordsArray.push({
+        word: currentWord,
+        startTime: start,
+        endTime: end
+      });
+      currentWord = "";
+    }
+  }
+  
+  // Last word
+  if (currentWord !== "") {
+    wordsArray.push({
+      word: currentWord,
+      startTime: wordStart,
+      endTime: endTimes[endTimes.length - 1]
+    });
+  }
+
+  console.log("\n📝 WORD-LEVEL TRANSCRIPT:");
+  wordsArray.forEach((wordInfo, i) => {
+    console.log(`${i + 1}. "${wordInfo.word}" → ${wordInfo.startTime.toFixed(2)}s - ${wordInfo.endTime.toFixed(2)}s`);
+  });
+
+  return { audioPath: filename, transcriptData:wordsArray };
+}

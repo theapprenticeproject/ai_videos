@@ -146,14 +146,14 @@ export default makeScene2D("SCENE2", function* (view) {
     view.add(<Audio src={options.audioUrl} play={true} />);
   }
 
- view.add(
-  <Audio 
-    src="https://revideo-example-assets.s3.amazonaws.com/chill-beat-2.mp3" 
-    play={true} 
-    volume={0.15} 
-    loop={true} 
-  />
-);
+//  view.add(
+//   <Audio 
+//     src="https://revideo-example-assets.s3.amazonaws.com/chill-beat-2.mp3" 
+//     play={true} 
+//     volume={0.15} 
+//     loop={true} 
+//   />
+// );
 
 
   // Subtitle Layer

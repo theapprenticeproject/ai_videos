@@ -2,6 +2,7 @@
   "name": "saas",
   "version": "0.1.0",
   "private": true,
+  "type": "module",
   "scripts": {
     "dev": "next dev",
     "build": "next build",
@@ -11,6 +12,7 @@
     "revideo:editor": "revideo editor --projectFile ./revideo/p2_project.ts"
   },
   "dependencies": {
+    "@elevenlabs/elevenlabs-js": "^2.26.0",
     "@google-cloud/speech": "^7.2.0",
     "@google-cloud/text-to-speech": "^6.2.0",
     "@google/genai": "^1.10.0",

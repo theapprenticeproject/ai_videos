@@ -10,7 +10,7 @@ import { callAssetSearch } from "./assetSearch";
 // import { textToSpeech,speechToText } from "./utils/audioTranscript";
 import { downloadFile } from "./utils/downloadAsset";
 import { speechToText } from "./utils/speechToText";
-import { textToSpeech } from "./utils/audioUtils";
+import { textToSpeech, generateSpeechWithTranscript} from "./utils/audioUtils";
 import { renderPersonalizedVideo } from "../revideo/render";
 import Sanscript from "@indic-transliteration/sanscript";
 import { getAudioDuration } from "./utils/utils";
@@ -19,7 +19,7 @@ import { deleteFiles } from "./utils/utils";
 import { generateFreepikAI } from "./mediaApis/freepik";
 
 
-import { AUDIO_API_KEY, LLM_API_KEY, TRANSCRIPT_API_KEY } from "./constant";
+import { AUDIO_API_KEY, LLM_API_KEY, TRANSCRIPT_API_KEY, ELEVENLABS_API_KEY } from "./constant";
 
 async function retryLlmCall<T>(
   fn: (...args: any[]) => Promise<T>,
@@ -163,7 +163,8 @@ export async function callVideoGenerator(
     avatar: string;
   },
   contentClass: string,
-  user_video_id: string
+  user_video_id: string,
+  flow: string | "eleven"
 ): Promise<string> {
   deleteFiles([],true);
   console.log("got pref, ", preferences);
@@ -181,26 +182,44 @@ export async function callVideoGenerator(
   // Output: Audio file saved at: ./bhashini-audio/user_abcd_1234.wav
 
   let tempFiles: string[] = [];
-  // 1. Text to Audio (TTS)
-  let audioPath = await textToSpeech(tts_options.text, {
-    apiKey: AUDIO_API_KEY, // <-- Replace with your API key
-    languageCode: tts_options.language,
-    ssmlGender: tts_options.gender,
-    fileName: `audio_${tts_options.user_video_id}.mp3`,
-    name: tts_options.voiceId,
-  });
-  tempFiles.push(audioPath);
 
-  console.log("done with audioPath");
-  // 2. Audio to Text (ASR with word timestamps)
-  let transcriptData: any = await speechToText(
-    `audio_${tts_options.user_video_id}.mp3`,
-    {
-      apiKey: TRANSCRIPT_API_KEY,
-      languageCode: tts_options.language
-    },
-    script.split(" ")
-  );
+  let audioPath: string | null = null;
+  let transcriptData: any = null;
+
+  if(flow=="eleven"){
+      ({ audioPath, transcriptData }  = await  generateSpeechWithTranscript(
+      ELEVENLABS_API_KEY,
+  "21m00Tcm4TlvDq8ikWAM",
+  tts_options.text,
+  `audio_${tts_options.user_video_id}.mp3`,
+    )
+      )
+  }else{
+    // 1. Text to Audio (TTS)
+    audioPath = await textToSpeech(tts_options.text, {
+      apiKey: AUDIO_API_KEY, // <-- Replace with your API key
+      languageCode: tts_options.language,
+      ssmlGender: tts_options.gender,
+      fileName: `audio_${tts_options.user_video_id}.mp3`,
+      name: tts_options.voiceId,
+    });
+  
+
+    console.log("done with audioPath");
+    // 2. Audio to Text (ASR with word timestamps)
+    transcriptData = await speechToText(
+      `audio_${tts_options.user_video_id}.mp3`,
+      {
+        apiKey: TRANSCRIPT_API_KEY,
+        languageCode: tts_options.language
+      },
+      script.split(" ")
+    );
+
+  }
+
+
+   tempFiles.push(audioPath);
 
   console.log("transcription data is ", transcriptData);
 
