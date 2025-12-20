@@ -1,23 +1,46 @@
 {
   "scriptFewShot": {
-  "low": "You are creating a video script for young students. Use a simple story-based example to explain the topic clearly.\nFollow the video structure: Hook (Problem), Hook (Challenge), Steps to Build, Ending.\nUse easy language and relatable characters or settings that children can imagine easily.\nInclude reflective questions and encourage trying the activity in a fun way.\nMake sure to connect the story to real learning objectives in a simple manner.\n\nexample scripts are (just refer for writing style):\nHello children!\nWelcome to the new activity of Financial Literacy!\nToday's activity is called\nMoney Matters\nIn this activity, we will learn about Budgeting\nWe will also learn how\nwe can make smart choices\nto save and manage money for our goals\nLet’s meet the Gupta family\nMr. Gupta owns a clothing shop\n\nMeena is a teacher at a school\n\nAnd this is their son Rahul\nRahul studies in 8th standard in a school\nHe loves to read books and\nHistory is his favorite subject\n\nThe Gupta family dreams of visiting the Taj Mahal in 6 months\nBut to turn their dream into reality,\nwhat should they do?\n...",
-
-  "high": "You are creating a video script for older students. Use day-to-day examples and real-life relativity to explain the topic clearly.\nFollow the video structure: Hook (Problem), Hook (Challenge), Steps to Build, Ending.\nUse inclusive and clear language with relevant examples students encounter daily.\nEncourage critical thinking, reflection, and practical attempts of the activity.\n\nexample scripts are (just refer for writing style):\nHello everyone!\nWelcome to the new activity of Financial Literacy!\n\nAaj hum ek fun challenge karenge\njiska naam hai\nThe Business Challenge\nMr. Kumar ek business owner hain\njo ek local grocery store chalate hain.\nUnhe apna business badhana hai aur financially stable rakhna hai.\n\nMr. Kumar ko apne business ka cash flow manage karna hai,\nemergencies ke liye ₹1,000\nbachaana hai,\naur\nbache paiso ko safe and risky investments mein invest karna hai\nAapka challenge ye hai ki\naap in sabhi points ko dhyaan mein rakhte hue Mr. Kumar ke liye ek financial plan taiyaar karein.\n...."
-},
-
+    "low": "You are creating a video script for young students. Use a simple story-based example to explain the topic clearly.\nFollow the video structure: Hook (Problem), Hook (Challenge), Steps to Build, Ending.\nUse easy language and relatable characters or settings that children can imagine easily.\nInclude reflective questions and encourage trying the activity in a fun way.\nMake sure to connect the story to real learning objectives in a simple manner.\n\nexample scripts are (just refer for writing style):\nHello children!\nWelcome to the new activity of Financial Literacy!\nToday's activity is called\nMoney Matters\nIn this activity, we will learn about Budgeting\nWe will also learn how\nwe can make smart choices\nto save and manage money for our goals\nLet’s meet the Gupta family\nMr. Gupta owns a clothing shop\n\nMeena is a teacher at a school\n\nAnd this is their son Rahul\nRahul studies in 8th standard in a school\nHe loves to read books and\nHistory is his favorite subject\n\nThe Gupta family dreams of visiting the Taj Mahal in 6 months\nBut to turn their dream into reality,\nwhat should they do?\n...",
+    "high": "You are creating a video script for older students. Use day-to-day examples and real-life relativity to explain the topic clearly.\nFollow the video structure: Hook (Problem), Hook (Challenge), Steps to Build, Ending.\nUse inclusive and clear language with relevant examples students encounter daily.\nEncourage critical thinking, reflection, and practical attempts of the activity.\n\nexample scripts are (just refer for writing style):\nHello everyone!\nWelcome to the new activity of Financial Literacy!\n\nAaj hum ek fun challenge karenge\njiska naam hai\nThe Business Challenge\nMr. Kumar ek business owner hain\njo ek local grocery store chalate hain.\nUnhe apna business badhana hai aur financially stable rakhna hai.\n\nMr. Kumar ko apne business ka cash flow manage karna hai,\nemergencies ke liye ₹1,000\nbachaana hai,\naur\nbache paiso ko safe and risky investments mein invest karna hai\nAapka challenge ye hai ki\naap in sabhi points ko dhyaan mein rakhte hue Mr. Kumar ke liye ek financial plan taiyaar karein.\n...."
+  },
   "avatarAudioMap": {
-    "female": "https://cloud.google.com/static/text-to-speech/docs/audio/en_us_studio_o_gatsby.wav",
-    "male": "https://cloud.google.com/static/text-to-speech/docs/audio/en-IN-Chirp3-HD-Algenib.wav",
-    "maleIn": "https://cloud.google.com/static/text-to-speech/docs/audio/hi-IN-Chirp3-HD-Zubenelgenubi.wav",
-    "f1_enIn": "https://cloud.google.com/static/text-to-speech/docs/audio/en-IN-Chirp3-HD-Achernar.wav",
-    "f2_enIn": "https://cloud.google.com/static/text-to-speech/docs/audio/en-IN-Chirp3-HD-Despina.wav",
-    "f3_hiIn": "https://cloud.google.com/static/text-to-speech/docs/audio/hi-IN-Chirp3-HD-Achernar.wav",
-    "f4_hiIn": "https://cloud.google.com/static/text-to-speech/docs/audio/hi-IN-Chirp3-HD-Despina.wav"
+    "siw1N9V8LmYeEWKyWBxv": "https://storage.googleapis.com/eleven-public-prod/database/workspace/514d94e9241c48e8b7905375729c436f/voices/siw1N9V8LmYeEWKyWBxv/cBmcFAhsEDTnsoNcP2Vr.mp3",
+    "W7iR5kTNHozpIl2Jqq15": "https://storage.googleapis.com/eleven-public-prod/database/workspace/ed9b05e6324c457685490352e9a1ec90/voices/W7iR5kTNHozpIl2Jqq15/NU587Ng72BhcW2lF5K0z.mp3",
+    "XfNU2rGpBa01ckF309OY": "https://storage.googleapis.com/eleven-public-prod/database/user/MXKZI3eQt3WgrktYjNyLAL45Md82/voices/XfNU2rGpBa01ckF309OY/bcfa2003-3ca0-4dd5-849a-285dab4cacf0.mp3",
+    "dxhwlBCxCrnzRlP4wDeE": "https://storage.googleapis.com/eleven-public-prod/database/workspace/ed9b05e6324c457685490352e9a1ec90/voices/dxhwlBCxCrnzRlP4wDeE/0na5TEuobTLNPitem1Bt.mp3"
   },
   "avatars": [
-    { "value": "f1_enIn", "label": "Female Avatar (English - India, Achernar)", "emoji": "👩🏽‍🦱", "langType": "english" },
-    { "value": "f2_enIn", "label": "Female Avatar (English - India, Despina)", "emoji": "👩🏽", "langType": "english" },
-    { "value": "f3_hiIn", "label": "Female Avatar (Hindi - India, Achernar)", "emoji": "👩🏽‍🦱", "langType": "hinglish" },
-    { "value": "f4_hiIn", "label": "Female Avatar (Hindi - India, Despina)", "emoji": "👩🏽", "langType": "hinglish" }
+    {
+      "value": "siw1N9V8LmYeEWKyWBxv",
+      "label": "Ruhaan (Hindi - Male)",
+      "emoji": "👨🏽",
+      "langType": "hinglish",
+      "gender": "MALE",
+      "languageCode": "hi-IN"
+    },
+    {
+      "value": "W7iR5kTNHozpIl2Jqq15",
+      "label": "Sia (English - Female)",
+      "emoji": "👩🏽",
+      "langType": "english",
+      "gender": "FEMALE",
+      "languageCode": "en-IN"
+    },
+    {
+      "value": "XfNU2rGpBa01ckF309OY",
+      "label": "Nichalia (Hindi - Female)",
+      "emoji": "👩🏽",
+      "langType": "english",
+      "gender": "FEMALE",
+      "languageCode": "en-US"
+    },
+    {
+      "value": "dxhwlBCxCrnzRlP4wDeE",
+      "label": "Arjun (Hindi - Male)",
+      "emoji": "👨🏽",
+      "langType": "hinglish",
+      "gender": "MALE",
+      "languageCode": "hi-IN"
+    }
   ]
 }

@@ -10,13 +10,18 @@ import { callAssetSearch } from "./assetSearch";
 // import { textToSpeech,speechToText } from "./utils/audioTranscript";
 import { downloadFile } from "./utils/downloadAsset";
 import { speechToText } from "./utils/speechToText";
-import { textToSpeech, generateSpeechWithTranscript} from "./utils/audioUtils";
+import { textToSpeech, generateSpeechWithTranscript } from "./utils/audioUtils";
 import { renderPersonalizedVideo } from "../revideo/render";
 import Sanscript from "@indic-transliteration/sanscript";
 import { getAudioDuration } from "./utils/utils";
 
 import { deleteFiles } from "./utils/utils";
-import { generateFreepikAI } from "./mediaApis/freepik";
+import { generateFreepikImage, generateFreepikVideo } from "./mediaApis/freepik";
+import { generateNanoBananaImage, generateNanoBananaBatch } from "./mediaApis/nanoBanana";
+import { generateImagen4Image } from "./mediaApis/imagegen4";
+import { searchPexels } from "./mediaApis/pexels";
+import { searchYouTubeImages } from "./mediaApis/googleSearch";
+import data from "../dynamication.json"
 
 
 import { AUDIO_API_KEY, LLM_API_KEY, TRANSCRIPT_API_KEY, ELEVENLABS_API_KEY } from "./constant";
@@ -86,57 +91,20 @@ function formatSceneJsonToAssets(
   }));
 }
 
+function getAvatarDetails(voiceId: string) {
+  const avatar = data.avatars.find(a => a.value === voiceId);
+  return avatar || { languageCode: "en-US", gender: "FEMALE" }; // Default fallback
+}
+
 function getLang(voice: string): string {
-  console.log("voice ", voice)
-  switch (voice) {
-    case "female":
-    case "f1_enin":
-    case "f2_enin":
-      return "en-IN";  // English (India)
-    case "male":
-    case "malein":
-      return "hi-IN";  // Hindi (India)
-    case "f3_hiin":
-    case "f4_hiin":
-      return "hi-IN";  // Hindi (India) for female voices
-    default:
-      return "en-US";  // Default language code
-  }
+  return getAvatarDetails(voice).languageCode;
 }
 
 function getGender(voice: string): string {
-  if (voice.startsWith("male")) {
-    return "MALE";
-  } else {
-    return "FEMALE";
-  }
+  return getAvatarDetails(voice).gender;
 }
 
-
-// let name = "";
-// let name = "en-IN-Chirp3-HD-Algenib";
-// let name = ""
-
-function getVoiceID(voice: string): string {
-  switch (voice) {
-    case "female":
-      return "en-US-Studio-O";  // Default female voice (US English)
-    case "male":
-      return "en-IN-Chirp3-HD-Algenib";  // Default male voice (Indian English)
-    case "maleIn":
-      return "hi-IN-Chirp3-HD-Zubenelgenubi";  // Hindi Male voice
-    case "f1_enIn":
-      return "en-IN-Chirp3-HD-Achernar";  // Female Avatar (English - India, Achernar)
-    case "f2_enIn":
-      return "en-IN-Chirp3-HD-Despina";  // Female Avatar (English - India, Despina)
-    case "f3_hiIn":
-      return "hi-IN-Chirp3-HD-Achernar";  // Female Avatar (Hindi - India, Achernar)
-    case "f4_hiIn":
-      return "hi-IN-Chirp3-HD-Despina";  // Female Avatar (Hindi - India, Despina)
-    default:
-      return "en-US-Studio-O";  // Default if no match is found
-  }
-}
+// getVoiceID is no longer needed as the voice IS the ID now
 
 
 type ChunkJson = {
@@ -164,18 +132,34 @@ export async function callVideoGenerator(
   },
   contentClass: string,
   user_video_id: string,
-  flow: string | "eleven"
+  flow: string = "eleven"
 ): Promise<string> {
-  deleteFiles([],true);
+  deleteFiles([], true);
   console.log("got pref, ", preferences);
 
-  let tts_options = {
-    text: script,
-    language: getLang(preferences.avatar.toLowerCase()), // or any other language supported by your TTS service
-    gender: getGender(preferences.avatar.toLowerCase()), //male or female,
-    voiceId: getVoiceID(preferences.avatar),
-    user_video_id: user_video_id,
-  };
+  let tts_options: any;
+
+  if (flow == "eleven") {
+    tts_options = {
+      text: script,
+      language: getLang(preferences.avatar),
+      gender: getGender(preferences.avatar),
+      voiceId: preferences.avatar,
+      user_video_id: user_video_id,
+    };
+  } else {
+    // Legacy flow - keeping as fallback if needed, but updated to use same helpers
+    tts_options = {
+      text: script,
+      language: getLang(preferences.avatar),
+      gender: getGender(preferences.avatar),
+      voiceId: preferences.avatar, // In new config, avatar IS the voiceId
+      user_video_id: user_video_id,
+    };
+  }
+
+
+
 
   console.log("tts options ", tts_options);
   // let audioPath = `audio_${tts_options.user_video_id}.mp3`;
@@ -186,15 +170,15 @@ export async function callVideoGenerator(
   let audioPath: string | null = null;
   let transcriptData: any = null;
 
-  if(flow=="eleven"){
-      ({ audioPath, transcriptData }  = await  generateSpeechWithTranscript(
+  if (flow == "eleven") {
+    ({ audioPath, transcriptData } = await generateSpeechWithTranscript(
       ELEVENLABS_API_KEY,
-  "21m00Tcm4TlvDq8ikWAM",
-  tts_options.text,
-  `audio_${tts_options.user_video_id}.mp3`,
+      tts_options.voiceId,
+      tts_options.text,
+      `audio_${tts_options.user_video_id}.mp3`,
     )
-      )
-  }else{
+    )
+  } else {
     // 1. Text to Audio (TTS)
     audioPath = await textToSpeech(tts_options.text, {
       apiKey: AUDIO_API_KEY, // <-- Replace with your API key
@@ -203,7 +187,7 @@ export async function callVideoGenerator(
       fileName: `audio_${tts_options.user_video_id}.mp3`,
       name: tts_options.voiceId,
     });
-  
+
 
     console.log("done with audioPath");
     // 2. Audio to Text (ASR with word timestamps)
@@ -219,7 +203,7 @@ export async function callVideoGenerator(
   }
 
 
-   tempFiles.push(audioPath);
+  tempFiles.push(audioPath);
 
   console.log("transcription data is ", transcriptData);
 
@@ -240,52 +224,47 @@ export async function callVideoGenerator(
   // transcriptData: { text: string; words: { word: string; startTime: number; endTime: number }[] }
 
   // 3. Chunk transcript via LLM structured output
-//   const chunkingStructure = {
-//     type: "object",
-//     properties: {
-//       chunks: {
-//         type: "array",
-//         items: {
-//           type: "string",
-//         },
-//         description: `Return an array of string chunks without any spell changes from the given transcript.
+  //   const chunkingStructure = {
+  //     type: "object",
+  //     properties: {
+  //       chunks: {
+  //         type: "array",
+  //         items: {
+  //           type: "string",
+  //         },
+  //         description: `Return an array of string chunks without any spell changes from the given transcript.
 
-// Each chunk should be meaningful and suitable for a visual video scene.
-// Limit each chunk to a maximum of 10-15 words.
-// Strictly Do not change any spelling, punctuation, or characters from the original text — even if they are incorrect. Keep everything exactly as it appears.`,
-//       },
-//     },
-//     required: ["chunks"],
-//   };
+  // Each chunk should be meaningful and suitable for a visual video scene.
+  // Limit each chunk to a maximum of 10-15 words.
+  // Strictly Do not change any spelling, punctuation, or characters from the original text — even if they are incorrect. Keep everything exactly as it appears.`,
+  //       },
+  //     },
+  //     required: ["chunks"],
+  //   };
 
-const chunkingStructure = {
-  "type": "object",
-  "properties": {
-    "chunks": {
-      "type": "array",
-      "items": {
-        "type": "object",
-        "properties": {
-          "chunk": {
-            "type": "string",
-            "description": "string chunk strictly without any spell changes even if there is any incorrect, no punctuation changes or addition  from the given transcript."
+  const chunkingStructure = {
+    "type": "object",
+    "properties": {
+      "chunks": {
+        "type": "array",
+        "items": {
+          "type": "object",
+          "properties": {
+            "chunk": {
+              "type": "string",
+              "description": "string chunk strictly without any spell changes even if there is any incorrect, no punctuation changes or addition  from the given transcript."
+            }
           },
-          "type": {
-            "type": "string",
-            "enum": ["story", "nostory"],
-            "description": "Indicates whether the chunk is part of a story or not , it should contain some significant story charater or element or imagination which we are telling in story which can't be shown through real life stock image/video."
-          }
+          "required": ["chunk"]
         },
-        "required": ["chunk", "type"]
-      },
-      "description": `Return an array of string chunks without any spell changes from the given transcript.
+        "description": `Return an array of string chunks without any spell changes from the given transcript.
 Each chunk should be meaningful and suitable for a visual video scene.
 Limit each chunk to a maximum of 10-15 words.
 Strictly Do not change any spelling, punctuation, or characters from the original text — even if they are incorrect. Keep everything exactly as it appears.`,
-    }
-  },
-  "required": ["chunks"]
-}
+      }
+    },
+    "required": ["chunks"]
+  }
 
   // OpenAI expects structure as stringified JSON schema
 
@@ -335,238 +314,266 @@ Output only the array of chunk objects. Do not include any explanations or extra
 
   console.log("done with scriptContextSummary ", scriptContextSummary);
 
-  // 4. Iterate over chunks
-  for (const [chunk_index, chunk] of chunks.entries()) {
-    console.log("chunk is , ", chunk);
-    console.log("chunk index is ", chunk_index);
+  // 4. Batch Keyword Extraction with LLM
+  console.log("Starting batch keyword extraction...");
 
-    // 2. Extract visually-representable and high-salience keywords, with script context reminder
-    // const keywordsPrompt =
-    //   `Given the following script segment (which is part of a larger script about: ${scriptContextSummary}), ` +
-    //   `extract/generate one distinct, non-duplicate keywords or short phrases in english that would be effective as visuals (image, video), ` +
-    //   `as well as text highlights for important dates or phrases. ` +
-    //   `Do NOT include explanations.\n\nSCRIPT SEGMENT:\n${chunk}
-    //   Note this keyword will be used as query for image/video for visuals of this segment/chunk
-    //   also make sure not to put any puncutation,asteriks or special characters in the keyword, just a single word or phrase
-    //   Striclty make sure keyword or phrase being generated is in english only`;
+  const batchKeywordSchema = {
+    "type": "object",
+    "properties": {
+      "results": {
+        "type": "array",
+        "items": {
+          "type": "object",
+          "properties": {
+            "index": { "type": "integer" },
+            "visual_query": {
+              "type": "string",
+              "description": "A specific, descriptive image generation prompt or search query for the given chunk."
+            },
+            "google_search": {
+              "type": "boolean",
+              "description": "Set to true if the visual requires a real-world entity, famous person, specific location, or current event that an AI image generator might get wrong. Set to false for generic scenes, illustrations, or concepts."
+            },
+            "reasoning": { "type": "string" }
+          },
+          "required": ["index", "visual_query", "google_search", "reasoning"]
+        }
+      }
+    },
+    "required": ["results"]
+  };
 
-    const keywordSystemPrompt =  `You are a visual keyword generation assistant. Your job is to generate a visual query for image/video content based on a given script segment and its overall context.
+  const batchSystemPrompt = `You are a visual direction assistant. You will be given a list of script chunks and the overall story context.
+For each chunk, generate a specific visual description (prompt) to be used for image generation or image search.
+Decide whether to use Google Search (Real images/Specifics) or AI Generation (Generic/Creative).
+- Use Google Search (google_search: true) for: Famous people, specific real-world locations (like Taj Mahal), complex real-world events, or when photorealism of specific entities is critical.
+- Use AI Generation (google_search: false) for: Generic characters (e.g. "a boy reading"), illustrations, fantasy elements, emotions, or scenes where exact real-world fidelity isn't restrictive.
 
-You must:
-- Understand the subject of the script from both the given segment and the overall context.
-- Disambiguate keywords by using context clues (e.g., is “Apple” a fruit or the company? Is “money” referring to Indian Rupees or US Dollars?).
-- Use culturally or geographically relevant visuals if applicable (e.g., use "Indian Rupees" if the script is set in India).
-- Select a keyword or short phrase in **English** that would work well as a **search term** for a visual (image/video).
-- Avoid punctuation or special characters.
-- Provide a **brief explanation** ("reasoning") for why this keyword was chosen, showing how context influenced your decision.
+Return a JSON object with a 'results' array containing an object for each chunk.`;
 
-Your output must follow a strict JSON schema.
-`
+  const chunksPayload = chunks.map((c: any, i: number) => ({ index: i, text: c.chunk }));
 
-const keywordsPrompt = `You are given the following information:
+  const batchUserPrompt = `
+STORY CONTEXT: "${scriptContextSummary}"
 
-OVERALL SCRIPT CONTEXT:
-"${scriptContextSummary}"
+CHUNKS:
+${JSON.stringify(chunksPayload, null, 2)}
 
-SCRIPT SEGMENT:
-"${chunk.chunk}"
+Generate visual prompts with all types as animated for all chunks.
 
-TASK:
-Based on the above, generate a visual keyword (as a search query) that accurately reflects the subject and is visually meaningful.
 
-Use the broader script context to disambiguate any ambiguous terms or references (e.g., "Apple" = company or fruit, "money" = which currency, etc.)
+Example visual prompts are :
 
-Return your output in the following JSON format:
-{
-  "visual_query": "string",
-  "reasoning": "string"
-}
+1
+TYPE: Animated for kids explainer
+Scene: Split Screen.
+Left: A friendly-looking man, Mr. Gupta, busy arranging clothes in a modest retail shop.
+Right: A woman, Meena, writing on a blackboard in a classroom filled with children.
 
-Rules:
-- The visual_query must be a clean, simple English word or phrase. No punctuation or special characters.
-- The reasoning should explain why this query fits the segment based on context.
-- Prioritize Indian visual relevance if the script context supports it.
+2
+type:animated kids explaners
 
-Examples:
+Scene: A teenage boy's room.
 
-Example 1:
-Context: "A tech news video discussing recent iPhone updates"
-Segment: "Apple is expected to release a new model with better battery life."
-Output:
-{
-  "visual_query": "Apple iPhone",
-  "reasoning": "The context makes it clear that Apple refers to the tech company, not the fruit, and the segment talks about a new iPhone release."
-}
 
-Example 2:
-Context: "A documentary about Himachal Pradesh agriculture"
-Segment: "Apple is one of the main crops grown in the region."
-Output:
-{
-  "visual_query": "Himachal Apple Orchard",
-  "reasoning": "The context shows this is about fruit farming in Himachal, so 'Apple' refers to the fruit, and location is relevant."
-}
+Visual: Rahul (around 13 years old) sits comfortably in a beanbag chair surrounded by books. He is engrossed in a large book titled "World History."
 
-Example 3:
-Context: "Explaining rising prices in rural Indian markets"
-Segment: "People are finding it harder to manage their daily expenses."
-Output:
-{
-  "visual_query": "Indian Rupees",
-  "reasoning": "The mention of daily expenses and rural India suggests the money visual should be in Indian currency."
-}
 
-Example 4:
-Context: "A global finance overview"
-Segment: "Inflation has pushed up costs across major cities."
-Output:
-{
-  "visual_query": "US Dollars",
-  "reasoning": "The context is global finance, and without specific location, US Dollars is a common visual for money."
-}
-
-Now generate the output for the current segment.
 `;
 
-const visualKeywordSchema = {
-  type: "object",
-  properties: {
-    visual_query: {
-      type: "string",
-      description: "A clean English keyword or short phrase usable as a visual search query (no punctuation or special characters)."
-    },
-    reasoning: {
-      type: "string",
-      description: "A brief explanation of how the context led to the choice of visual_query."
-    }
-  },
-  required: ["visual_query", "reasoning"]
-};
-    
+  let batchKeywordsData: any = {};
 
-      let keywordsJson = await retryLlmCall(callStructuredLlm, [
+  try {
+    const batchResponse = await retryLlmCall(callStructuredLlm, [
       LLM_API_KEY,
-      keywordSystemPrompt,
-      keywordsPrompt,
-      visualKeywordSchema,
-      ]);
+      batchSystemPrompt,
+      batchUserPrompt,
+      batchKeywordSchema,
+    ]);
 
-      let keywordsStr = keywordsJson.visual_query;
+    if (batchResponse?.results) {
+      batchResponse.results.forEach((r: any) => {
+        batchKeywordsData[r.index] = r;
+      });
+    }
+    console.log("Batch keywords generated:", batchKeywordsData);
+  } catch (e) {
+    console.error("Failed batch keyword extraction, falling back to chunk text", e);
+  }
 
-    console.log("Keywords are:", keywordsStr);
+  // 5. Pre-process Batch Generation for AI chunks
+  console.log("Preparing batch generation requests...");
+  const batchPrompts: string[] = [];
+  const chunkIndicesForBatch: number[] = [];
 
-    // Get timestamps for the chunk
+  for (const [chunk_index, chunk] of chunks.entries()) {
+    const promptData = batchKeywordsData[chunk_index] || { visual_query: chunk.chunk, google_search: false };
+    if (!promptData.google_search) {
+      batchPrompts.push(promptData.visual_query);
+      chunkIndicesForBatch.push(chunk_index);
+    }
+  }
+
+  let batchResultsMap = new Map<string, string>();
+  if (batchPrompts.length > 0) {
+    console.log(`Sending ${batchPrompts.length} prompts to Gemini Batch...`);
+    try {
+      batchResultsMap = await generateNanoBananaBatch(batchPrompts);
+    } catch (e) {
+      console.error("Batch generation failed completely:", e);
+    }
+  }
+
+  // 6. Iterate over chunks and generate media
+  for (const [chunk_index, chunk] of chunks.entries()) {
+    console.log(`Processing chunk ${chunk_index}: ${chunk.chunk}`);
+
+    const promptData = batchKeywordsData[chunk_index] || { visual_query: chunk.chunk, google_search: false };
+    const keywordsStr = promptData.visual_query;
+    const useGoogle = promptData.google_search;
+
+    console.log(`Prompt: "${keywordsStr}", Google Search: ${useGoogle}`);
+
+    let mediaPath = "";
+    let selectedUrl = "";
+    let generated = false;
+
+    // Get timestamps
     let { startTime, endTime, startIndex, endIndex } = getTimestampsForPhrase(
       transcriptData,
       chunk.chunk
     );
-
-    // Extract the actual word objects for the chunk
     const chunkWords = transcriptData.slice(startIndex, endIndex + 1);
 
-    console.log("chunk words ", chunkWords);
-
-    let tag = "";
-    let templateJson = {};
-    let { selectedUrl, alternateUrls } = { selectedUrl: "", alternateUrls: [] };
-    let mediaPath = "";
-
-    if (preferences.style != "slideshow") {
-      // b. Extract tag for chunk
-      const tagPrompt = `Extract a single tag for the following text:\n\n${chunk.chunk}\n\nReturn a single tag as a string.`;
-      // const tag = await callLlm(apiKey,`Extract a tag from text.`,tagPrompt);
-      const tag = await retryLlmCall(callLlm, [LLM_API_KEY, tagPrompt, chunk.chunk]);
-
-      // template selection
-      let template = templateSelector(
-        chunk.chunk,
-        keywordsStr,
-        tag,
-        scriptContextSummary
-      );
-      // let template = "slideshow";
-
-      // get scene json info -> media queries , start time, end time
-      // let llmOutput = callStructuredLlm(apiKey,`Generate a template JSON for the following text with keywords and tag.`,"",template)
-      let llmOutput = await retryLlmCall(callStructuredLlm, [
-        LLM_API_KEY,
-        `Generate a template JSON for the following text with keywords and tag.`,
-        "",
-        template,
-      ]);
-
-      // let templateJson =  collectTemplateAssets(template, keywords);
-    } else {
-      console.log("slideshow condition");
-      // For slideshow, we don't need a tag or templateJson
-      // c. Call asset search
-
-      //  let {selectedUrl: string,alternateUrls: string[]}; = await callAssetSearch(keywordsStr, preferences.style);
-      // let assetDetails = await callAssetSearch(keywordsStr, preferences.style);
-      // let assetDetails = await retryLlmCall(callAssetSearch,[keywordsStr, preferences.style]);
-      // let selectedUrl = assetDetails.selected_asset;
-      // let alternateUrls = assetDetails.alternate_asset;
-      let assetDetails = (await retryLlmCall(callAssetSearch, [
-        keywordsStr,
-        preferences.style,
-        chunk.type
-      ])) || { selected_asset: "", alternate_asset: [] };
-      let selectedUrl = assetDetails.selected_asset;
-      let alternateUrls = assetDetails.alternate_asset || [];
-
-      // d. Download media with fallback to alternate URLs
-      let mediaPath: string | undefined;
-      let downloadSuccess = false;
-
-      const allUrls = [selectedUrl, ...(alternateUrls || [])];
-
-      console.log("all urls, ", allUrls);
-
-      for (const url of allUrls) {
-        try {
-          const { path } = await downloadFile(url);
-          console.log("Downloaded path: ", path);
-          tempFiles.push(path);
-          //mediaPath = path
-          mediaPath = path.replace(/^public[\\/]/, "");
-          console.log("media path is ", mediaPath);
-          selectedUrl = url; // update to the actually used URL
-          downloadSuccess = true;
-          break; // Exit loop on first success
-        } catch (err) {
-          console.warn(`Failed to download from ${url}: ${err}`);
-          // Try next URL
-        }
-      }
-
-      if (!downloadSuccess) {
-        try {
-          const url = await generateFreepikAI("image", keywordsStr);
-          console.log("Selected asset set to:", url);
-
-          if (typeof url === "string") {
+    // Generation Logic
+    if (useGoogle) {
+      console.log("Using Google Search...");
+      try {
+        // Using searchYouTubeImages which actually searches Google Custom Search for images
+        const images = await searchYouTubeImages(keywordsStr + " high quality", 3);
+        if (images && images.length > 0) {
+          // Try downloading the first one
+          for (const img of images) {
             try {
-              const { path } = await downloadFile(url);
-              console.log("Downloaded path: ", path);
-              tempFiles.push(path);
-              //mediaPath = path
+              const { path } = await downloadFile(img.imageUrl);
               mediaPath = path.replace(/^public[\\/]/, "");
-              console.log("media path is ", mediaPath);
-              selectedUrl = url; // update to the actually used URL
-              downloadSuccess = true;
+              selectedUrl = img.imageUrl;
+              tempFiles.push(path);
+              generated = true;
+              console.log("Downloaded Google Image:", mediaPath);
+              break;
             } catch (err) {
-              console.warn(`Failed to download from ${url}: ${err}`);
-              // Try next URL
+              console.warn("Failed to download google image:", err);
             }
           }
-        } catch (err) {
-          console.error("Error generating Freepik AI image:", err);
         }
-        console.log("All media download attempts failed.");
+      } catch (err) {
+        console.error("Google search failed:", err);
+      }
+    }
+
+    if (!generated) {
+      // Fallback chain: NanoBanana Batch Result -> Imagen4 -> Freepik -> Pexels
+      console.log("Checking AI Generation (NanoBanana Batch)...");
+
+      // 1. Nano Banana (Batch Result)
+      if (batchResultsMap.has(keywordsStr)) {
+        const nanoPath = batchResultsMap.get(keywordsStr);
+        if (nanoPath) {
+          mediaPath = nanoPath.replace(/^public[\\/]/, "");
+          selectedUrl = "generated-nano-batch";
+          tempFiles.push(nanoPath);
+          generated = true;
+          console.log("Used Batch Generated Image:", mediaPath);
+        }
+      } else {
+        console.warn("Batch result not found for this prompt. Proceeding to fallbacks.");
       }
 
-      templateJson = { path: mediaPath };
+      // Note: We skip single-call NanoBanana because if batch failed for this specific prompt, 
+      // likely single call would too or we just want to move to next provider as per fallback strategy.
+      // UPDATE: User requested fallback to NanoBanana single if batch fails.
+
+      // 1.5 Nano Banana (Single Call Fallback)
+      if (!generated) {
+        console.log("Fallback to NanoBanana (Single)...");
+        try {
+          const nanoPath = await generateNanoBananaImage(keywordsStr);
+          if (nanoPath) {
+            mediaPath = nanoPath.replace(/^public[\\/]/, "");
+            selectedUrl = "generated-nano-single";
+            tempFiles.push(nanoPath);
+            generated = true;
+            console.log("Generated NanoBanana (Single) Image:", mediaPath);
+          }
+        } catch (e) { console.error("NanoBanana (Single) failed", e); }
+      }
+
+      // 2. Imagen 4 Fallback
+      if (!generated) {
+        console.log("Fallback to Imagen 4...");
+        try {
+          const imagenPath = await generateImagen4Image(keywordsStr);
+          if (imagenPath) {
+            mediaPath = imagenPath.replace(/^public[\\/]/, "");
+            selectedUrl = "generated-imagen4";
+            tempFiles.push(imagenPath);
+            generated = true;
+            console.log("Generated Imagen4 Image:", mediaPath);
+          }
+        } catch (e) { console.error("Imagen4 failed", e); }
+      }
+
+      // 3. Freepik Fallback
+      if (!generated) {
+        console.log("Fallback to Freepik (Flux)...");
+        try {
+          const freepikUrl = await generateFreepikImage("flux-dev", keywordsStr);
+          if (freepikUrl) {
+            try {
+              const { path } = await downloadFile(freepikUrl);
+              mediaPath = path.replace(/^public[\\/]/, "");
+              selectedUrl = freepikUrl;
+              tempFiles.push(path);
+              generated = true;
+              console.log("Generated Freepik Image:", mediaPath);
+            } catch (err) {
+              console.warn("Freepik download failed:", err);
+            }
+          }
+        } catch (e) { console.error("Freepik failed", e); }
+      }
+
+      // 4. Pexels Fallback
+      if (!generated) {
+        console.log("Fallback to Pexels...");
+        try {
+          const pexelsResults = await searchPexels("photo", keywordsStr, 3, "landscape");
+          if (pexelsResults && pexelsResults.length > 0) {
+            for (const photo of pexelsResults) {
+              try {
+                const url = photo.best_quality_url || photo.url;
+                const { path } = await downloadFile(url);
+                mediaPath = path.replace(/^public[\\/]/, "");
+                selectedUrl = url;
+                tempFiles.push(path);
+                generated = true;
+                console.log("Downloaded Pexels Image:", mediaPath);
+                break;
+              } catch (err) {
+                console.warn("Pexels download failed:", err);
+              }
+            }
+          }
+        } catch (e) { console.error("Pexels failed", e); }
+      }
     }
+
+    if (!generated) {
+      console.warn(`All generation/search methods failed for chunk: ${chunk_index}`);
+    }
+
+    const templateJson = { path: mediaPath };
 
     // e. Compose chunkJson
     const chunkJson: ChunkJson = {
@@ -577,10 +584,10 @@ const visualKeywordSchema = {
       endTime,
       words: chunkWords,
       selectedUrl,
-      alternateUrls,
+      alternateUrls: [],
       template: preferences.style,
       templateJson: templateJson,
-      tag,
+      tag: "",
     };
 
     // Append chunkJson to sceneJson
@@ -621,7 +628,7 @@ const visualKeywordSchema = {
 
   for (let a in assetJson) {
     console.log("asset is : ", assetJson[a].path);
-    if(assetJson[a].type==="video"){
+    if (assetJson[a].type === "video") {
       let tempPath = fixIfBrokenVideo("public/" + assetJson[a].path);
       //assetJson[a].path = fixIfBrokenVideo(assetJson[a].path)
       tempFiles.push(tempPath);

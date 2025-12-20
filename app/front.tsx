@@ -37,9 +37,9 @@ const detectLanguage = async (text: string): Promise<string> => {
     }
 
     const lang = await callStructuredLlm(
-      LLM_API_KEY, 
-      "systemPrompt", 
-      `return if given script is english or hinglish. script:${text}`, 
+      LLM_API_KEY,
+      "systemPrompt",
+      `return if given script is english or hinglish. script:${text}`,
       scriptLangSchema
     );
 
@@ -55,24 +55,21 @@ const StepIndicator = ({ currentStep, steps }: { currentStep: number; steps: any
   <div className="flex items-center justify-center mb-8">
     {steps.map((step, index) => (
       <div key={step.id} className="flex items-center">
-        <div className={`flex items-center justify-center w-10 h-10 rounded-full border-2 transition-all duration-300 ${
-          index <= currentStep 
-            ? 'bg-blue-600 border-blue-600 text-white' 
-            : 'border-gray-300 text-gray-400'
-        }`}>
+        <div className={`flex items-center justify-center w-10 h-10 rounded-full border-2 transition-all duration-300 ${index <= currentStep
+          ? 'bg-blue-600 border-blue-600 text-white'
+          : 'border-gray-300 text-gray-400'
+          }`}>
           <step.icon className="w-5 h-5" />
         </div>
         <div className="ml-2 mr-4">
-          <div className={`text-sm font-medium ${
-            index <= currentStep ? 'text-blue-600' : 'text-gray-400'
-          }`}>
+          <div className={`text-sm font-medium ${index <= currentStep ? 'text-blue-600' : 'text-gray-400'
+            }`}>
             {step.title}
           </div>
         </div>
         {index < steps.length - 1 && (
-          <ChevronRight className={`w-4 h-4 mx-2 ${
-            index < currentStep ? 'text-blue-600' : 'text-gray-300'
-          }`} />
+          <ChevronRight className={`w-4 h-4 mx-2 ${index < currentStep ? 'text-blue-600' : 'text-gray-300'
+            }`} />
         )}
       </div>
     ))}
@@ -80,12 +77,12 @@ const StepIndicator = ({ currentStep, steps }: { currentStep: number; steps: any
 );
 
 // Prompt Input Step Component
-const PromptInputStep = ({ 
-  formData, 
-  setFormData, 
+const PromptInputStep = ({
+  formData,
+  setFormData,
   onSubmit,
   onDirectScriptClick,
-  isLoading 
+  isLoading
 }: {
   formData: FormData;
   setFormData: React.Dispatch<React.SetStateAction<FormData>>;
@@ -108,7 +105,7 @@ const PromptInputStep = ({
         <h2 className="text-2xl font-bold text-gray-900 mb-2">What's your vision?</h2>
         <p className="text-gray-600">Describe the video you want to create</p>
       </div>
-      
+
       <div className="space-y-6">
         <div>
           <label className="block text-sm font-medium text-gray-700 mb-2">
@@ -125,7 +122,7 @@ const PromptInputStep = ({
             <option value="high">High</option>
           </select>
         </div>
-        
+
         <div>
           <label className="block text-sm font-medium text-gray-700 mb-2">
             Video Prompt
@@ -141,7 +138,7 @@ const PromptInputStep = ({
             style={{ fontSize: '16px' }}
           />
         </div>
-        
+
         <div className="flex space-x-4">
           <button
             type="button"
@@ -193,7 +190,7 @@ const ScriptVerificationStep = ({
       <h2 className="text-2xl font-bold text-gray-900 mb-2">Review & Edit Script</h2>
       <p className="text-gray-600">Make any adjustments to perfect your video script</p>
     </div>
-    
+
     <div className="space-y-6">
       <div>
         <label className="block text-sm font-medium text-gray-700 mb-2">
@@ -209,7 +206,7 @@ const ScriptVerificationStep = ({
           style={{ fontSize: '14px' }}
         />
       </div>
-      
+
       <div className="flex space-x-4">
         <button
           onClick={onBack}
@@ -250,30 +247,19 @@ const AvatarSelection = ({
 }) => {
   const avatars: { value: string; label: string; emoji: string }[] = [];
 
-  // Only populate avatars if we have detected the language
-  // if (!isLoadingLanguage) {
-  //   for (let ava of data.avatars) {
-  //     if (scriptLanguage.toLowerCase() === "english" && ava.langType.toLowerCase() === "english") {
-  //       avatars.push(ava);
-  //     } else if ((scriptLanguage.toLowerCase() === "hinglish" || scriptLanguage.toLowerCase() === "hindi") && 
-  //                (ava.langType.toLowerCase() === "hinglish" || ava.langType.toLowerCase() === "hindi")) {
-  //       avatars.push(ava);
-  //     }
-  //   }
-  // }
   if (!isLoadingLanguage) {
-  for (let ava of data.avatars) {
-    if (scriptLanguage.toLowerCase() === "english" && ava.langType.toLowerCase() === "english") {
-      avatars.push(ava);
-    } else if (
-      scriptLanguage.toLowerCase() === "hinglish" ||
-      scriptLanguage.toLowerCase() === "hindi"
-    ) {
-      // Show all avatars in case of hindglish or hindi
-      avatars.push(ava);
+    for (let ava of data.avatars) {
+      if (scriptLanguage.toLowerCase() === "english" && ava.langType.toLowerCase() === "english") {
+        avatars.push(ava);
+      } else if (
+        scriptLanguage.toLowerCase() === "hinglish" ||
+        scriptLanguage.toLowerCase() === "hindi"
+      ) {
+        // Show all avatars in case of hindglish or hindi
+        avatars.push(ava);
+      }
     }
   }
-}
 
 
   if (isLoadingLanguage) {
@@ -297,11 +283,10 @@ const AvatarSelection = ({
             <button
               type="button"
               onClick={() => onAvatarChange(avatar.value)}
-              className={`w-full p-4 rounded-lg border-2 transition-colors flex flex-col items-center space-y-2 ${
-                selectedAvatar === avatar.value
-                  ? 'border-blue-500 bg-blue-50 text-blue-700'
-                  : 'border-gray-200 hover:border-gray-300'
-              }`}
+              className={`w-full p-4 rounded-lg border-2 transition-colors flex flex-col items-center space-y-2 ${selectedAvatar === avatar.value
+                ? 'border-blue-500 bg-blue-50 text-blue-700'
+                : 'border-gray-200 hover:border-gray-300'
+                }`}
             >
               <span className="text-2xl">{avatar.emoji}</span>
               <span className="text-sm font-medium">{avatar.label}</span>
@@ -309,11 +294,10 @@ const AvatarSelection = ({
             <button
               type="button"
               onClick={() => onPlayAudio(avatar.value)}
-              className={`w-full px-3 py-2 text-xs rounded-md transition-colors flex items-center justify-center space-x-1 ${
-                playingAudio === avatar.value
-                  ? 'bg-green-100 text-green-700 border border-green-300'
-                  : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
-              }`}
+              className={`w-full px-3 py-2 text-xs rounded-md transition-colors flex items-center justify-center space-x-1 ${playingAudio === avatar.value
+                ? 'bg-green-100 text-green-700 border border-green-300'
+                : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+                }`}
             >
               {playingAudio === avatar.value ? (
                 <>
@@ -449,7 +433,7 @@ const PreferencesStep = ({
       <h2 className="text-2xl font-bold text-gray-900 mb-2">Video Preferences</h2>
       <p className="text-gray-600">Customize your video settings</p>
     </div>
-    
+
     <div className="space-y-6">
       <div className="bg-gray-50 p-6 rounded-lg">
         <h3 className="font-medium text-gray-900 mb-4">Subtitle Options</h3>
@@ -468,13 +452,13 @@ const PreferencesStep = ({
           </label>
         </div>
       </div>
-      
+
       <div className="bg-gray-50 p-6 rounded-lg">
         <h3 className="font-medium text-gray-900 mb-4">Video Style</h3>
         <div className="grid grid-cols-2 gap-3">
           {[
             { value: 'slideshow', label: 'Story' },
-           // { value: 'explainer', label: 'Explainer' }
+            // { value: 'explainer', label: 'Explainer' }
           ].map((style) => (
             <button
               key={style.value}
@@ -483,18 +467,17 @@ const PreferencesStep = ({
                 ...prev,
                 preferences: { ...prev.preferences, style: style.value }
               }))}
-              className={`p-3 rounded-lg border-2 transition-colors ${
-                formData.preferences.style === style.value
-                  ? 'border-blue-500 bg-blue-50 text-blue-700'
-                  : 'border-gray-200 hover:border-gray-300'
-              }`}
+              className={`p-3 rounded-lg border-2 transition-colors ${formData.preferences.style === style.value
+                ? 'border-blue-500 bg-blue-50 text-blue-700'
+                : 'border-gray-200 hover:border-gray-300'
+                }`}
             >
               {style.label}
             </button>
           ))}
         </div>
       </div>
-      
+
       <AudiosComponent
         selectedAvatar={formData.preferences.avatar}
         onAvatarChange={(avatar) =>
@@ -508,7 +491,7 @@ const PreferencesStep = ({
         }
         formData={formData}
       />
-      
+
       <div className="flex space-x-4">
         <button
           type="button"
@@ -554,12 +537,12 @@ const ResultStep = ({
       <h2 className="text-2xl font-bold text-gray-900 mb-2">Your Video is Ready!</h2>
       <p className="text-gray-600">Video generated successfully</p>
     </div>
-    
+
     <div className="space-y-6">
       {videoUrl ? (
         <div className="bg-black rounded-lg aspect-video">
-          <video 
-            controls 
+          <video
+            controls
             className="w-full h-full rounded-lg"
             src={videoUrl}
           >
@@ -575,7 +558,7 @@ const ResultStep = ({
           </div>
         </div>
       )}
-      
+
       <div className="flex space-x-4">
         <button
           onClick={onReset}
@@ -615,7 +598,7 @@ const PromptToVideoApp: React.FC = () => {
     preferences: {
       subtitles: false,
       style: 'slideshow',
-      avatar: 'female'
+      avatar: 'XfNU2rGpBa01ckF309OY'
     }
   });
   const [videoUrl, setVideoUrl] = useState<string | null>(null);
@@ -629,23 +612,23 @@ const PromptToVideoApp: React.FC = () => {
 
   const handlePromptSubmit = async () => {
     if (!formData.prompt.trim()) return;
-    
+
     setIsLoading(true);
     try {
-      let script = await callLlm(LLM_API_KEY, "write video script refering examples, in required language english/hindi or hinglish", promptFormation(formData.prompt, "scriptFormation", formData)); 
-      
+      let script = await callLlm(LLM_API_KEY, "write video script refering examples, in required language english/hindi or hinglish", promptFormation(formData.prompt, "scriptFormation", formData));
+
       script = cleanNarrationStrictly(script);
       if (script.length === 0) {
         script = `Scene 1: ${formData.prompt}\n\nThis is a sample script generated from your prompt. You can edit this script to match your vision perfectly.\n\nScene 2: Additional content based on your requirements...`;
       }
-      
+
       setFormData(prev => ({ ...prev, script: script }));
       setCurrentStep(1);
     } catch (error) {
       console.error('Error generating script:', error);
-      setFormData(prev => ({ 
-        ...prev, 
-        script: `Scene 1: ${formData.prompt}\n\nThis is a sample script generated from your prompt. You can edit this script to match your vision perfectly.\n\nScene 2: Additional content based on your requirements...` 
+      setFormData(prev => ({
+        ...prev,
+        script: `Scene 1: ${formData.prompt}\n\nThis is a sample script generated from your prompt. You can edit this script to match your vision perfectly.\n\nScene 2: Additional content based on your requirements...`
       }));
       setCurrentStep(1);
     } finally {
@@ -707,7 +690,7 @@ const PromptToVideoApp: React.FC = () => {
       preferences: {
         subtitles: false,
         style: 'slideshow',
-        avatar: 'female'
+        avatar: 'XfNU2rGpBa01ckF309OY'
       }
     });
   };
@@ -734,7 +717,7 @@ const PromptToVideoApp: React.FC = () => {
               formData={formData}
               setFormData={setFormData}
               onSubmit={handlePromptSubmit}
-              onDirectScriptClick={() => setCurrentStep(1)} 
+              onDirectScriptClick={() => setCurrentStep(1)}
               isLoading={isLoading}
             />
           )}

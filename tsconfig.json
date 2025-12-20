@@ -10,7 +10,7 @@
 		"moduleResolution": "bundler",
 		"resolveJsonModule": true,
 		"isolatedModules": true,
-		"target": "es2015",
+		"target": "es2017",
 		"jsx": "preserve",
 		"incremental": true,
 		"plugins": [
