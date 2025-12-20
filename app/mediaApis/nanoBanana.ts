@@ -162,7 +162,7 @@ export async function generateNanoBananaBatch(prompts: string[]): Promise<Map<st
             if (!fileBatchJob.name) break; // Should not happen
             batchJob = await ai.batches.get({ name: fileBatchJob.name });
             attempts++;
-            if (attempts > 60) {
+            if (attempts > 120) {
                 console.log("Batch job timed out polling (artificial limit).");
                 break;
             }
