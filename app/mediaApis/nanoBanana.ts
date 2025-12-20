@@ -158,7 +158,7 @@ export async function generateNanoBananaBatch(prompts: string[]): Promise<Map<st
         // Check state type or cast if needed. Assuming string compatible.
         while (!completedStates.has(batchJob.state as string)) {
             console.log(`Job ${fileBatchJob.name} state: ${batchJob.state}`);
-            await new Promise(resolve => setTimeout(resolve, 5000));
+            await new Promise(resolve => setTimeout(resolve, 10000));
             if (!fileBatchJob.name) break; // Should not happen
             batchJob = await ai.batches.get({ name: fileBatchJob.name });
             attempts++;
