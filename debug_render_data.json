@@ -1,0 +1,90 @@
+{
+  "user_video_id": "test",
+  "words": [
+    {
+      "word": "dhirubai",
+      "start": 0,
+      "end": 0.615
+    },
+    {
+      "word": "was",
+      "start": 0.615,
+      "end": 0.824
+    },
+    {
+      "word": "a",
+      "start": 0.824,
+      "end": 0.894
+    },
+    {
+      "word": "man,",
+      "start": 0.894,
+      "end": 1.265
+    },
+    {
+      "word": "who",
+      "start": 1.265,
+      "end": 1.428
+    },
+    {
+      "word": "is",
+      "start": 1.428,
+      "end": 1.579
+    },
+    {
+      "word": "behind",
+      "start": 1.579,
+      "end": 1.997
+    },
+    {
+      "word": "this",
+      "start": 1.997,
+      "end": 2.218
+    },
+    {
+      "word": "billionare",
+      "start": 2.218,
+      "end": 2.972
+    },
+    {
+      "word": "called",
+      "start": 2.972,
+      "end": 3.286
+    },
+    {
+      "word": "mukesh",
+      "start": 3.286,
+      "end": 3.738
+    },
+    {
+      "word": "ambani",
+      "start": 3.738,
+      "end": 4.505
+    }
+  ],
+  "assets": [
+    {
+      "path": "batch_gen_1767469244673_0_63615.png",
+      "type": "image",
+      "start": 0,
+      "end": 5
+    },
+    {
+      "path": "generated_nano_1767469515516_9455.png",
+      "type": "image",
+      "start": 1.265,
+      "end": 4.54525
+    }
+  ],
+  "options": {
+    "subtitles": true,
+    "wordsPerLine": 3,
+    "subtitleStyle": {
+      "fontSize": 60,
+      "highlightColor": "#FF0",
+      "normalColor": "#FFF"
+    },
+    "logoUrl": "logo.png",
+    "audioUrl": "../audio_test.mp3"
+  }
+}

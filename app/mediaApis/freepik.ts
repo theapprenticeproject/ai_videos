@@ -1,5 +1,5 @@
 import { FREEPIK_API_KEY } from "../constant";
-const API_KEY = FREEPIK_API_KEY;
+let API_KEY = FREEPIK_API_KEY; 
 
 
 
@@ -261,7 +261,8 @@ Visual: Rahul (around 13 years old) sits comfortably in a beanbag chair surround
 // });
 
 // Example video generation:
-// generateFreepikVideo("hailuo-02-768p", "on left man selling and on right women teaching", "ENTER_FILE_NAME_0.png", 6).then(url => {
+// console.log("freepik ", FREEPIK_API_KEY)
+// generateFreepikVideo("hailuo-02-768p", "kid reading books and turns pages", "https://cdn-magnific.freepik.com/result_FLUX_DEV_fb46d5a5-db11-4219-bbb1-5a1d3e425b0b_0.jpeg?token=exp=1767435377~hmac=477a70b4a5d75338a8f1383073336fd5cea9173fe5cdfdb462cef6a07b706077&size=stable", 6).then(url => {
 //   console.log("Generated video URL:", url);
 // });
 

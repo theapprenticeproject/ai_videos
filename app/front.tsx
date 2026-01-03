@@ -13,6 +13,7 @@ interface FormData {
     subtitles: boolean;
     style: string;
     avatar: string;
+    animation?: boolean;
   };
 }
 
@@ -456,25 +457,32 @@ const PreferencesStep = ({
       <div className="bg-gray-50 p-6 rounded-lg">
         <h3 className="font-medium text-gray-900 mb-4">Video Style</h3>
         <div className="grid grid-cols-2 gap-3">
-          {[
-            { value: 'slideshow', label: 'Story' },
-            // { value: 'explainer', label: 'Explainer' }
-          ].map((style) => (
-            <button
-              key={style.value}
-              type="button"
-              onClick={() => setFormData(prev => ({
-                ...prev,
-                preferences: { ...prev.preferences, style: style.value }
-              }))}
-              className={`p-3 rounded-lg border-2 transition-colors ${formData.preferences.style === style.value
-                ? 'border-blue-500 bg-blue-50 text-blue-700'
-                : 'border-gray-200 hover:border-gray-300'
-                }`}
-            >
-              {style.label}
-            </button>
-          ))}
+          <button
+            type="button"
+            onClick={() => setFormData(prev => ({
+              ...prev,
+              preferences: { ...prev.preferences, style: 'slideshow', animation: false }
+            }))}
+            className={`p-3 rounded-lg border-2 transition-colors ${formData.preferences.style === 'slideshow' && !formData.preferences.animation
+              ? 'border-blue-500 bg-blue-50 text-blue-700'
+              : 'border-gray-200 hover:border-gray-300'
+              }`}
+          >
+            Story
+          </button>
+          <button
+            type="button"
+            onClick={() => setFormData(prev => ({
+              ...prev,
+              preferences: { ...prev.preferences, style: 'slideshow', animation: true }
+            }))}
+            className={`p-3 rounded-lg border-2 transition-colors ${formData.preferences.animation
+              ? 'border-blue-500 bg-blue-50 text-blue-700'
+              : 'border-gray-200 hover:border-gray-300'
+              }`}
+          >
+            Animation
+          </button>
         </div>
       </div>
 
@@ -598,7 +606,8 @@ const PromptToVideoApp: React.FC = () => {
     preferences: {
       subtitles: false,
       style: 'slideshow',
-      avatar: 'XfNU2rGpBa01ckF309OY'
+      avatar: 'XfNU2rGpBa01ckF309OY',
+      animation: false
     }
   });
   const [videoUrl, setVideoUrl] = useState<string | null>(null);

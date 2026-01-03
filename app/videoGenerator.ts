@@ -129,11 +129,36 @@ export async function callVideoGenerator(
     subtitles: boolean;
     style: string;
     avatar: string;
+    animation?: boolean;
   },
   contentClass: string,
   user_video_id: string,
-  flow: string = "eleven"
+  flow: string = "eleven",
+  staticGen: boolean = false
 ): Promise<string> {
+  if (staticGen) {
+    console.log("Static Generation Mode Enabled: Reading from debug_render_data.json");
+    try {
+      const fs = require('fs');
+      const path = require('path');
+      const debugFilePath = path.join(process.cwd(), 'data', 'debug_render_data.json');
+
+      if (fs.existsSync(debugFilePath)) {
+        const rawData = fs.readFileSync(debugFilePath, 'utf8');
+        const renderParams = JSON.parse(rawData);
+
+        console.log("Loaded render params:", JSON.stringify(renderParams, null, 2));
+
+        await renderPersonalizedVideo(renderParams);
+        return `video-${renderParams.user_video_id}.mp4`;
+      } else {
+        console.warn("Debug file not found. Falling back to normal generation.");
+      }
+    } catch (err) {
+      console.error("Error in static generation mode:", err);
+    }
+  }
+
   deleteFiles([], true);
   console.log("got pref, ", preferences);
 
@@ -571,6 +596,102 @@ Visual: Rahul (around 13 years old) sits comfortably in a beanbag chair surround
 
     if (!generated) {
       console.warn(`All generation/search methods failed for chunk: ${chunk_index}`);
+    } else if (preferences.animation) {
+      // ----------------------------------------------------
+      // NEW VIDEO GENERATION LOGIC (Freepik Hailuo)
+      // ----------------------------------------------------
+      console.log(`Checking if chunk ${chunk_index} should be animated...`);
+
+      const videoDecisionSchema = {
+        "type": "object",
+        "properties": {
+          "should_animate": {
+            "type": "boolean",
+            "description": "True if the scene depicts action, movement, or emotion that benefits from video. False if it's static, abstract, or better as an image."
+          },
+          "video_prompt": {
+            "type": "string",
+            "description": "A concise prompt for the video generator describing the motion. Required if should_animate is true."
+          }
+        },
+        "required": ["should_animate"]
+      };
+
+      const videoSystemPrompt = `You are a film director deciding if a scene should be a static image or a short video clip.
+Given a script chunk and an image description, decide if it should be animated.
+If yes, provide a specific video generation prompt describing the movement.`;
+
+      try {
+        const decisionResponse = await retryLlmCall(callStructuredLlm, [
+          LLM_API_KEY,
+          videoSystemPrompt,
+          `Script Chunk: "${chunk.chunk}"\nImage Prompt/Context: "${keywordsStr}"`,
+          videoDecisionSchema
+        ]);
+
+        if (decisionResponse && decisionResponse.should_animate) {
+          console.log(`Animating chunk ${chunk_index} with prompt: ${decisionResponse.video_prompt}`);
+
+          // Use the image we just generated/downloaded as the source
+          // If selectedUrl is a URL, use it. If not (e.g. locally generated), use the local file path.
+          // Note context: mediaPath is "path/to/file.ext" (relative to public usually for frontend, but here used for processing).
+          // We need an absolute path or a URL for Freepik.
+
+          // If selectedUrl starts with http, it's a web URL.
+          // If selectedUrl is random string like "generated-nano-single", we must use the local file.
+
+          let imageInputForVideo = "";
+          if (selectedUrl.startsWith("http")) {
+            imageInputForVideo = selectedUrl;
+          } else {
+            // It's a local file. mediaPath typically is relative to public or root? 
+            // In downloadFile, it saves to "public/temp/..." and returns path "public/temp/..."
+            // In generate functions, they return "public/..."
+            // processImageInput expects local path to exist.
+            // Let's assume mediaPath is relative to process.cwd() or can be found.
+            // Safety check: prepend 'public/' if it's missing and file exists there?
+            // Actually, existing code: mediaPath = path.replace(/^public[\\/]/, "");
+            // So mediaPath is "temp/..." without public.
+            // We need to put "public/" back for fs.readFileSync if running from root.
+            imageInputForVideo = "public/" + mediaPath;
+          }
+
+          console.log(`Using image source for video: ${imageInputForVideo}`);
+
+          const videoUrl = await generateFreepikVideo(
+            "hailuo-02-768p",
+            decisionResponse.video_prompt || keywordsStr,
+            imageInputForVideo
+          );
+
+          if (videoUrl) {
+            console.log(`Freepik Video Generated: ${videoUrl}`);
+            try {
+              const { path: vidPath } = await downloadFile(videoUrl);
+
+              // Update the asset to point to the video
+              mediaPath = vidPath.replace(/^public[\\/]/, "");
+              selectedUrl = videoUrl;
+              tempFiles.push(vidPath);
+
+              // Important: Update the type in sceneJson/assetJson implicitly via templateJson or logic??
+              // formatSceneJsonToAssets checks if path includes .mp4.
+              // Our downloadFile usually preserves extension from URL or content-type.
+              // Freepik video likely ends in .mp4.
+              console.log(`Video downloaded to: ${mediaPath}`);
+
+            } catch (err) {
+              console.error("Failed to download generated video:", err);
+            }
+          } else {
+            console.warn("Video generation returned null URL.");
+          }
+        } else {
+          console.log(`Skipping animation for chunk ${chunk_index} (LLM decided against it).`);
+        }
+      } catch (err) {
+        console.error("Error in video decision/generation flow:", err);
+      }
     }
 
     const templateJson = { path: mediaPath };
@@ -660,7 +781,8 @@ Visual: Rahul (around 13 years old) sits comfortably in a beanbag chair surround
   // }
   // );
 
-  await renderPersonalizedVideo({
+  // Save render params for debugging/static mode
+  const renderParams = {
     user_video_id: tts_options.user_video_id,
     words: transcriptData,
     assets: assetJson,
@@ -675,7 +797,11 @@ Visual: Rahul (around 13 years old) sits comfortably in a beanbag chair surround
       logoUrl: "logo.png",
       audioUrl: "../audio_" + tts_options.user_video_id + ".mp3",
     },
-  });
+  };
+
+  saveDataAsJSON(renderParams, "debug_render_data.json");
+
+  await renderPersonalizedVideo(renderParams);
   let finalVideoPath = `video-${tts_options.user_video_id}.mp4`;
 
   // let finalVideoPath = "";
