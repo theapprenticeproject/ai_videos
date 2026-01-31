@@ -18,6 +18,8 @@ import { getAudioDuration } from "./utils/utils";
 import { deleteFiles } from "./utils/utils";
 import { generateFreepikImage, generateFreepikVideo } from "./mediaApis/freepik";
 import { generateNanoBananaImage, generateNanoBananaBatch } from "./mediaApis/nanoBanana";
+import { generateVeo3FastVideo } from "./mediaApis/veo";
+import { generateVeoVideo } from "./mediaApis/vertex";
 import { generateImagen4Image } from "./mediaApis/imagegen4";
 import { searchPexels } from "./mediaApis/pexels";
 import { searchYouTubeImages } from "./mediaApis/googleSearch";
@@ -134,8 +136,18 @@ export async function callVideoGenerator(
   contentClass: string,
   user_video_id: string,
   flow: string = "eleven",
-  staticGen: boolean = false
+  staticGen: boolean = false,
+  onProgress?: (progress: number, status: string) => void,
+  modelName: string = "gemini-2.0-flash-lite",
+  vidGen: string = "veo"
 ): Promise<string> {
+  // Helper to safely call progress
+  const reportProgress = (p: number, s: string) => {
+    if (onProgress) onProgress(p, s);
+  };
+
+  reportProgress(5, "Initializing video generation...");
+
   if (staticGen) {
     console.log("Static Generation Mode Enabled: Reading from debug_render_data.json");
     try {
@@ -149,7 +161,9 @@ export async function callVideoGenerator(
 
         console.log("Loaded render params:", JSON.stringify(renderParams, null, 2));
 
+        reportProgress(90, "Rendering static video...");
         await renderPersonalizedVideo(renderParams);
+        reportProgress(100, "Video generated successfully!");
         return `video-${renderParams.user_video_id}.mp4`;
       } else {
         console.warn("Debug file not found. Falling back to normal generation.");
@@ -159,7 +173,7 @@ export async function callVideoGenerator(
     }
   }
 
-  deleteFiles([], true);
+  // deleteFiles([], true); // Removed to prevent deleting other users' files
   console.log("got pref, ", preferences);
 
   let tts_options: any;
@@ -194,6 +208,8 @@ export async function callVideoGenerator(
 
   let audioPath: string | null = null;
   let transcriptData: any = null;
+
+  reportProgress(10, "Generating Audio...");
 
   if (flow == "eleven") {
     ({ audioPath, transcriptData } = await generateSpeechWithTranscript(
@@ -247,6 +263,8 @@ export async function callVideoGenerator(
   console.log("script is , ", script);
 
   // transcriptData: { text: string; words: { word: string; startTime: number; endTime: number }[] }
+
+  reportProgress(20, "Chunking Transcript...");
 
   // 3. Chunk transcript via LLM structured output
   //   const chunkingStructure = {
@@ -317,6 +335,8 @@ Output only the array of chunk objects. Do not include any explanations or extra
     systemPrompt,
     `Do not change any spell even if its incorrect, no chnages in punctuation , just chunk it as per instruction nothing else,  in given script ${script}`,
     chunkingStructure,
+    [], // otherPrompts
+    modelName
   ]);
 
   console.log(chunkResponseStr);
@@ -339,6 +359,7 @@ Output only the array of chunk objects. Do not include any explanations or extra
 
   console.log("done with scriptContextSummary ", scriptContextSummary);
 
+  reportProgress(30, "Extracting Keywords...");
   // 4. Batch Keyword Extraction with LLM
   console.log("Starting batch keyword extraction...");
 
@@ -414,6 +435,8 @@ Visual: Rahul (around 13 years old) sits comfortably in a beanbag chair surround
       batchSystemPrompt,
       batchUserPrompt,
       batchKeywordSchema,
+      [], // otherPrompts
+      modelName
     ]);
 
     if (batchResponse?.results) {
@@ -427,6 +450,7 @@ Visual: Rahul (around 13 years old) sits comfortably in a beanbag chair surround
   }
 
   // 5. Pre-process Batch Generation for AI chunks
+  reportProgress(40, "Generating Visuals (Batch)...");
   console.log("Preparing batch generation requests...");
   const batchPrompts: string[] = [];
   const chunkIndicesForBatch: number[] = [];
@@ -450,7 +474,11 @@ Visual: Rahul (around 13 years old) sits comfortably in a beanbag chair surround
   }
 
   // 6. Iterate over chunks and generate media
+  const totalChunks = chunks.length;
   for (const [chunk_index, chunk] of chunks.entries()) {
+    const progressPercent = 40 + Math.floor(((chunk_index) / totalChunks) * 45); // 40% to 85%
+    reportProgress(progressPercent, `Generating Visuals for Scene ${chunk_index + 1}/${totalChunks}...`);
+
     console.log(`Processing chunk ${chunk_index}: ${chunk.chunk}`);
 
     const promptData = batchKeywordsData[chunk_index] || { visual_query: chunk.chunk, google_search: false };
@@ -598,9 +626,10 @@ Visual: Rahul (around 13 years old) sits comfortably in a beanbag chair surround
       console.warn(`All generation/search methods failed for chunk: ${chunk_index}`);
     } else if (preferences.animation) {
       // ----------------------------------------------------
-      // NEW VIDEO GENERATION LOGIC (Freepik Hailuo)
+      // NEW VIDEO GENERATION LOGIC (Veo or Freepik)
+      // vidGen parameter: "veo" (default) or "freepik"
       // ----------------------------------------------------
-      console.log(`Checking if chunk ${chunk_index} should be animated...`);
+      console.log(`Checking if chunk ${chunk_index} should be animated with ${vidGen}...`);
 
       const videoDecisionSchema = {
         "type": "object",
@@ -626,65 +655,112 @@ If yes, provide a specific video generation prompt describing the movement.`;
           LLM_API_KEY,
           videoSystemPrompt,
           `Script Chunk: "${chunk.chunk}"\nImage Prompt/Context: "${keywordsStr}"`,
-          videoDecisionSchema
+          videoDecisionSchema,
+          [], // otherPrompts
+          modelName
         ]);
 
         if (decisionResponse && decisionResponse.should_animate) {
           console.log(`Animating chunk ${chunk_index} with prompt: ${decisionResponse.video_prompt}`);
 
-          // Use the image we just generated/downloaded as the source
-          // If selectedUrl is a URL, use it. If not (e.g. locally generated), use the local file path.
-          // Note context: mediaPath is "path/to/file.ext" (relative to public usually for frontend, but here used for processing).
-          // We need an absolute path or a URL for Freepik.
+          if (vidGen === "freepik") {
+            // ====== FREEPIK VIDEO GENERATION ======
+            console.log(`Using Freepik for chunk ${chunk_index}`);
 
-          // If selectedUrl starts with http, it's a web URL.
-          // If selectedUrl is random string like "generated-nano-single", we must use the local file.
+            // Use the image we just generated/downloaded as the source
+            let imageInputForVideo = "";
+            if (selectedUrl.startsWith("http")) {
+              imageInputForVideo = selectedUrl;
+            } else {
+              // It's a local file
+              imageInputForVideo = "public/" + mediaPath;
+            }
 
-          let imageInputForVideo = "";
-          if (selectedUrl.startsWith("http")) {
-            imageInputForVideo = selectedUrl;
-          } else {
-            // It's a local file. mediaPath typically is relative to public or root? 
-            // In downloadFile, it saves to "public/temp/..." and returns path "public/temp/..."
-            // In generate functions, they return "public/..."
-            // processImageInput expects local path to exist.
-            // Let's assume mediaPath is relative to process.cwd() or can be found.
-            // Safety check: prepend 'public/' if it's missing and file exists there?
-            // Actually, existing code: mediaPath = path.replace(/^public[\\/]/, "");
-            // So mediaPath is "temp/..." without public.
-            // We need to put "public/" back for fs.readFileSync if running from root.
-            imageInputForVideo = "public/" + mediaPath;
-          }
+            console.log(`Using image source for video: ${imageInputForVideo}`);
 
-          console.log(`Using image source for video: ${imageInputForVideo}`);
+            const videoUrl = await generateFreepikVideo(
+              "hailuo-02-768p",
+              decisionResponse.video_prompt || keywordsStr,
+              imageInputForVideo
+            );
 
-          const videoUrl = await generateFreepikVideo(
-            "hailuo-02-768p",
-            decisionResponse.video_prompt || keywordsStr,
-            imageInputForVideo
-          );
+            if (videoUrl) {
+              console.log(`Freepik Video Generated: ${videoUrl}`);
+              try {
+                const { path: vidPath } = await downloadFile(videoUrl);
 
-          if (videoUrl) {
-            console.log(`Freepik Video Generated: ${videoUrl}`);
+                // Update the asset to point to the video
+                mediaPath = vidPath.replace(/^public[\\/]/, "");
+                selectedUrl = videoUrl;
+                tempFiles.push(vidPath);
+
+                console.log(`Video downloaded to: ${mediaPath}`);
+              } catch (err) {
+                console.error("Failed to download Freepik video:", err);
+              }
+            } else {
+              console.warn("Freepik video generation returned null URL.");
+            }
+          } else if (vidGen === "veo") {
+            // ====== VEO VIDEO GENERATION ======
+            console.log(`Using Veo for chunk ${chunk_index}`);
+
+            // Prepare the image path for Veo
+            // Veo expects an optional imagePath for image-to-video
+            let imagePath = "";
+            if (selectedUrl.startsWith("http")) {
+              // For HTTP URLs, we need to download first
+              try {
+                const { path: downloadedPath } = await downloadFile(selectedUrl);
+                imagePath = downloadedPath;
+                tempFiles.push(downloadedPath);
+              } catch (err) {
+                console.warn("Failed to download image for Veo:", err);
+              }
+            } else {
+              // It's a local file
+              imagePath = "public/" + mediaPath;
+            }
+
             try {
-              const { path: vidPath } = await downloadFile(videoUrl);
+              const veoOutputPath = `veo_video_${user_video_id}_${chunk_index}.mp4`;
+              console.log(`Generating Veo video with prompt: ${decisionResponse.video_prompt}`);
 
-              // Update the asset to point to the video
-              mediaPath = vidPath.replace(/^public[\\/]/, "");
-              selectedUrl = videoUrl;
-              tempFiles.push(vidPath);
+              // await generateVeo3FastVideo({
+              //   prompt: decisionResponse.video_prompt || keywordsStr,
+              //   imagePath: imagePath || undefined,
+              //   outputPath: veoOutputPath
+              // });
 
-              // Important: Update the type in sceneJson/assetJson implicitly via templateJson or logic??
-              // formatSceneJsonToAssets checks if path includes .mp4.
-              // Our downloadFile usually preserves extension from URL or content-type.
-              // Freepik video likely ends in .mp4.
-              console.log(`Video downloaded to: ${mediaPath}`);
 
+              let veoOutputName = veoOutputPath.replace(/\.mp4$/, "");
+
+
+              await generateVeoVideo(
+                decisionResponse.video_prompt || keywordsStr,
+                veoOutputName,
+                imagePath || undefined
+              );
+              // Move the video to public folder for consistency
+              const fs = require('fs');
+              const path = require('path');
+              const publicVidPath = `public/${veoOutputPath}`;
+
+              if (fs.existsSync(veoOutputPath)) {
+                fs.copyFileSync(veoOutputPath, publicVidPath);
+                fs.unlinkSync(veoOutputPath);
+              }
+
+              mediaPath = veoOutputPath;
+              selectedUrl = publicVidPath;
+              tempFiles.push(publicVidPath);
+
+              console.log(`Veo video generated and saved to: ${publicVidPath}`);
             } catch (err) {
-              console.error("Failed to download generated video:", err);
+              console.error("Failed to generate Veo video:", err);
             }
           } else {
-            console.warn("Video generation returned null URL.");
+            console.warn(`Unknown vidGen option: ${vidGen}. Defaulting to image (no animation).`);
           }
         } else {
           console.log(`Skipping animation for chunk ${chunk_index} (LLM decided against it).`);
@@ -765,6 +841,7 @@ If yes, provide a specific video generation prompt describing the movement.`;
   }
 
   // 5. Call video creator API with sceneJson and audioPath
+  reportProgress(90, "Rendering Final Video...");
   // const finalVideoPath = await renderPersonalizedVideo({
   // user_video_id: tts_options.user_video_id,
   // words: transcriptData,
@@ -784,6 +861,7 @@ If yes, provide a specific video generation prompt describing the movement.`;
   // Save render params for debugging/static mode
   const renderParams = {
     user_video_id: tts_options.user_video_id,
+    chunks: sceneJson,
     words: transcriptData,
     assets: assetJson,
     options: {

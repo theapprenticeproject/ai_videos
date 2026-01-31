@@ -7,6 +7,7 @@ import data from '../dynamication.json'
 
 interface FormData {
   prompt: string;
+  modelName: string;
   contentClass: string;
   script: string;
   preferences: {
@@ -108,6 +109,20 @@ const PromptInputStep = ({
       </div>
 
       <div className="space-y-6">
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-2">
+            Model Name (Optional)
+          </label>
+          <input
+            type="text"
+            value={formData.modelName}
+            onChange={(e) => {
+              setFormData(prev => ({ ...prev, modelName: e.target.value }));
+            }}
+            placeholder="e.g. gemini-2.0-flash-exp"
+            className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+          />
+        </div>
         <div>
           <label className="block text-sm font-medium text-gray-700 mb-2">
             Content Class
@@ -228,190 +243,42 @@ const ScriptVerificationStep = ({
   </div>
 );
 
-// Avatar Selection Component
+// Removed AvatarSelection and avatarAudioMap
+
 const avatarAudioMap: Record<string, string> = data.avatarAudioMap;
 
-const AvatarSelection = ({
-  selectedAvatar,
-  onAvatarChange,
-  playingAudio,
-  onPlayAudio,
-  scriptLanguage,
-  isLoadingLanguage
+// AvatarSelection component removed
+
+
+// Voice Selection Component
+const VoiceSelection = ({
+  voiceId,
+  onVoiceChange,
 }: {
-  selectedAvatar: string;
-  onAvatarChange: (avatar: string) => void;
-  playingAudio: string | null;
-  onPlayAudio: (avatar: string) => void;
-  scriptLanguage: string;
-  isLoadingLanguage: boolean;
+  voiceId: string;
+  onVoiceChange: (voice: string) => void;
 }) => {
-  const avatars: { value: string; label: string; emoji: string }[] = [];
-
-  if (!isLoadingLanguage) {
-    for (let ava of data.avatars) {
-      if (scriptLanguage.toLowerCase() === "english" && ava.langType.toLowerCase() === "english") {
-        avatars.push(ava);
-      } else if (
-        scriptLanguage.toLowerCase() === "hinglish" ||
-        scriptLanguage.toLowerCase() === "hindi"
-      ) {
-        // Show all avatars in case of hindglish or hindi
-        avatars.push(ava);
-      }
-    }
-  }
-
-
-  if (isLoadingLanguage) {
-    return (
-      <div className="bg-gray-50 p-6 rounded-lg">
-        <h3 className="font-medium text-gray-900 mb-4">Select Avatar</h3>
-        <div className="flex items-center justify-center py-8">
-          <div className="animate-spin w-6 h-6 border-2 border-blue-600 border-t-transparent rounded-full mr-2"></div>
-          <span className="text-gray-600">Detecting script language...</span>
-        </div>
-      </div>
-    );
-  }
-
   return (
     <div className="bg-gray-50 p-6 rounded-lg">
-      <h3 className="font-medium text-gray-900 mb-4">Select Avatar</h3>
-      <div className="grid grid-cols-2 gap-4">
-        {avatars.map((avatar) => (
-          <div key={avatar.value} className="space-y-2">
-            <button
-              type="button"
-              onClick={() => onAvatarChange(avatar.value)}
-              className={`w-full p-4 rounded-lg border-2 transition-colors flex flex-col items-center space-y-2 ${selectedAvatar === avatar.value
-                ? 'border-blue-500 bg-blue-50 text-blue-700'
-                : 'border-gray-200 hover:border-gray-300'
-                }`}
-            >
-              <span className="text-2xl">{avatar.emoji}</span>
-              <span className="text-sm font-medium">{avatar.label}</span>
-            </button>
-            <button
-              type="button"
-              onClick={() => onPlayAudio(avatar.value)}
-              className={`w-full px-3 py-2 text-xs rounded-md transition-colors flex items-center justify-center space-x-1 ${playingAudio === avatar.value
-                ? 'bg-green-100 text-green-700 border border-green-300'
-                : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
-                }`}
-            >
-              {playingAudio === avatar.value ? (
-                <>
-                  <div className="w-3 h-3 border-2 border-green-600 border-t-transparent rounded-full animate-spin"></div>
-                  <span>Playing...</span>
-                </>
-              ) : (
-                <>
-                  <Play className="w-3 h-3" />
-                  <span>Preview Voice</span>
-                </>
-              )}
-            </button>
-          </div>
-        ))}
+      <h3 className="font-medium text-gray-900 mb-4">Voice Details</h3>
+      <div className="space-y-4">
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-2">
+            ElevenLabs Voice ID
+          </label>
+          <input
+            type="text"
+            value={voiceId}
+            onChange={(e) => onVoiceChange(e.target.value)}
+            placeholder="Enter Voice ID"
+            className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+          />
+          <p className="text-xs text-gray-500 mt-2">
+            Available Voices: {data.avatars.map(a => `${a.label} (${a.value})`).join(', ')}
+          </p>
+        </div>
       </div>
     </div>
-  );
-};
-
-// Fixed AudiosComponent
-const AudiosComponent = ({
-  selectedAvatar,
-  onAvatarChange,
-  formData
-}: {
-  selectedAvatar: string;
-  onAvatarChange: (avatar: string) => void;
-  formData: FormData;
-}) => {
-  const [playingAudio, setPlayingAudio] = useState<string | null>(null);
-  const [currentAudio, setCurrentAudio] = useState<HTMLAudioElement | null>(null);
-  const [scriptLanguage, setScriptLanguage] = useState<string>("english");
-  const [isLoadingLanguage, setIsLoadingLanguage] = useState<boolean>(false);
-
-  const onPlayAudio = useCallback((avatar: string) => {
-    const audioPath = avatarAudioMap[avatar];
-    if (!audioPath) return;
-
-    if (playingAudio === avatar && currentAudio) {
-      currentAudio.pause();
-      setPlayingAudio(null);
-      return;
-    }
-
-    if (currentAudio) {
-      currentAudio.pause();
-      currentAudio.currentTime = 0;
-    }
-
-    const audio = new Audio(audioPath);
-    setCurrentAudio(audio);
-    setPlayingAudio(avatar);
-
-    audio.play().catch((err) => {
-      console.error('Audio play error:', err);
-      setPlayingAudio(null);
-    });
-
-    audio.onended = () => {
-      setPlayingAudio(null);
-      setCurrentAudio(null);
-    };
-
-    audio.onerror = () => {
-      console.error('Audio failed to load');
-      setPlayingAudio(null);
-      setCurrentAudio(null);
-    };
-  }, [playingAudio, currentAudio]);
-
-  // Properly handle async language detection
-  useEffect(() => {
-    const detectLanguageAsync = async () => {
-      if (formData.script && formData.script.trim()) {
-        setIsLoadingLanguage(true);
-        try {
-          const language = await detectLanguage(formData.script);
-          setScriptLanguage(language);
-        } catch (error) {
-          console.error('Error detecting language:', error);
-          setScriptLanguage("english"); // Fallback
-        } finally {
-          setIsLoadingLanguage(false);
-        }
-      } else {
-        setScriptLanguage("english"); // Default when no script
-        setIsLoadingLanguage(false);
-      }
-    };
-
-    detectLanguageAsync();
-  }, [formData.script]);
-
-  // Cleanup audio on unmount
-  useEffect(() => {
-    return () => {
-      if (currentAudio) {
-        currentAudio.pause();
-        currentAudio.currentTime = 0;
-      }
-    };
-  }, [currentAudio]);
-
-  return (
-    <AvatarSelection
-      selectedAvatar={selectedAvatar}
-      onAvatarChange={onAvatarChange}
-      playingAudio={playingAudio}
-      onPlayAudio={onPlayAudio}
-      scriptLanguage={scriptLanguage}
-      isLoadingLanguage={isLoadingLanguage}
-    />
   );
 };
 
@@ -486,18 +353,17 @@ const PreferencesStep = ({
         </div>
       </div>
 
-      <AudiosComponent
-        selectedAvatar={formData.preferences.avatar}
-        onAvatarChange={(avatar) =>
+      <VoiceSelection
+        voiceId={formData.preferences.avatar}
+        onVoiceChange={(voice) =>
           setFormData(prev => ({
             ...prev,
             preferences: {
               ...prev.preferences,
-              avatar,
+              avatar: voice,
             }
           }))
         }
-        formData={formData}
       />
 
       <div className="flex space-x-4">
@@ -595,18 +461,38 @@ const cleanNarrationStrictly = (text: string): string => {
   return text.replace(unwantedChars, "");
 };
 
+// Progress Bar Component
+const ProgressBar = ({ progress, status }: { progress: number; status: string }) => (
+  <div className="w-full max-w-md mx-auto mt-4">
+    <div className="flex justify-between text-sm font-medium text-gray-700 mb-2">
+      <span>{status}</span>
+      <span>{Math.round(progress)}%</span>
+    </div>
+    <div className="w-full bg-gray-200 rounded-full h-2.5 overflow-hidden">
+      <div
+        className="bg-blue-600 h-2.5 rounded-full transition-all duration-300 ease-out"
+        style={{ width: `${Math.max(5, Math.min(100, progress))}%` }}
+      ></div>
+    </div>
+  </div>
+);
+
 // Main App Component
 const PromptToVideoApp: React.FC = () => {
   const [currentStep, setCurrentStep] = useState(0);
   const [isLoading, setIsLoading] = useState(false);
+  const [progress, setProgress] = useState(0);
+  const [statusText, setStatusText] = useState("Initializing...");
+
   const [formData, setFormData] = useState<FormData>({
     prompt: '',
+    modelName: '',
     contentClass: 'low',
     script: '',
     preferences: {
       subtitles: false,
       style: 'slideshow',
-      avatar: 'XfNU2rGpBa01ckF309OY',
+      avatar: 'X0Kc6dUd5Kws5uwEyOnL',
       animation: false
     }
   });
@@ -624,9 +510,9 @@ const PromptToVideoApp: React.FC = () => {
 
     setIsLoading(true);
     try {
-      let script = await callLlm(LLM_API_KEY, "write video script refering examples, in required language english/hindi or hinglish", promptFormation(formData.prompt, "scriptFormation", formData));
+      let script = await callLlm(LLM_API_KEY, "write video script refering examples with correct punctuations and pauses by comma , in required language english/hindi or hinglish", promptFormation(formData.prompt, "scriptFormation", formData), [], formData.modelName || "gemini-2.0-flash-lite");
 
-      script = cleanNarrationStrictly(script);
+      // script = cleanNarrationStrictly(script);
       if (script.length === 0) {
         script = `Scene 1: ${formData.prompt}\n\nThis is a sample script generated from your prompt. You can edit this script to match your vision perfectly.\n\nScene 2: Additional content based on your requirements...`;
       }
@@ -652,14 +538,17 @@ const PromptToVideoApp: React.FC = () => {
     }
 
     setIsLoading(true);
+    setProgress(0);
+    setStatusText("Starting...");
 
     try {
-      const userVideoId = "test";
+      const userVideoId = `user_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
       const payload = {
         script: formData.script,
         preferences: formData.preferences,
         contentClass: formData.contentClass,
         user_video_id: userVideoId,
+        modelName: formData.modelName,
       };
 
       const response = await fetch('/api/render', {
@@ -668,22 +557,49 @@ const PromptToVideoApp: React.FC = () => {
         body: JSON.stringify(payload),
       });
 
-      const data = await response.json();
-
       if (!response.ok) {
-        alert(data.error || "Video generation failed");
-        return;
+        throw new Error(response.statusText);
       }
 
-      if (data.videoUrl) {
-        setVideoUrl(data.videoUrl);
-        setCurrentStep(3);
-      } else {
-        alert("No video URL returned from server");
+      if (!response.body) {
+        throw new Error("No response body");
       }
-    } catch (error) {
+
+      const reader = response.body.getReader();
+      const decoder = new TextDecoder();
+      let buffer = "";
+
+      while (true) {
+        const { done, value } = await reader.read();
+        if (done) break;
+
+        buffer += decoder.decode(value, { stream: true });
+        const lines = buffer.split("\n");
+        buffer = lines.pop() || ""; // Keep incomplete line in buffer
+
+        for (const line of lines) {
+          if (!line.trim()) continue;
+          try {
+            const data = JSON.parse(line);
+
+            if (data.type === "progress") {
+              setProgress(data.progress);
+              setStatusText(data.status);
+            } else if (data.type === "result") {
+              setVideoUrl(data.videoUrl);
+              setCurrentStep(3);
+            } else if (data.type === "error") {
+              throw new Error(data.message);
+            }
+          } catch (e) {
+            console.error("Error parsing stream data:", e);
+          }
+        }
+      }
+
+    } catch (error: any) {
       console.error("Error generating video:", error);
-      alert("Error generating video");
+      alert("Error generating video: " + error.message);
     } finally {
       setIsLoading(false);
     }
@@ -696,10 +612,12 @@ const PromptToVideoApp: React.FC = () => {
       prompt: '',
       contentClass: 'low',
       script: '',
+      modelName: 'gemini-2.0-flash-lite',
       preferences: {
         subtitles: false,
         style: 'slideshow',
-        avatar: 'XfNU2rGpBa01ckF309OY'
+        avatar: 'XfNU2rGpBa01ckF309OY', // Reset to default avatar
+        animation: false
       }
     });
   };
@@ -739,13 +657,27 @@ const PromptToVideoApp: React.FC = () => {
             />
           )}
           {currentStep === 2 && (
-            <PreferencesStep
-              formData={formData}
-              setFormData={setFormData}
-              onBack={() => setCurrentStep(1)}
-              onSubmit={handlePreferencesSubmit}
-              isLoading={isLoading}
-            />
+            <>
+              <PreferencesStep
+                formData={formData}
+                setFormData={setFormData}
+                onBack={() => setCurrentStep(1)}
+                onSubmit={handlePreferencesSubmit}
+                isLoading={isLoading}
+              />
+              {isLoading && (
+                <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
+                  <div className="bg-white p-8 rounded-xl shadow-2xl max-w-md w-full mx-4">
+                    <div className="text-center mb-6">
+                      <div className="animate-spin w-12 h-12 border-4 border-blue-600 border-t-transparent rounded-full mx-auto mb-4"></div>
+                      <h3 className="text-xl font-bold text-gray-900">Creating Your Video</h3>
+                      <p className="text-gray-600 mt-2">Please wait while we bring your story to life...</p>
+                    </div>
+                    <ProgressBar progress={progress} status={statusText} />
+                  </div>
+                </div>
+              )}
+            </>
           )}
           {currentStep === 3 && (
             <ResultStep

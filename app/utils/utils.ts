@@ -1,64 +1,14 @@
 
+// // function normalize(word: string): string {
+// //   // Removes punctuation and makes lowercase
+// //   return word.replace(/[^\w\s]|_/g, '').toLowerCase();
+// // }
+
 // function normalize(word: string): string {
-//   // Removes punctuation and makes lowercase
-//   return word.replace(/[^\w\s]|_/g, '').toLowerCase();
+//   return word.replace(/[^\p{L}\p{N}\s]+/gu, '').toLowerCase();
 // }
 
-function normalize(word: string): string {
-  return word.replace(/[^\p{L}\p{N}\s]+/gu, '').toLowerCase();
-}
 
-/**
- * Get accurate start and end timestamps for a phrase in transcript words.
- *
- * @param transcriptWords - Array of word objects with `word`, `startTime`, and `endTime`
- * @param phrase - The phrase to find (e.g. "my home is")
- * @param fallbackDuration - Duration to use if no match is found (default: 5 seconds)
- * @returns Timestamps for the matched phrase
- */
-// below code don't have prev_end_time == next_start_time checck
-// export function getTimestampsForPhrase(
-//   transcriptWords:{
-//   word: string;
-//   startTime: number;
-//   endTime: number;
-// }[]
-// ,
-//   phrase: string,
-//   fallbackDuration: number = 5
-// ): { startTime: number; endTime: number, startIndex: number, endIndex: number} {
-//   phrase = normalize(phrase);
-//   const chunkWords = phrase.trim().toLowerCase().split(/\s+/);
-
-//   console.log("chunk words are ", chunkWords);
-//   console.log("transcript ", transcriptWords);
-
-//   for (let i = 0; i <= transcriptWords.length - chunkWords.length; i++) {
-//     const slice = transcriptWords.slice(i, i + chunkWords.length);
-//     const match = slice.every((w, idx) =>
-//       w.word.toLowerCase() ===chunkWords[idx]
-//     );
-
-//     if (match) {
-//       return {
-//         startTime: slice[0].startTime,
-//         endTime: slice[slice.length - 1].endTime,
-//         startIndex: i,
-//         endIndex: i + chunkWords.length - 1
-//       };
-//     }
-//   }
-
-//   // Fallback if phrase not found
-//   return {
-//     startTime: 0,
-//     endTime: fallbackDuration,
-//     startIndex: 0,
-//     endIndex: fallbackDuration / 1000, // Assuming 1 word per second for fallback
-//   };
-// }
-
-// below code has prev_end_time == next_start_time check
 // export function getTimestampsForPhrase(
 //   transcriptWords: {
 //     word: string;
@@ -68,55 +18,54 @@ function normalize(word: string): string {
 //   phrase: string,
 //   fallbackDuration: number = 5
 // ): { startTime: number; endTime: number; startIndex: number; endIndex: number } {
+
 //   phrase = normalize(phrase);
-//   console.log("p is ", phrase)
-//   // const chunkWords = phrase.trim().toLowerCase().split(/\s+/);
 
 //   const chunkWords = phrase
-//   .trim()
-//   .toLowerCase()
-//   .split(/\s+/)
-//   .filter(word => word.trim() !== "");
+//     .trim()
+//     .toLowerCase()
+//     .split(/\s+/)
+//     .filter(word => word.trim() !== "");
 
-//   // console.log("transcript ,", transcriptWords);
+//   // Filter transcript words that are blank or empty
+//   transcriptWords = transcriptWords.filter(w => w.word && w.word.trim() !== "");
 
-//   // 🔧 Adjust start times so each word starts at the previous word's end
+//   // Adjust start times for transcriptWords
 //   for (let i = 1; i < transcriptWords.length; i++) {
 //     transcriptWords[i].startTime = transcriptWords[i - 1].endTime;
-//     // Optional: ensure endTime is always after startTime
+
 //     if (transcriptWords[i].endTime < transcriptWords[i].startTime) {
-//       console.log("transcript word end time is less than start time, adjusting end time");
-//       transcriptWords[i].endTime = transcriptWords[i].startTime + 0.01; // or some minimum duration
+//       console.log("Adjusting endTime for word:", transcriptWords[i].word);
+//       transcriptWords[i].endTime = transcriptWords[i].startTime + 0.01;
 //     }
 //   }
 
-//   // console.log("chunk words are ", chunkWords);
-//   // console.log("transcript ", transcriptWords);
-//   // console.log("transcript length is ", transcriptWords.length-chunkWords.length);
-
-// for (let i = 0; i <= transcriptWords.length -chunkWords.length; i++) {
-//     // Print current position and the words under consideration
+//   for (let i = 0; i <= transcriptWords.length - chunkWords.length; i++) {
 //     const slice = transcriptWords.slice(i, i + chunkWords.length);
-//     // console.log("==== Iteration", i, "====");
-//     // console.log("Trying slice:", slice.map(w => w.word));
-//     // console.log("Against chunkWords:", chunkWords);
 
-//     const match = slice.every((w, idx) => {
-//         const wordFromTranscript = normalize(w.word.toLowerCase());
-//         const wordFromChunk = normalize(chunkWords[idx].toLowerCase());
-//         const areSame = wordFromTranscript === wordFromChunk;
-//         console.log(
-//             `Comparing slice[${idx}]: "${wordFromTranscript}" with chunkWords[${idx}]: "${wordFromChunk}" => ${areSame}`
-//         );
-//         return areSame;
-//     });
+//     let match = true;
+
+//     for (let idx = 0; idx < chunkWords.length; idx++) {
+//       const wordFromTranscript = normalize(slice[idx].word.toLowerCase().trim());
+//       const wordFromChunk = normalize(chunkWords[idx].toLowerCase().trim());
+
+//       // If either word is blank or empty — skip this entire attempt
+//       if (!wordFromTranscript || !wordFromChunk) {
+//         match = false;
+//         console.log(`⏭️ Skipping comparison at index ${i}, idx ${idx} due to blank word`);
+//         break;
+//       }
+
+//       if (wordFromTranscript !== wordFromChunk) {
+//         match = false;
+//         break;
+//       }
+//     }
 
 //     console.log("Match result at index", i, ":", match);
-//     console.log("-----------------------------");
-
 
 //     if (match) {
-//       console.log("chunk start and end times are ", slice[0].startTime, slice[slice.length - 1].endTime);
+//       console.log("✅ Match found with times:", slice[0].startTime, "-", slice[slice.length - 1].endTime);
 //       return {
 //         startTime: slice[0].startTime,
 //         endTime: slice[slice.length - 1].endTime,
@@ -126,16 +75,15 @@ function normalize(word: string): string {
 //     }
 //   }
 
-//   // Fallback if phrase not found
-//   console.log("phrase in fallback condition");
+//   // Fallback
+//   console.log("⚠️ Phrase not found, using fallback duration.");
 //   return {
 //     startTime: 0,
 //     endTime: fallbackDuration,
 //     startIndex: 0,
-//     endIndex: Math.floor(fallbackDuration), // Or another fallback logic
+//     endIndex: Math.floor(fallbackDuration),
 //   };
 // }
-
 export function getTimestampsForPhrase(
   transcriptWords: {
     word: string;
@@ -146,71 +94,86 @@ export function getTimestampsForPhrase(
   fallbackDuration: number = 5
 ): { startTime: number; endTime: number; startIndex: number; endIndex: number } {
 
-  phrase = normalize(phrase);
+  const normalize = (w: string) =>
+    w
+      .toLowerCase()
+      .replace(/[^\p{L}\p{N}]+/gu, "") // remove punctuation, keep Hindi
+      .trim();
 
-  const chunkWords = phrase
-    .trim()
-    .toLowerCase()
+  if (!transcriptWords.length || !phrase.trim()) {
+    return {
+      startTime: 0,
+      endTime: fallbackDuration,
+      startIndex: 0,
+      endIndex: 0,
+    };
+  }
+
+  const words = transcriptWords.map(w => ({
+    ...w,
+    norm: normalize(w.word),
+  }));
+
+  const phraseWords = phrase
     .split(/\s+/)
-    .filter(word => word.trim() !== "");
+    .map(normalize)
+    .filter(Boolean);
 
-  // Filter transcript words that are blank or empty
-  transcriptWords = transcriptWords.filter(w => w.word && w.word.trim() !== "");
-
-  // Adjust start times for transcriptWords
-  for (let i = 1; i < transcriptWords.length; i++) {
-    transcriptWords[i].startTime = transcriptWords[i - 1].endTime;
-
-    if (transcriptWords[i].endTime < transcriptWords[i].startTime) {
-      console.log("Adjusting endTime for word:", transcriptWords[i].word);
-      transcriptWords[i].endTime = transcriptWords[i].startTime + 0.01;
-    }
+  if (!phraseWords.length) {
+    return {
+      startTime: 0,
+      endTime: fallbackDuration,
+      startIndex: 0,
+      endIndex: 0,
+    };
   }
 
-  for (let i = 0; i <= transcriptWords.length - chunkWords.length; i++) {
-    const slice = transcriptWords.slice(i, i + chunkWords.length);
+  // -------- sequence-based match --------
+  let t = 0;
+  let p = 0;
+  let startIndex = -1;
+  let endIndex = -1;
 
-    let match = true;
-
-    for (let idx = 0; idx < chunkWords.length; idx++) {
-      const wordFromTranscript = normalize(slice[idx].word.toLowerCase().trim());
-      const wordFromChunk = normalize(chunkWords[idx].toLowerCase().trim());
-
-      // If either word is blank or empty — skip this entire attempt
-      if (!wordFromTranscript || !wordFromChunk) {
-        match = false;
-        console.log(`⏭️ Skipping comparison at index ${i}, idx ${idx} due to blank word`);
-        break;
-      }
-
-      if (wordFromTranscript !== wordFromChunk) {
-        match = false;
-        break;
-      }
+  while (t < words.length && p < phraseWords.length) {
+    if (words[t].norm === phraseWords[p]) {
+      if (startIndex === -1) startIndex = t;
+      endIndex = t;
+      p++;
     }
-
-    console.log("Match result at index", i, ":", match);
-
-    if (match) {
-      console.log("✅ Match found with times:", slice[0].startTime, "-", slice[slice.length - 1].endTime);
-      return {
-        startTime: slice[0].startTime,
-        endTime: slice[slice.length - 1].endTime,
-        startIndex: i,
-        endIndex: i + chunkWords.length - 1,
-      };
-    }
+    t++;
   }
 
-  // Fallback
-  console.log("⚠️ Phrase not found, using fallback duration.");
+  // -------- full match found --------
+  if (p === phraseWords.length && startIndex !== -1) {
+    const startTime = transcriptWords[startIndex].startTime;
+
+    // 🔑 ALIGNMENT LOGIC (INSIDE FUNCTION)
+    // If there is a next word, extend till its startTime
+    // else use current word's endTime
+    const endTime =
+      endIndex + 1 < transcriptWords.length
+        ? transcriptWords[endIndex + 1].startTime
+        : transcriptWords[endIndex].endTime;
+
+    return {
+      startTime,
+      endTime,
+      startIndex,
+      endIndex,
+    };
+  }
+
+  // -------- fallback --------
+  const last = transcriptWords[transcriptWords.length - 1];
+
   return {
-    startTime: 0,
-    endTime: fallbackDuration,
-    startIndex: 0,
-    endIndex: Math.floor(fallbackDuration),
+    startTime: Math.max(0, last.endTime - fallbackDuration),
+    endTime: last.endTime,
+    startIndex: transcriptWords.length - 1,
+    endIndex: transcriptWords.length - 1,
   };
 }
+
 
 
 let t =  [

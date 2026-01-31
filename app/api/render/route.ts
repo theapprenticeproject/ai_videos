@@ -46,15 +46,11 @@
 
 // app/api/generate-video/route.ts
 import { NextRequest, NextResponse } from "next/server";
-// import { callVideoGenerator } from "@/app/videoGenerator";
 import { callVideoGenerator } from "../../videoGenerator";
 
 export async function POST(request: NextRequest) {
   try {
-    console.log("i am in post")
     const body = await request.json();
-
-
 
     // Validate and extract parameters
     const {
@@ -62,6 +58,7 @@ export async function POST(request: NextRequest) {
       preferences,
       contentClass,
       user_video_id,
+      modelName
     } = body;
 
     if (
@@ -76,21 +73,52 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Call your backend function
-    console.log("sending to callVideo generator with params")
     preferences.style = "slideshow";
-    let  videoUrl = await callVideoGenerator(
-      script,
-      preferences,
-      contentClass,
-      user_video_id
-    );
 
-    console.log("Video URL generated:", videoUrl);
-    // videoUrl = "C:/Users/chawl/Desktop/PRESENT/Interhips/C4GT-The Apprentice Project/Code/revideo/saas/output/video-test.mp4"
+    // Set up Streaming Response
+    const encoder = new TextEncoder();
+    const stream = new ReadableStream({
+      async start(controller) {
+        const sendEvent = (data: any) => {
+          controller.enqueue(encoder.encode(JSON.stringify(data) + "\n"));
+        };
 
-    // Return the video URL/path as JSON
-    return NextResponse.json({ videoUrl });
+        try {
+          console.log("Starting video generation with streaming...");
+
+          await callVideoGenerator(
+            script,
+            preferences,
+            contentClass,
+            user_video_id,
+            "eleven", // default flow
+            false,    // default staticGen
+            (progress: number, status: string) => {
+              // On Progress Callback
+              sendEvent({ type: "progress", progress, status });
+            },
+            modelName || "gemini-2.0-flash-lite"
+          ).then((videoUrl) => {
+            // On Success
+            sendEvent({ type: "result", videoUrl });
+            controller.close();
+          });
+
+        } catch (error: any) {
+          console.error("Error in generate-video stream:", error);
+          sendEvent({ type: "error", message: error.message || "Internal Server Error" });
+          controller.close();
+        }
+      },
+    });
+
+    return new Response(stream, {
+      headers: {
+        "Content-Type": "application/x-ndjson",
+        "Transfer-Encoding": "chunked",
+      },
+    });
+
   } catch (error: any) {
     console.error("Error in generate-video API:", error);
     return NextResponse.json(
