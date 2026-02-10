@@ -15,12 +15,17 @@ const writeFileAsync = promisify(writeFile);
 import { GEMINI_API_KEY } from '../constant';
 
 // Initialize Gemini Client
-const ai = new GoogleGenAI({
-    apiKey: GEMINI_API_KEY,
-});
+// const ai = new GoogleGenAI({
+//     apiKey: GEMINI_API_KEY,
+// });
+
 
 export async function generateNanoBananaImage(prompt: string): Promise<string | null> {
     try {
+        const ai = new GoogleGenAI({
+            apiKey: GEMINI_API_KEY,
+        });
+
         const config = {
             responseModalities: [
                 'IMAGE',
@@ -89,6 +94,12 @@ export async function generateNanoBananaBatch(prompts: string[]): Promise<Map<st
     let resultLocalPath: string | null = null;
 
     try {
+        console.log("lkey here is ", GEMINI_API_KEY)
+        
+        const ai = new GoogleGenAI({
+            apiKey: GEMINI_API_KEY,
+        });
+
         // 1. Create JSONL file
         const writeStream = createWriteStream(batchFilePath, { flags: 'w' });
 
@@ -195,7 +206,7 @@ export async function generateNanoBananaBatch(prompts: string[]): Promise<Map<st
                         let imageBuffer: Buffer | null = null;
                         let extension = 'png';
 
-                        if (parsed.response && parsed.response.candidates && parsed.response.candidates[0].content.parts) {
+                        if (parsed.response && parsed.response.candidates && parsed.response.candidates[0].content && parsed.response.candidates[0].content.parts) {
                             for (const part of parsed.response.candidates[0].content.parts) {
                                 if (part.inlineData) {
                                     extension = mime.getExtension(part.inlineData.mimeType || '') || 'png';
@@ -249,3 +260,21 @@ export async function generateNanoBananaBatch(prompts: string[]): Promise<Map<st
 
     return resultMap;
 }
+
+
+
+// export async function exampleBatchGeneration() {
+//     const prompts = [
+//         "A futuristic city with neon lights and flying cars",
+//         "A peaceful forest with a small stream and sunlight filtering through trees"
+//     ];
+
+//     const results = await generateNanoBananaBatch(prompts);
+
+//     results.forEach((filePath, prompt) => {
+//         console.log(`Prompt: "${prompt}" generated image at: ${filePath}`);
+//     });
+// }
+
+
+// exampleBatchGeneration()

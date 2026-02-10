@@ -6,7 +6,7 @@ import { GoogleGenAI } from '@google/genai';
 import mime from 'mime';
 import { writeFile, mkdirSync, existsSync } from 'fs';
 import path from 'path';
-import { GOOGLE_API_KEY } from '../constant';
+import { GEMINI_API_KEY } from '../constant';
 
 // Function to save the binary data as a file
 function saveBinaryFile(fileName: string, content: Buffer, directory: string) {
@@ -21,9 +21,9 @@ function saveBinaryFile(fileName: string, content: Buffer, directory: string) {
 }
 
 // Main function to interact with Google Gen AI API
-async function generateContent(prompt: string, fileName: string, directory: string) {
+export async function generateNanoBananaProImage(prompt: string, fileName: string, directory: string) {
     const ai = new GoogleGenAI({
-        apiKey:GOOGLE_API_KEY,
+        apiKey:GEMINI_API_KEY,
     });
 
     const tools = [

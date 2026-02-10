@@ -1,11 +1,13 @@
 import { GoogleGenAI } from "@google/genai";
 import fs from "fs";
+import { GOOGLE_API_KEY } from '../constant';
+
 
 /**
  * ⚠️ API KEY IS HARDCODED HERE (as requested)
  */
 const ai = new GoogleGenAI({
-  apiKey: "AIzaSyDc5pzJpMQEl1oFDinVdW7Iz-v4WPG2kWo",
+  apiKey: GOOGLE_API_KEY,
 });
 
 type GenerateVeoVideoParams = {

@@ -58,9 +58,11 @@ export async function POST(request: NextRequest) {
       preferences,
       contentClass,
       user_video_id,
-      modelName
+      modelName,
+      rebuild = false
     } = body;
 
+    // Basic type validation for required fields
     if (
       typeof script !== "string" ||
       typeof preferences !== "object" ||
@@ -92,7 +94,7 @@ export async function POST(request: NextRequest) {
             contentClass,
             user_video_id,
             "eleven", // default flow
-            false,    // default staticGen
+            rebuild,    // use rebuild flag from request
             (progress: number, status: string) => {
               // On Progress Callback
               sendEvent({ type: "progress", progress, status });

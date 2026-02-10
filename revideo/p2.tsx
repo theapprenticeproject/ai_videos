@@ -96,15 +96,15 @@ export default makeScene2D("SCENE2", function* (view) {
   const vars = useScene().variables;
 
   const getUsername = vars.get('username', 'Guest')!;
-  const getWords    = vars.get('words', [])!; ///word level timestamps
-  const getAssets   = vars.get('assets', [])!; //[{path, type, start, end}]
-  const getOptions  = vars.get('options', {})!; //{wordsPerLine, subtitleStyle, logoUrl, audioUrl}
+  const getWords = vars.get('words', [])!; ///word level timestamps
+  const getAssets = vars.get('assets', [])!; //[{path, type, start, end}]
+  const getOptions = vars.get('options', {})!; //{wordsPerLine, subtitleStyle, logoUrl, audioUrl}
 
   // ✅ Call them to get actual values
-  let username:any = getUsername();
-  let words:any = getWords();
-  let assets:any = getAssets();
-  let options:any = getOptions();
+  let username: any = getUsername();
+  let words: any = getWords();
+  let assets: any = getAssets();
+  let options: any = getOptions();
 
   words = JSON.parse(words);
   assets = JSON.parse(assets);
@@ -120,7 +120,7 @@ export default makeScene2D("SCENE2", function* (view) {
   // let duration = getAudioDuration(options.audioUrl || '');
   // console.log("duration ", duration)
   // assets[assets.length-1].end = duration;
-  
+
   const subtitleStyle = options.subtitleStyle || {};
   const fadeEnabled = options.fade ?? false;
   const fadeTime = fadeEnabled ? 0.5 : 0;
@@ -129,7 +129,7 @@ export default makeScene2D("SCENE2", function* (view) {
   const WORD_GAP = 25;
   const style = {
     fontSize: subtitleStyle.fontSize ?? 36,
-    fontFamily:"700 56px Lohit Devanagari, Samyak Devanagari, Roboto, Arial, sans-serif",
+    fontFamily: "700 56px Lohit Devanagari, Samyak Devanagari, Roboto, Arial, sans-serif",
     highlightColor: subtitleStyle.highlightColor ?? "#FFD700",
     normalColor: subtitleStyle.normalColor ?? "#FFF",
   };
@@ -146,14 +146,14 @@ export default makeScene2D("SCENE2", function* (view) {
     view.add(<Audio src={options.audioUrl} play={true} />);
   }
 
-//  view.add(
-//   <Audio 
-//     src="https://revideo-example-assets.s3.amazonaws.com/chill-beat-2.mp3" 
-//     play={true} 
-//     volume={0.15} 
-//     loop={true} 
-//   />
-// );
+  //  view.add(
+  //   <Audio 
+  //     src="https://revideo-example-assets.s3.amazonaws.com/chill-beat-2.mp3" 
+  //     play={true} 
+  //     volume={0.15} 
+  //     loop={true} 
+  //   />
+  // );
 
 
   // Subtitle Layer
@@ -224,61 +224,70 @@ export default makeScene2D("SCENE2", function* (view) {
       mediaRef().opacity(1);
     }
 
-    if(options.subtitles){
-    // Show subtitles relevant to this asset
-    for (const sub of subtitleEvents) {
-      if (sub.end > asset.start && sub.start < asset.end) {
-        if (sub.start > currentTime) {
-          yield* waitFor(sub.start - currentTime);
-          currentTime = sub.start;
-        }
-
-        for (let wIdx = 0; wIdx < sub.line.length; wIdx++) {
-          const word = sub.line[wIdx];
-          const duration = word.end - word.start;
-
-          // Measure & layout text
-          const font = style.fontFamily;
-          const wordWidths = sub.line.map(w => measureTextWidth(w.word, font));
-          const totalWidth = wordWidths.reduce((a, b) => a + b, 0) + (WORD_GAP * (sub.line.length - 1));
-          const xPositions: number[] = [];
-          let x = -totalWidth / 2;
-
-          for (let i = 0; i < wordWidths.length; i++) {
-            xPositions.push(x + wordWidths[i] / 2);
-            x += wordWidths[i] + WORD_GAP;
+    if (options.subtitles) {
+      // Show subtitles relevant to this asset
+      for (const sub of subtitleEvents) {
+        if (sub.end > asset.start && sub.start < asset.end) {
+          if (sub.start > currentTime) {
+            yield* waitFor(sub.start - currentTime);
+            currentTime = sub.start;
           }
 
-          // Render subtitle
-          subtitleRef().removeChildren();
-          subtitleRef().add(
-            <Rect width={totalWidth + 40} height={80} fill="#1fa647" radius={16} x={0} y={0} zIndex={30} />
-          );
-          let fontfamily =  style.fontFamily.split("px ")[1];
-          sub.line.forEach((w, idx) => {
+
+          let lastWordEnd = sub.start;
+          for (let wIdx = 0; wIdx < sub.line.length; wIdx++) {
+            const word = sub.line[wIdx];
+
+            // Wait for silence/gap before this word
+            if (word.start > lastWordEnd) {
+              yield* waitFor(word.start - lastWordEnd);
+            }
+
+            const duration = word.end - word.start;
+
+            // Measure & layout text
+            const font = style.fontFamily;
+            const wordWidths = sub.line.map(w => measureTextWidth(w.word, font));
+            const totalWidth = wordWidths.reduce((a, b) => a + b, 0) + (WORD_GAP * (sub.line.length - 1));
+            const xPositions: number[] = [];
+            let x = -totalWidth / 2;
+
+            for (let i = 0; i < wordWidths.length; i++) {
+              xPositions.push(x + wordWidths[i] / 2);
+              x += wordWidths[i] + WORD_GAP;
+            }
+
+            // Render subtitle
+            subtitleRef().removeChildren();
             subtitleRef().add(
-              <Txt
-                text={w.word}
-                fontSize={style.fontSize}
-                fontFamily={fontfamily}
-                fill={idx === wIdx ? style.highlightColor : style.normalColor}
-                fontWeight={idx === wIdx ? 700 : 400}
-                shadowColor="#000"
-                shadowBlur={4}
-                zIndex={40}
-                x={xPositions[idx]}
-              />
+              <Rect width={totalWidth + 40} height={80} fill="#1fa647" radius={16} x={0} y={0} zIndex={30} />
             );
-          });
+            let fontfamily = style.fontFamily.split("px ")[1];
+            sub.line.forEach((w, idx) => {
+              subtitleRef().add(
+                <Txt
+                  text={w.word}
+                  fontSize={style.fontSize}
+                  fontFamily={fontfamily}
+                  fill={idx === wIdx ? style.highlightColor : style.normalColor}
+                  fontWeight={idx === wIdx ? 700 : 400}
+                  shadowColor="#000"
+                  shadowBlur={4}
+                  zIndex={40}
+                  x={xPositions[idx]}
+                />
+              );
+            });
 
-          yield* waitFor(duration);
+            yield* waitFor(duration);
+            lastWordEnd = word.end;
+          }
+
+          subtitleRef().removeChildren();
+          currentTime = sub.end;
         }
-
-        subtitleRef().removeChildren();
-        currentTime = sub.end;
       }
     }
-  }
     // Wait for asset duration (minus fade out)
     const visibleDuration = asset.end - currentTime;
     const waitDuration = fadeEnabled ? visibleDuration - fadeTime : visibleDuration;

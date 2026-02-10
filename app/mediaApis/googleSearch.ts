@@ -91,10 +91,10 @@ export async function searchYouTubeImages(
     }));
 }
 
-(async () => {
-  const images = await searchYouTubeImages(
-    "ai technology background futuristic"
-  );
+// (async () => {
+//   const images = await searchYouTubeImages(
+//     "ai technology background futuristic"
+//   );
 
-  console.log(images);
-})();
+//   console.log(images);
+// })();

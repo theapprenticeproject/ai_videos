@@ -1,79 +1,4347 @@
 {
-  "user_video_id": "test",
+  "user_video_id": "user_1770635250214_ddfebpsth",
+  "chunks": [
+    {
+      "chunkId": 0,
+      "chunkText": "हाय एवरीवन! आज हम एक बहुत काम का स्किल सीखेंगे: प्रॉब्लम सॉल्विंग।",
+      "keywords": "Animated for kids explainer: A diverse group of children looking at the screen. A title card appears with text: Problem Solving.",
+      "startTime": 0,
+      "endTime": 6.188,
+      "words": [
+        {
+          "word": "हाय",
+          "startTime": 0,
+          "endTime": 0.337
+        },
+        {
+          "word": "एवरीवन!",
+          "startTime": 0.406,
+          "endTime": 1.138
+        },
+        {
+          "word": "आज",
+          "startTime": 1.521,
+          "endTime": 1.788
+        },
+        {
+          "word": "हम",
+          "startTime": 1.846,
+          "endTime": 1.974
+        },
+        {
+          "word": "एक",
+          "startTime": 2.043,
+          "endTime": 2.101
+        },
+        {
+          "word": "बहुत",
+          "startTime": 2.194,
+          "endTime": 2.589
+        },
+        {
+          "word": "काम",
+          "startTime": 2.67,
+          "endTime": 2.937
+        },
+        {
+          "word": "का",
+          "startTime": 3.019,
+          "endTime": 3.1
+        },
+        {
+          "word": "स्किल",
+          "startTime": 3.146,
+          "endTime": 3.402
+        },
+        {
+          "word": "सीखेंगे:",
+          "startTime": 3.46,
+          "endTime": 4.133
+        },
+        {
+          "word": "प्रॉब्लम",
+          "startTime": 4.516,
+          "endTime": 4.946
+        },
+        {
+          "word": "सॉल्विंग।",
+          "startTime": 5.027,
+          "endTime": 5.584
+        }
+      ],
+      "selectedUrl": "generated-nano-batch",
+      "alternateUrls": [],
+      "template": "slideshow",
+      "templateJson": {
+        "path": "batch_gen_1770635298094_0_28550.png"
+      },
+      "tag": ""
+    },
+    {
+      "chunkId": 1,
+      "chunkText": "प्रॉब्लम वो सिचुएशन है जहाँ चीज़ें वैसी नहीं हो रहीं जैसी आप चाहते हो।",
+      "keywords": "Animated for kids explainer: A thought bubble appears, illustrating things going wrong - a child's ice cream cone melting, a kite stuck in a tree, a spilled glass of milk.",
+      "startTime": 6.188,
+      "endTime": 11.494,
+      "words": [
+        {
+          "word": "प्रॉब्लम",
+          "startTime": 6.188,
+          "endTime": 6.594
+        },
+        {
+          "word": "वो",
+          "startTime": 6.687,
+          "endTime": 6.85
+        },
+        {
+          "word": "सिचुएशन",
+          "startTime": 6.92,
+          "endTime": 7.442
+        },
+        {
+          "word": "है",
+          "startTime": 7.512,
+          "endTime": 7.663
+        },
+        {
+          "word": "जहाँ",
+          "startTime": 7.779,
+          "endTime": 7.999
+        },
+        {
+          "word": "चीज़ें",
+          "startTime": 8.057,
+          "endTime": 8.371
+        },
+        {
+          "word": "वैसी",
+          "startTime": 8.429,
+          "endTime": 8.777
+        },
+        {
+          "word": "नहीं",
+          "startTime": 8.847,
+          "endTime": 9.067
+        },
+        {
+          "word": "हो",
+          "startTime": 9.114,
+          "endTime": 9.23
+        },
+        {
+          "word": "रहीं",
+          "startTime": 9.276,
+          "endTime": 9.613
+        },
+        {
+          "word": "जैसी",
+          "startTime": 9.938,
+          "endTime": 10.252
+        },
+        {
+          "word": "आप",
+          "startTime": 10.321,
+          "endTime": 10.437
+        },
+        {
+          "word": "चाहते",
+          "startTime": 10.507,
+          "endTime": 10.809
+        },
+        {
+          "word": "हो।",
+          "startTime": 10.855,
+          "endTime": 11.169
+        }
+      ],
+      "selectedUrl": "generated-nano-batch",
+      "alternateUrls": [],
+      "template": "slideshow",
+      "templateJson": {
+        "path": "batch_gen_1770635298094_1_74902.png"
+      },
+      "tag": ""
+    },
+    {
+      "chunkId": 2,
+      "chunkText": "और प्रॉब्लम सॉल्विंग का मतलब है स्टेप बाय स्टेप सोचकर एक क्लियर",
+      "keywords": "Animated for kids explainer: A lightbulb flashes above a child's head as they begin to think step by step. The child is surrounded by gears and cogs.",
+      "startTime": 11.494,
+      "endTime": 16.498,
+      "words": [
+        {
+          "word": "और",
+          "startTime": 11.494,
+          "endTime": 11.668
+        },
+        {
+          "word": "प्रॉब्लम",
+          "startTime": 11.738,
+          "endTime": 12.121
+        },
+        {
+          "word": "सॉल्विंग",
+          "startTime": 12.19,
+          "endTime": 12.539
+        },
+        {
+          "word": "का",
+          "startTime": 12.574,
+          "endTime": 12.643
+        },
+        {
+          "word": "मतलब",
+          "startTime": 12.69,
+          "endTime": 12.992
+        },
+        {
+          "word": "है",
+          "startTime": 13.061,
+          "endTime": 13.282
+        },
+        {
+          "word": "स्टेप",
+          "startTime": 13.665,
+          "endTime": 14.071
+        },
+        {
+          "word": "बाय",
+          "startTime": 14.187,
+          "endTime": 14.443
+        },
+        {
+          "word": "स्टेप",
+          "startTime": 14.512,
+          "endTime": 14.838
+        },
+        {
+          "word": "सोचकर",
+          "startTime": 14.896,
+          "endTime": 15.453
+        },
+        {
+          "word": "एक",
+          "startTime": 15.778,
+          "endTime": 15.952
+        },
+        {
+          "word": "क्लियर",
+          "startTime": 16.022,
+          "endTime": 16.382
+        }
+      ],
+      "selectedUrl": "generated-nano-batch",
+      "alternateUrls": [],
+      "template": "slideshow",
+      "templateJson": {
+        "path": "batch_gen_1770635298094_2_59834.png"
+      },
+      "tag": ""
+    },
+    {
+      "chunkId": 3,
+      "chunkText": "और प्रैक्टिकल सॉल्यूशन ढूँढना। ये बिलकुल डिटेक्टिव बनने जैसा है—क्लूज़ देखो,",
+      "keywords": "Animated for kids explainer: A child dressed as a detective examines clues: footprints, a broken toy, and a missing item. The child is holding a magnifying glass.",
+      "startTime": 16.498,
+      "endTime": 22.245,
+      "words": [
+        {
+          "word": "और",
+          "startTime": 16.498,
+          "endTime": 16.637
+        },
+        {
+          "word": "प्रैक्टिकल",
+          "startTime": 16.753,
+          "endTime": 17.276
+        },
+        {
+          "word": "सॉल्यूशन",
+          "startTime": 17.345,
+          "endTime": 17.821
+        },
+        {
+          "word": "ढूँढना।",
+          "startTime": 17.868,
+          "endTime": 18.46
+        },
+        {
+          "word": "ये",
+          "startTime": 18.843,
+          "endTime": 18.971
+        },
+        {
+          "word": "बिलकुल",
+          "startTime": 19.017,
+          "endTime": 19.354
+        },
+        {
+          "word": "डिटेक्टिव",
+          "startTime": 19.435,
+          "endTime": 19.899
+        },
+        {
+          "word": "बनने",
+          "startTime": 19.958,
+          "endTime": 20.201
+        },
+        {
+          "word": "जैसा",
+          "startTime": 20.259,
+          "endTime": 20.561
+        },
+        {
+          "word": "है—क्लूज़",
+          "startTime": 20.631,
+          "endTime": 21.455
+        },
+        {
+          "word": "देखो,",
+          "startTime": 21.502,
+          "endTime": 22.036
+        }
+      ],
+      "selectedUrl": "generated-nano-batch",
+      "alternateUrls": [],
+      "template": "slideshow",
+      "templateJson": {
+        "path": "batch_gen_1770635298094_3_80496.png"
+      },
+      "tag": ""
+    },
+    {
+      "chunkId": 4,
+      "chunkText": "आइडियाज़ टेस्ट करो, और जो काम करे वो चूज़ करो। आज एक आसान",
+      "keywords": "Animated for kids explainer: A child is testing different ideas, shown as floating symbols above their head - a lightbulb for an idea, a checkmark for something that works and a cross mark for something that doesn't.",
+      "startTime": 22.245,
+      "endTime": 26.9,
+      "words": [
+        {
+          "word": "आइडियाज़",
+          "startTime": 22.245,
+          "endTime": 22.709
+        },
+        {
+          "word": "टेस्ट",
+          "startTime": 22.756,
+          "endTime": 22.999
+        },
+        {
+          "word": "करो,",
+          "startTime": 23.046,
+          "endTime": 23.51
+        },
+        {
+          "word": "और",
+          "startTime": 23.719,
+          "endTime": 23.858
+        },
+        {
+          "word": "जो",
+          "startTime": 23.928,
+          "endTime": 24.079
+        },
+        {
+          "word": "काम",
+          "startTime": 24.137,
+          "endTime": 24.346
+        },
+        {
+          "word": "करे",
+          "startTime": 24.416,
+          "endTime": 24.613
+        },
+        {
+          "word": "वो",
+          "startTime": 24.66,
+          "endTime": 24.752
+        },
+        {
+          "word": "चूज़",
+          "startTime": 24.822,
+          "endTime": 25.078
+        },
+        {
+          "word": "करो।",
+          "startTime": 25.112,
+          "endTime": 25.542
+        },
+        {
+          "word": "आज",
+          "startTime": 25.925,
+          "endTime": 26.157
+        },
+        {
+          "word": "एक",
+          "startTime": 26.239,
+          "endTime": 26.389
+        },
+        {
+          "word": "आसान",
+          "startTime": 26.482,
+          "endTime": 26.831
+        }
+      ],
+      "selectedUrl": "generated-nano-batch",
+      "alternateUrls": [],
+      "template": "slideshow",
+      "templateJson": {
+        "path": "batch_gen_1770635298094_4_74019.png"
+      },
+      "tag": ""
+    },
+    {
+      "chunkId": 5,
+      "chunkText": "मेथड याद रखो: डिफाइन, प्लान, ट्राय, चेक, इम्प्रूव। चलो एक एग्ज़ाम्पल लेते हैं।",
+      "keywords": "Animated for kids explainer: A colorful graphic showing the steps of the problem-solving method: Define, Plan, Try, Check, Improve. Each step has a simple icon associated with it.",
+      "startTime": 26.9,
+      "endTime": 32.566,
+      "words": [
+        {
+          "word": "मेथड",
+          "startTime": 26.9,
+          "endTime": 27.225
+        },
+        {
+          "word": "याद",
+          "startTime": 27.283,
+          "endTime": 27.458
+        },
+        {
+          "word": "रखो:",
+          "startTime": 27.504,
+          "endTime": 28.003
+        },
+        {
+          "word": "डिफाइन,",
+          "startTime": 28.282,
+          "endTime": 28.758
+        },
+        {
+          "word": "प्लान,",
+          "startTime": 28.793,
+          "endTime": 29.153
+        },
+        {
+          "word": "ट्राय,",
+          "startTime": 29.187,
+          "endTime": 29.524
+        },
+        {
+          "word": "चेक,",
+          "startTime": 29.582,
+          "endTime": 29.849
+        },
+        {
+          "word": "इम्प्रूव।",
+          "startTime": 29.872,
+          "endTime": 30.453
+        },
+        {
+          "word": "चलो",
+          "startTime": 30.836,
+          "endTime": 31.068
+        },
+        {
+          "word": "एक",
+          "startTime": 31.115,
+          "endTime": 31.184
+        },
+        {
+          "word": "एग्ज़ाम्पल",
+          "startTime": 31.242,
+          "endTime": 31.649
+        },
+        {
+          "word": "लेते",
+          "startTime": 31.684,
+          "endTime": 31.904
+        },
+        {
+          "word": "हैं।",
+          "startTime": 31.951,
+          "endTime": 32.241
+        }
+      ],
+      "selectedUrl": "public/veo_video_user_1770635250214_ddfebpsth_5.mp4",
+      "alternateUrls": [],
+      "template": "slideshow",
+      "templateJson": {
+        "path": "veo_video_user_1770635250214_ddfebpsth_5.mp4"
+      },
+      "tag": ""
+    },
+    {
+      "chunkId": 6,
+      "chunkText": "सोचो आप स्कूल पहुँचे और पता चला कि आप मैथ्स नोटबुक",
+      "keywords": "Animated for kids explainer: A child arriving at school looking surprised and realizing they forgot their math notebook. The school has a sign board saying 'School'.",
+      "startTime": 32.566,
+      "endTime": 36.27,
+      "words": [
+        {
+          "word": "सोचो",
+          "startTime": 32.566,
+          "endTime": 32.891
+        },
+        {
+          "word": "आप",
+          "startTime": 32.984,
+          "endTime": 33.123
+        },
+        {
+          "word": "स्कूल",
+          "startTime": 33.181,
+          "endTime": 33.448
+        },
+        {
+          "word": "पहुँचे",
+          "startTime": 33.506,
+          "endTime": 33.913
+        },
+        {
+          "word": "और",
+          "startTime": 34.354,
+          "endTime": 34.493
+        },
+        {
+          "word": "पता",
+          "startTime": 34.551,
+          "endTime": 34.737
+        },
+        {
+          "word": "चला",
+          "startTime": 34.807,
+          "endTime": 35.016
+        },
+        {
+          "word": "कि",
+          "startTime": 35.074,
+          "endTime": 35.155
+        },
+        {
+          "word": "आप",
+          "startTime": 35.271,
+          "endTime": 35.434
+        },
+        {
+          "word": "मैथ्स",
+          "startTime": 35.515,
+          "endTime": 35.794
+        },
+        {
+          "word": "नोटबुक",
+          "startTime": 35.863,
+          "endTime": 36.235
+        }
+      ],
+      "selectedUrl": "generated-nano-batch",
+      "alternateUrls": [],
+      "template": "slideshow",
+      "templateJson": {
+        "path": "batch_gen_1770635298094_6_83451.png"
+      },
+      "tag": ""
+    },
+    {
+      "chunkId": 7,
+      "chunkText": "घर भूल गए। सबसे पहले डिफाइन: “मेरे पास नोटबुक नहीं है, इसलिए मैं",
+      "keywords": "Animated for kids explainer: A close-up on the child's thought bubble, with the words 'I don't have my notebook'.",
+      "startTime": 36.27,
+      "endTime": 41.332,
+      "words": [
+        {
+          "word": "घर",
+          "startTime": 36.27,
+          "endTime": 36.409
+        },
+        {
+          "word": "भूल",
+          "startTime": 36.479,
+          "endTime": 36.699
+        },
+        {
+          "word": "गए।",
+          "startTime": 36.757,
+          "endTime": 37.105
+        },
+        {
+          "word": "सबसे",
+          "startTime": 37.489,
+          "endTime": 37.779
+        },
+        {
+          "word": "पहले",
+          "startTime": 37.837,
+          "endTime": 38.069
+        },
+        {
+          "word": "डिफाइन:",
+          "startTime": 38.127,
+          "endTime": 38.684
+        },
+        {
+          "word": "“मेरे",
+          "startTime": 39.01,
+          "endTime": 39.335
+        },
+        {
+          "word": "पास",
+          "startTime": 39.381,
+          "endTime": 39.567
+        },
+        {
+          "word": "नोटबुक",
+          "startTime": 39.636,
+          "endTime": 39.985
+        },
+        {
+          "word": "नहीं",
+          "startTime": 40.043,
+          "endTime": 40.229
+        },
+        {
+          "word": "है,",
+          "startTime": 40.275,
+          "endTime": 40.542
+        },
+        {
+          "word": "इसलिए",
+          "startTime": 40.751,
+          "endTime": 41.123
+        },
+        {
+          "word": "मैं",
+          "startTime": 41.181,
+          "endTime": 41.285
+        }
+      ],
+      "selectedUrl": "generated-nano-batch",
+      "alternateUrls": [],
+      "template": "slideshow",
+      "templateJson": {
+        "path": "batch_gen_1770635298094_7_24549.png"
+      },
+      "tag": ""
+    },
+    {
+      "chunkId": 8,
+      "chunkText": "क्लास में ठीक से फॉलो नहीं कर पाऊँगा।” फिर प्लान: ऑप्शन्स सोचो।",
+      "keywords": "Animated for kids explainer: The child thinking of different options, shown as floating icons: borrowing a notebook, using loose sheets, asking the teacher, using the textbook.",
+      "startTime": 41.332,
+      "endTime": 46.846,
+      "words": [
+        {
+          "word": "क्लास",
+          "startTime": 41.332,
+          "endTime": 41.633
+        },
+        {
+          "word": "में",
+          "startTime": 41.703,
+          "endTime": 41.796
+        },
+        {
+          "word": "ठीक",
+          "startTime": 41.854,
+          "endTime": 42.028
+        },
+        {
+          "word": "से",
+          "startTime": 42.086,
+          "endTime": 42.156
+        },
+        {
+          "word": "फॉलो",
+          "startTime": 42.214,
+          "endTime": 42.446
+        },
+        {
+          "word": "नहीं",
+          "startTime": 42.504,
+          "endTime": 42.69
+        },
+        {
+          "word": "कर",
+          "startTime": 42.725,
+          "endTime": 42.829
+        },
+        {
+          "word": "पाऊँगा।”",
+          "startTime": 42.887,
+          "endTime": 43.468
+        },
+        {
+          "word": "फिर",
+          "startTime": 43.979,
+          "endTime": 44.176
+        },
+        {
+          "word": "प्लान:",
+          "startTime": 44.234,
+          "endTime": 44.71
+        },
+        {
+          "word": "ऑप्शन्स",
+          "startTime": 45.151,
+          "endTime": 45.755
+        },
+        {
+          "word": "सोचो।",
+          "startTime": 45.906,
+          "endTime": 46.521
+        }
+      ],
+      "selectedUrl": "generated-nano-batch",
+      "alternateUrls": [],
+      "template": "slideshow",
+      "templateJson": {
+        "path": "batch_gen_1770635298094_8_40963.png"
+      },
+      "tag": ""
+    },
+    {
+      "chunkId": 9,
+      "chunkText": "आप फ्रेंड की नोटबुक बॉरो कर सकते हो, लूज़ शीट्स पर लिख सकते हो,",
+      "keywords": "Animated for kids explainer: A friend happily offering their notebook to borrow, and the child taking the notebook. Both are smiling.",
+      "startTime": 46.846,
+      "endTime": 51.467,
+      "words": [
+        {
+          "word": "आप",
+          "startTime": 46.846,
+          "endTime": 47.02
+        },
+        {
+          "word": "फ्रेंड",
+          "startTime": 47.102,
+          "endTime": 47.357
+        },
+        {
+          "word": "की",
+          "startTime": 47.427,
+          "endTime": 47.508
+        },
+        {
+          "word": "नोटबुक",
+          "startTime": 47.566,
+          "endTime": 47.938
+        },
+        {
+          "word": "बॉरो",
+          "startTime": 47.996,
+          "endTime": 48.228
+        },
+        {
+          "word": "कर",
+          "startTime": 48.274,
+          "endTime": 48.39
+        },
+        {
+          "word": "सकते",
+          "startTime": 48.448,
+          "endTime": 48.739
+        },
+        {
+          "word": "हो,",
+          "startTime": 48.797,
+          "endTime": 49.145
+        },
+        {
+          "word": "लूज़",
+          "startTime": 49.389,
+          "endTime": 49.726
+        },
+        {
+          "word": "शीट्स",
+          "startTime": 49.784,
+          "endTime": 50.074
+        },
+        {
+          "word": "पर",
+          "startTime": 50.143,
+          "endTime": 50.26
+        },
+        {
+          "word": "लिख",
+          "startTime": 50.329,
+          "endTime": 50.445
+        },
+        {
+          "word": "सकते",
+          "startTime": 50.503,
+          "endTime": 50.794
+        },
+        {
+          "word": "हो,",
+          "startTime": 50.852,
+          "endTime": 51.223
+        }
+      ],
+      "selectedUrl": "generated-nano-batch",
+      "alternateUrls": [],
+      "template": "slideshow",
+      "templateJson": {
+        "path": "batch_gen_1770635298094_9_47746.png"
+      },
+      "tag": ""
+    },
+    {
+      "chunkId": 10,
+      "chunkText": "टीचर से कुछ मिनट माँगकर क्वेश्चन्स नोट कर सकते हो, या आज टेक्स्टबुक",
+      "keywords": "Animated for kids explainer: The child asking the teacher for few minutes and the teacher responding in a supportive manner. ",
+      "startTime": 51.467,
+      "endTime": 55.937,
+      "words": [
+        {
+          "word": "टीचर",
+          "startTime": 51.467,
+          "endTime": 51.792
+        },
+        {
+          "word": "से",
+          "startTime": 51.862,
+          "endTime": 51.943
+        },
+        {
+          "word": "कुछ",
+          "startTime": 52.001,
+          "endTime": 52.164
+        },
+        {
+          "word": "मिनट",
+          "startTime": 52.233,
+          "endTime": 52.443
+        },
+        {
+          "word": "माँगकर",
+          "startTime": 52.501,
+          "endTime": 52.826
+        },
+        {
+          "word": "क्वेश्चन्स",
+          "startTime": 52.884,
+          "endTime": 53.325
+        },
+        {
+          "word": "नोट",
+          "startTime": 53.395,
+          "endTime": 53.58
+        },
+        {
+          "word": "कर",
+          "startTime": 53.627,
+          "endTime": 53.743
+        },
+        {
+          "word": "सकते",
+          "startTime": 53.801,
+          "endTime": 54.091
+        },
+        {
+          "word": "हो,",
+          "startTime": 54.149,
+          "endTime": 54.486
+        },
+        {
+          "word": "या",
+          "startTime": 54.73,
+          "endTime": 54.892
+        },
+        {
+          "word": "आज",
+          "startTime": 54.974,
+          "endTime": 55.241
+        },
+        {
+          "word": "टेक्स्टबुक",
+          "startTime": 55.357,
+          "endTime": 55.879
+        }
+      ],
+      "selectedUrl": "generated-nano-batch",
+      "alternateUrls": [],
+      "template": "slideshow",
+      "templateJson": {
+        "path": "batch_gen_1770635298094_10_21358.png"
+      },
+      "tag": ""
+    },
+    {
+      "chunkId": 11,
+      "chunkText": "से काम चला सकते हो। अब ट्राय: बेस्ट ऑप्शन चूज़ करो। बेस्ट ऑप्शन",
+      "keywords": "Animated for kids explainer: A hand reaching out to select the friend's notebook option.",
+      "startTime": 55.937,
+      "endTime": 60.837,
+      "words": [
+        {
+          "word": "से",
+          "startTime": 55.937,
+          "endTime": 56.019
+        },
+        {
+          "word": "काम",
+          "startTime": 56.077,
+          "endTime": 56.251
+        },
+        {
+          "word": "चला",
+          "startTime": 56.32,
+          "endTime": 56.518
+        },
+        {
+          "word": "सकते",
+          "startTime": 56.576,
+          "endTime": 56.854
+        },
+        {
+          "word": "हो।",
+          "startTime": 56.901,
+          "endTime": 57.18
+        },
+        {
+          "word": "अब",
+          "startTime": 57.389,
+          "endTime": 57.563
+        },
+        {
+          "word": "ट्राय:",
+          "startTime": 57.644,
+          "endTime": 58.097
+        },
+        {
+          "word": "बेस्ट",
+          "startTime": 58.306,
+          "endTime": 58.596
+        },
+        {
+          "word": "ऑप्शन",
+          "startTime": 58.666,
+          "endTime": 58.991
+        },
+        {
+          "word": "चूज़",
+          "startTime": 59.049,
+          "endTime": 59.246
+        },
+        {
+          "word": "करो।",
+          "startTime": 59.281,
+          "endTime": 59.676
+        },
+        {
+          "word": "बेस्ट",
+          "startTime": 60.001,
+          "endTime": 60.279
+        },
+        {
+          "word": "ऑप्शन",
+          "startTime": 60.349,
+          "endTime": 60.721
+        }
+      ],
+      "selectedUrl": "public/veo_video_user_1770635250214_ddfebpsth_11.mp4",
+      "alternateUrls": [],
+      "template": "slideshow",
+      "templateJson": {
+        "path": "veo_video_user_1770635250214_ddfebpsth_11.mp4"
+      },
+      "tag": ""
+    },
+    {
+      "chunkId": 12,
+      "chunkText": "ये हो सकता है—क्लास के दौरान फ्रेंड की नोटबुक बॉरो करके सिर्फ इम्पोर्टेन्ट पॉइंट्स",
+      "keywords": "Animated for kids explainer: The child taking notes from their friend's notebook during class, highlighting the important points.",
+      "startTime": 60.837,
+      "endTime": 66.618,
+      "words": [
+        {
+          "word": "ये",
+          "startTime": 60.837,
+          "endTime": 60.964
+        },
+        {
+          "word": "हो",
+          "startTime": 60.999,
+          "endTime": 61.092
+        },
+        {
+          "word": "सकता",
+          "startTime": 61.15,
+          "endTime": 61.452
+        },
+        {
+          "word": "है—क्लास",
+          "startTime": 61.51,
+          "endTime": 62.346
+        },
+        {
+          "word": "के",
+          "startTime": 62.416,
+          "endTime": 62.497
+        },
+        {
+          "word": "दौरान",
+          "startTime": 62.555,
+          "endTime": 62.892
+        },
+        {
+          "word": "फ्रेंड",
+          "startTime": 63.008,
+          "endTime": 63.286
+        },
+        {
+          "word": "की",
+          "startTime": 63.356,
+          "endTime": 63.449
+        },
+        {
+          "word": "नोटबुक",
+          "startTime": 63.519,
+          "endTime": 63.913
+        },
+        {
+          "word": "बॉरो",
+          "startTime": 63.983,
+          "endTime": 64.285
+        },
+        {
+          "word": "करके",
+          "startTime": 64.343,
+          "endTime": 64.784
+        },
+        {
+          "word": "सिर्फ",
+          "startTime": 65.109,
+          "endTime": 65.446
+        },
+        {
+          "word": "इम्पोर्टेन्ट",
+          "startTime": 65.562,
+          "endTime": 66.177
+        },
+        {
+          "word": "पॉइंट्स",
+          "startTime": 66.247,
+          "endTime": 66.572
+        }
+      ],
+      "selectedUrl": "generated-nano-batch",
+      "alternateUrls": [],
+      "template": "slideshow",
+      "templateJson": {
+        "path": "batch_gen_1770635298094_12_69139.png"
+      },
+      "tag": ""
+    },
+    {
+      "chunkId": 13,
+      "chunkText": "कॉपी करना। फिर चेक: क्या ये काम किया? हाँ, आप लेसन मिस नहीं करोगे।",
+      "keywords": "Animated for kids explainer: A checkmark appears over the child's face, indicating that they are following the lesson and did not miss it.",
+      "startTime": 66.618,
+      "endTime": 72.679,
+      "words": [
+        {
+          "word": "कॉपी",
+          "startTime": 66.618,
+          "endTime": 66.874
+        },
+        {
+          "word": "करना।",
+          "startTime": 66.92,
+          "endTime": 67.385
+        },
+        {
+          "word": "फिर",
+          "startTime": 67.826,
+          "endTime": 68.012
+        },
+        {
+          "word": "चेक:",
+          "startTime": 68.093,
+          "endTime": 68.534
+        },
+        {
+          "word": "क्या",
+          "startTime": 68.975,
+          "endTime": 69.149
+        },
+        {
+          "word": "ये",
+          "startTime": 69.231,
+          "endTime": 69.335
+        },
+        {
+          "word": "काम",
+          "startTime": 69.37,
+          "endTime": 69.556
+        },
+        {
+          "word": "किया?",
+          "startTime": 69.637,
+          "endTime": 70.078
+        },
+        {
+          "word": "हाँ,",
+          "startTime": 70.461,
+          "endTime": 70.844
+        },
+        {
+          "word": "आप",
+          "startTime": 70.995,
+          "endTime": 71.169
+        },
+        {
+          "word": "लेसन",
+          "startTime": 71.239,
+          "endTime": 71.494
+        },
+        {
+          "word": "मिस",
+          "startTime": 71.541,
+          "endTime": 71.669
+        },
+        {
+          "word": "नहीं",
+          "startTime": 71.75,
+          "endTime": 71.936
+        },
+        {
+          "word": "करोगे।",
+          "startTime": 71.959,
+          "endTime": 72.528
+        }
+      ],
+      "selectedUrl": "generated-nano-batch",
+      "alternateUrls": [],
+      "template": "slideshow",
+      "templateJson": {
+        "path": "batch_gen_1770635298094_13_37441.png"
+      },
+      "tag": ""
+    },
+    {
+      "chunkId": 14,
+      "chunkText": "और अंत में इम्प्रूव: नेक्स्ट टाइम ये अवॉइड कैसे करें? रात को बैग",
+      "keywords": "Animated for kids explainer: The child packing their bag the night before, placing a notebook and a checklist inside. Calendar showing the day for the exam.",
+      "startTime": 72.679,
+      "endTime": 77.09,
+      "words": [
+        {
+          "word": "और",
+          "startTime": 72.679,
+          "endTime": 72.83
+        },
+        {
+          "word": "अंत",
+          "startTime": 72.888,
+          "endTime": 73.073
+        },
+        {
+          "word": "में",
+          "startTime": 73.143,
+          "endTime": 73.248
+        },
+        {
+          "word": "इम्प्रूव:",
+          "startTime": 73.306,
+          "endTime": 73.956
+        },
+        {
+          "word": "नेक्स्ट",
+          "startTime": 74.234,
+          "endTime": 74.501
+        },
+        {
+          "word": "टाइम",
+          "startTime": 74.536,
+          "endTime": 74.734
+        },
+        {
+          "word": "ये",
+          "startTime": 74.815,
+          "endTime": 74.896
+        },
+        {
+          "word": "अवॉइड",
+          "startTime": 74.931,
+          "endTime": 75.21
+        },
+        {
+          "word": "कैसे",
+          "startTime": 75.256,
+          "endTime": 75.5
+        },
+        {
+          "word": "करें?",
+          "startTime": 75.558,
+          "endTime": 75.988
+        },
+        {
+          "word": "रात",
+          "startTime": 76.371,
+          "endTime": 76.603
+        },
+        {
+          "word": "को",
+          "startTime": 76.661,
+          "endTime": 76.754
+        },
+        {
+          "word": "बैग",
+          "startTime": 76.823,
+          "endTime": 77.021
+        }
+      ],
+      "selectedUrl": "generated-nano-batch",
+      "alternateUrls": [],
+      "template": "slideshow",
+      "templateJson": {
+        "path": "batch_gen_1770635298094_14_32335.png"
+      },
+      "tag": ""
+    },
+    {
+      "chunkId": 15,
+      "chunkText": "पैक करो, एक चेकलिस्ट बनाओ, या रिमाइंडर लगाओ। अब एक और एग्ज़ाम्पल",
+      "keywords": "Animated for kids explainer: A new scene begins with a science project on a table. The child's face shows an expression of anticipation.",
+      "startTime": 77.09,
+      "endTime": 81.258,
+      "words": [
+        {
+          "word": "पैक",
+          "startTime": 77.09,
+          "endTime": 77.311
+        },
+        {
+          "word": "करो,",
+          "startTime": 77.334,
+          "endTime": 77.671
+        },
+        {
+          "word": "एक",
+          "startTime": 77.741,
+          "endTime": 77.868
+        },
+        {
+          "word": "चेकलिस्ट",
+          "startTime": 77.938,
+          "endTime": 78.333
+        },
+        {
+          "word": "बनाओ,",
+          "startTime": 78.391,
+          "endTime": 78.693
+        },
+        {
+          "word": "या",
+          "startTime": 78.727,
+          "endTime": 78.809
+        },
+        {
+          "word": "रिमाइंडर",
+          "startTime": 78.844,
+          "endTime": 79.262
+        },
+        {
+          "word": "लगाओ।",
+          "startTime": 79.308,
+          "endTime": 79.877
+        },
+        {
+          "word": "अब",
+          "startTime": 80.028,
+          "endTime": 80.202
+        },
+        {
+          "word": "एक",
+          "startTime": 80.353,
+          "endTime": 80.539
+        },
+        {
+          "word": "और",
+          "startTime": 80.655,
+          "endTime": 80.736
+        },
+        {
+          "word": "एग्ज़ाम्पल",
+          "startTime": 80.794,
+          "endTime": 81.212
+        }
+      ],
+      "selectedUrl": "generated-nano-batch",
+      "alternateUrls": [],
+      "template": "slideshow",
+      "templateJson": {
+        "path": "batch_gen_1770635298094_15_21645.png"
+      },
+      "tag": ""
+    },
+    {
+      "chunkId": 16,
+      "chunkText": "देखते हैं। मान लो कल साइंस प्रोजेक्ट सबमिट करना है, लेकिन आपका",
+      "keywords": "Animated for kids explainer: The child looking at the science project and his face looking sad.",
+      "startTime": 81.258,
+      "endTime": 85.856,
+      "words": [
+        {
+          "word": "देखते",
+          "startTime": 81.258,
+          "endTime": 81.572
+        },
+        {
+          "word": "हैं।",
+          "startTime": 81.618,
+          "endTime": 81.92
+        },
+        {
+          "word": "मान",
+          "startTime": 82.245,
+          "endTime": 82.477
+        },
+        {
+          "word": "लो",
+          "startTime": 82.536,
+          "endTime": 82.733
+        },
+        {
+          "word": "कल",
+          "startTime": 82.942,
+          "endTime": 83.162
+        },
+        {
+          "word": "साइंस",
+          "startTime": 83.255,
+          "endTime": 83.522
+        },
+        {
+          "word": "प्रोजेक्ट",
+          "startTime": 83.569,
+          "endTime": 83.917
+        },
+        {
+          "word": "सबमिट",
+          "startTime": 83.987,
+          "endTime": 84.335
+        },
+        {
+          "word": "करना",
+          "startTime": 84.393,
+          "endTime": 84.66
+        },
+        {
+          "word": "है,",
+          "startTime": 84.718,
+          "endTime": 85.032
+        },
+        {
+          "word": "लेकिन",
+          "startTime": 85.275,
+          "endTime": 85.531
+        },
+        {
+          "word": "आपका",
+          "startTime": 85.589,
+          "endTime": 85.798
+        }
+      ],
+      "selectedUrl": "generated-nano-batch",
+      "alternateUrls": [],
+      "template": "slideshow",
+      "templateJson": {
+        "path": "batch_gen_1770635298094_16_38765.png"
+      },
+      "tag": ""
+    },
+    {
+      "chunkId": 17,
+      "chunkText": "मॉडल बार-बार टूट रहा है। डिफाइन: “मेरा मॉडल स्टेबल नहीं है।” प्लान:",
+      "keywords": "Animated for kids explainer: Close up shot: 'My model is not stable' written over the model and a concerned face.",
+      "startTime": 85.856,
+      "endTime": 91.812,
+      "words": [
+        {
+          "word": "मॉडल",
+          "startTime": 85.856,
+          "endTime": 86.146
+        },
+        {
+          "word": "बार-बार",
+          "startTime": 86.239,
+          "endTime": 86.692
+        },
+        {
+          "word": "टूट",
+          "startTime": 86.738,
+          "endTime": 86.97
+        },
+        {
+          "word": "रहा",
+          "startTime": 87.017,
+          "endTime": 87.203
+        },
+        {
+          "word": "है।",
+          "startTime": 87.261,
+          "endTime": 87.609
+        },
+        {
+          "word": "डिफाइन:",
+          "startTime": 87.992,
+          "endTime": 88.538
+        },
+        {
+          "word": "“मेरा",
+          "startTime": 88.909,
+          "endTime": 89.223
+        },
+        {
+          "word": "मॉडल",
+          "startTime": 89.269,
+          "endTime": 89.513
+        },
+        {
+          "word": "स्टेबल",
+          "startTime": 89.559,
+          "endTime": 89.861
+        },
+        {
+          "word": "नहीं",
+          "startTime": 89.908,
+          "endTime": 90.105
+        },
+        {
+          "word": "है।”",
+          "startTime": 90.175,
+          "endTime": 90.477
+        },
+        {
+          "word": "प्लान:",
+          "startTime": 91.069,
+          "endTime": 91.58
+        }
+      ],
+      "selectedUrl": "generated-nano-batch",
+      "alternateUrls": [],
+      "template": "slideshow",
+      "templateJson": {
+        "path": "batch_gen_1770635298094_17_23434.png"
+      },
+      "tag": ""
+    },
+    {
+      "chunkId": 18,
+      "chunkText": "कारण ढूँढो—ग्लू वीक है, ऊपर का हिस्सा हेवी है, या बेस पतला है।",
+      "keywords": "Animated for kids explainer: The child inspecting the model, with thought bubbles indicating the possible causes: weak glue, heavy top, thin base.",
+      "startTime": 91.812,
+      "endTime": 96.63,
+      "words": [
+        {
+          "word": "कारण",
+          "startTime": 91.812,
+          "endTime": 92.241
+        },
+        {
+          "word": "ढूँढो—ग्लू",
+          "startTime": 92.311,
+          "endTime": 93.147
+        },
+        {
+          "word": "वीक",
+          "startTime": 93.228,
+          "endTime": 93.449
+        },
+        {
+          "word": "है,",
+          "startTime": 93.542,
+          "endTime": 93.739
+        },
+        {
+          "word": "ऊपर",
+          "startTime": 93.786,
+          "endTime": 94.064
+        },
+        {
+          "word": "का",
+          "startTime": 94.111,
+          "endTime": 94.192
+        },
+        {
+          "word": "हिस्सा",
+          "startTime": 94.238,
+          "endTime": 94.517
+        },
+        {
+          "word": "हेवी",
+          "startTime": 94.575,
+          "endTime": 94.842
+        },
+        {
+          "word": "है,",
+          "startTime": 94.912,
+          "endTime": 95.097
+        },
+        {
+          "word": "या",
+          "startTime": 95.121,
+          "endTime": 95.225
+        },
+        {
+          "word": "बेस",
+          "startTime": 95.295,
+          "endTime": 95.515
+        },
+        {
+          "word": "पतला",
+          "startTime": 95.562,
+          "endTime": 95.875
+        },
+        {
+          "word": "है।",
+          "startTime": 95.933,
+          "endTime": 96.2
+        }
+      ],
+      "selectedUrl": "generated-nano-batch",
+      "alternateUrls": [],
+      "template": "slideshow",
+      "templateJson": {
+        "path": "batch_gen_1770635298094_18_55864.png"
+      },
+      "tag": ""
+    },
+    {
+      "chunkId": 19,
+      "chunkText": "अब सॉल्यूशन्स सोचो: स्ट्रॉन्गर टेप यूज़ करो, सपोर्ट स्टिक्स लगाओ, बेस",
+      "keywords": "Animated for kids explainer: Thought bubbles appear, showing solutions: stronger tape, support sticks, wider base, or reduce the weight.",
+      "startTime": 96.63,
+      "endTime": 101.413,
+      "words": [
+        {
+          "word": "अब",
+          "startTime": 96.63,
+          "endTime": 96.804
+        },
+        {
+          "word": "सॉल्यूशन्स",
+          "startTime": 96.885,
+          "endTime": 97.443
+        },
+        {
+          "word": "सोचो:",
+          "startTime": 97.466,
+          "endTime": 98.058
+        },
+        {
+          "word": "स्ट्रॉन्गर",
+          "startTime": 98.337,
+          "endTime": 98.836
+        },
+        {
+          "word": "टेप",
+          "startTime": 98.906,
+          "endTime": 99.126
+        },
+        {
+          "word": "यूज़",
+          "startTime": 99.207,
+          "endTime": 99.405
+        },
+        {
+          "word": "करो,",
+          "startTime": 99.44,
+          "endTime": 99.788
+        },
+        {
+          "word": "सपोर्ट",
+          "startTime": 99.846,
+          "endTime": 100.229
+        },
+        {
+          "word": "स्टिक्स",
+          "startTime": 100.287,
+          "endTime": 100.566
+        },
+        {
+          "word": "लगाओ,",
+          "startTime": 100.624,
+          "endTime": 101.042
+        },
+        {
+          "word": "बेस",
+          "startTime": 101.088,
+          "endTime": 101.344
+        }
+      ],
+      "selectedUrl": "public/veo_video_user_1770635250214_ddfebpsth_19.mp4",
+      "alternateUrls": [],
+      "template": "slideshow",
+      "templateJson": {
+        "path": "veo_video_user_1770635250214_ddfebpsth_19.mp4"
+      },
+      "tag": ""
+    },
+    {
+      "chunkId": 20,
+      "chunkText": "वाइड करो, या ऊपर का वेट कम करो। ट्राय: बेस वाइड करो और सपोर्ट",
+      "keywords": "Animated for kids explainer: The child adds support sticks and widens the base of the model with a happy face.",
+      "startTime": 101.413,
+      "endTime": 106.29,
+      "words": [
+        {
+          "word": "वाइड",
+          "startTime": 101.413,
+          "endTime": 101.622
+        },
+        {
+          "word": "करो,",
+          "startTime": 101.669,
+          "endTime": 102.098
+        },
+        {
+          "word": "या",
+          "startTime": 102.261,
+          "endTime": 102.377
+        },
+        {
+          "word": "ऊपर",
+          "startTime": 102.447,
+          "endTime": 102.725
+        },
+        {
+          "word": "का",
+          "startTime": 102.783,
+          "endTime": 102.865
+        },
+        {
+          "word": "वेट",
+          "startTime": 102.923,
+          "endTime": 103.12
+        },
+        {
+          "word": "कम",
+          "startTime": 103.178,
+          "endTime": 103.306
+        },
+        {
+          "word": "करो।",
+          "startTime": 103.376,
+          "endTime": 103.794
+        },
+        {
+          "word": "ट्राय:",
+          "startTime": 104.119,
+          "endTime": 104.665
+        },
+        {
+          "word": "बेस",
+          "startTime": 104.781,
+          "endTime": 105.048
+        },
+        {
+          "word": "वाइड",
+          "startTime": 105.117,
+          "endTime": 105.315
+        },
+        {
+          "word": "करो",
+          "startTime": 105.373,
+          "endTime": 105.628
+        },
+        {
+          "word": "और",
+          "startTime": 105.744,
+          "endTime": 105.86
+        },
+        {
+          "word": "सपोर्ट",
+          "startTime": 105.918,
+          "endTime": 106.255
+        }
+      ],
+      "selectedUrl": "generated-nano-batch",
+      "alternateUrls": [],
+      "template": "slideshow",
+      "templateJson": {
+        "path": "batch_gen_1770635298094_20_15097.png"
+      },
+      "tag": ""
+    },
+    {
+      "chunkId": 21,
+      "chunkText": "स्टिक्स जोड़ो। चेक: अब मॉडल ठीक से खड़ा है? इम्प्रूव: टेबल हल्का",
+      "keywords": "Animated for kids explainer: The child gently shakes the table, testing the model's stability. Showing success and failure and then making it better.",
+      "startTime": 106.29,
+      "endTime": 111.77,
+      "words": [
+        {
+          "word": "स्टिक्स",
+          "startTime": 106.29,
+          "endTime": 106.569
+        },
+        {
+          "word": "जोड़ो।",
+          "startTime": 106.638,
+          "endTime": 107.126
+        },
+        {
+          "word": "चेक:",
+          "startTime": 107.822,
+          "endTime": 108.287
+        },
+        {
+          "word": "अब",
+          "startTime": 108.612,
+          "endTime": 108.751
+        },
+        {
+          "word": "मॉडल",
+          "startTime": 108.798,
+          "endTime": 109.065
+        },
+        {
+          "word": "ठीक",
+          "startTime": 109.123,
+          "endTime": 109.262
+        },
+        {
+          "word": "से",
+          "startTime": 109.309,
+          "endTime": 109.378
+        },
+        {
+          "word": "खड़ा",
+          "startTime": 109.425,
+          "endTime": 109.622
+        },
+        {
+          "word": "है?",
+          "startTime": 109.668,
+          "endTime": 109.947
+        },
+        {
+          "word": "इम्प्रूव:",
+          "startTime": 110.156,
+          "endTime": 110.818
+        },
+        {
+          "word": "टेबल",
+          "startTime": 111.062,
+          "endTime": 111.352
+        },
+        {
+          "word": "हल्का",
+          "startTime": 111.41,
+          "endTime": 111.712
+        }
+      ],
+      "selectedUrl": "generated-nano-batch",
+      "alternateUrls": [],
+      "template": "slideshow",
+      "templateJson": {
+        "path": "batch_gen_1770635298094_21_1387.png"
+      },
+      "tag": ""
+    },
+    {
+      "chunkId": 22,
+      "chunkText": "सा हिलाकर टेस्ट करो और वीक पॉइंट्स पहले से फिक्स कर दो। देखा?",
+      "keywords": "Animated for kids explainer: A lightbulb appears over the child's head.",
+      "startTime": 111.77,
+      "endTime": 116.193,
+      "words": [
+        {
+          "word": "सा",
+          "startTime": 111.77,
+          "endTime": 111.863
+        },
+        {
+          "word": "हिलाकर",
+          "startTime": 111.898,
+          "endTime": 112.292
+        },
+        {
+          "word": "टेस्ट",
+          "startTime": 112.374,
+          "endTime": 112.617
+        },
+        {
+          "word": "करो",
+          "startTime": 112.675,
+          "endTime": 112.931
+        },
+        {
+          "word": "और",
+          "startTime": 113.047,
+          "endTime": 113.198
+        },
+        {
+          "word": "वीक",
+          "startTime": 113.279,
+          "endTime": 113.5
+        },
+        {
+          "word": "पॉइंट्स",
+          "startTime": 113.569,
+          "endTime": 113.894
+        },
+        {
+          "word": "पहले",
+          "startTime": 113.964,
+          "endTime": 114.22
+        },
+        {
+          "word": "से",
+          "startTime": 114.266,
+          "endTime": 114.336
+        },
+        {
+          "word": "फिक्स",
+          "startTime": 114.394,
+          "endTime": 114.579
+        },
+        {
+          "word": "कर",
+          "startTime": 114.626,
+          "endTime": 114.73
+        },
+        {
+          "word": "दो।",
+          "startTime": 114.788,
+          "endTime": 115.137
+        },
+        {
+          "word": "देखा?",
+          "startTime": 115.462,
+          "endTime": 115.949
+        }
+      ],
+      "selectedUrl": "generated-nano-batch",
+      "alternateUrls": [],
+      "template": "slideshow",
+      "templateJson": {
+        "path": "batch_gen_1770635298094_22_46830.png"
+      },
+      "tag": ""
+    },
+    {
+      "chunkId": 23,
+      "chunkText": "अच्छे प्रॉब्लम सॉल्वर्स पैनिक नहीं करते। वो काम रहते हैं और स्मार्ट क्वेश्चन्स",
+      "keywords": "Animated for kids explainer: A group of children calmly discussing a problem together, asking each other questions.",
+      "startTime": 116.193,
+      "endTime": 120.431,
+      "words": [
+        {
+          "word": "अच्छे",
+          "startTime": 116.193,
+          "endTime": 116.518
+        },
+        {
+          "word": "प्रॉब्लम",
+          "startTime": 116.565,
+          "endTime": 116.878
+        },
+        {
+          "word": "सॉल्वर्स",
+          "startTime": 116.948,
+          "endTime": 117.273
+        },
+        {
+          "word": "पैनिक",
+          "startTime": 117.331,
+          "endTime": 117.586
+        },
+        {
+          "word": "नहीं",
+          "startTime": 117.644,
+          "endTime": 117.819
+        },
+        {
+          "word": "करते।",
+          "startTime": 117.853,
+          "endTime": 118.353
+        },
+        {
+          "word": "वो",
+          "startTime": 118.678,
+          "endTime": 118.829
+        },
+        {
+          "word": "काम",
+          "startTime": 118.887,
+          "endTime": 119.049
+        },
+        {
+          "word": "रहते",
+          "startTime": 119.131,
+          "endTime": 119.351
+        },
+        {
+          "word": "हैं",
+          "startTime": 119.409,
+          "endTime": 119.537
+        },
+        {
+          "word": "और",
+          "startTime": 119.572,
+          "endTime": 119.63
+        },
+        {
+          "word": "स्मार्ट",
+          "startTime": 119.653,
+          "endTime": 119.932
+        },
+        {
+          "word": "क्वेश्चन्स",
+          "startTime": 119.978,
+          "endTime": 120.385
+        }
+      ],
+      "selectedUrl": "generated-nano-batch",
+      "alternateUrls": [],
+      "template": "slideshow",
+      "templateJson": {
+        "path": "batch_gen_1770635298094_23_292.png"
+      },
+      "tag": ""
+    },
+    {
+      "chunkId": 24,
+      "chunkText": "पूछते हैं: एक्ज़ैक्टली क्या गलत है? मेरे पास कौन से ऑप्शन्स हैं? सबसे",
+      "keywords": "Animated for kids explainer: The child asking smart questions, each question appearing in a thought bubble: What exactly is wrong?, What options do I have?, Which is the safest and fastest option? ",
+      "startTime": 120.431,
+      "endTime": 125.272,
+      "words": [
+        {
+          "word": "पूछते",
+          "startTime": 120.431,
+          "endTime": 120.791
+        },
+        {
+          "word": "हैं:",
+          "startTime": 120.849,
+          "endTime": 121.139
+        },
+        {
+          "word": "एक्ज़ैक्टली",
+          "startTime": 121.418,
+          "endTime": 121.882
+        },
+        {
+          "word": "क्या",
+          "startTime": 121.929,
+          "endTime": 122.115
+        },
+        {
+          "word": "गलत",
+          "startTime": 122.161,
+          "endTime": 122.416
+        },
+        {
+          "word": "है?",
+          "startTime": 122.498,
+          "endTime": 122.765
+        },
+        {
+          "word": "मेरे",
+          "startTime": 122.974,
+          "endTime": 123.171
+        },
+        {
+          "word": "पास",
+          "startTime": 123.206,
+          "endTime": 123.38
+        },
+        {
+          "word": "कौन",
+          "startTime": 123.426,
+          "endTime": 123.612
+        },
+        {
+          "word": "से",
+          "startTime": 123.659,
+          "endTime": 123.74
+        },
+        {
+          "word": "ऑप्शन्स",
+          "startTime": 123.81,
+          "endTime": 124.204
+        },
+        {
+          "word": "हैं?",
+          "startTime": 124.274,
+          "endTime": 124.587
+        },
+        {
+          "word": "सबसे",
+          "startTime": 124.866,
+          "endTime": 125.18
+        }
+      ],
+      "selectedUrl": "generated-nano-batch",
+      "alternateUrls": [],
+      "template": "slideshow",
+      "templateJson": {
+        "path": "batch_gen_1770635298094_24_8499.png"
+      },
+      "tag": ""
+    },
+    {
+      "chunkId": 25,
+      "chunkText": "सेफ और फास्ट ऑप्शन कौन सा है? मैं इससे क्या लर्न कर सकता हूँ?",
+      "keywords": "Animated for kids explainer: The child asking a question: what can I learn from this?",
+      "startTime": 125.272,
+      "endTime": 129.359,
+      "words": [
+        {
+          "word": "सेफ",
+          "startTime": 125.272,
+          "endTime": 125.516
+        },
+        {
+          "word": "और",
+          "startTime": 125.586,
+          "endTime": 125.667
+        },
+        {
+          "word": "फास्ट",
+          "startTime": 125.748,
+          "endTime": 126.039
+        },
+        {
+          "word": "ऑप्शन",
+          "startTime": 126.097,
+          "endTime": 126.364
+        },
+        {
+          "word": "कौन",
+          "startTime": 126.41,
+          "endTime": 126.596
+        },
+        {
+          "word": "सा",
+          "startTime": 126.654,
+          "endTime": 126.77
+        },
+        {
+          "word": "है?",
+          "startTime": 126.828,
+          "endTime": 127.107
+        },
+        {
+          "word": "मैं",
+          "startTime": 127.385,
+          "endTime": 127.548
+        },
+        {
+          "word": "इससे",
+          "startTime": 127.583,
+          "endTime": 127.769
+        },
+        {
+          "word": "क्या",
+          "startTime": 127.827,
+          "endTime": 127.989
+        },
+        {
+          "word": "लर्न",
+          "startTime": 128.07,
+          "endTime": 128.291
+        },
+        {
+          "word": "कर",
+          "startTime": 128.361,
+          "endTime": 128.465
+        },
+        {
+          "word": "सकता",
+          "startTime": 128.523,
+          "endTime": 128.802
+        },
+        {
+          "word": "हूँ?",
+          "startTime": 128.825,
+          "endTime": 129.115
+        }
+      ],
+      "selectedUrl": "generated-nano-batch",
+      "alternateUrls": [],
+      "template": "slideshow",
+      "templateJson": {
+        "path": "batch_gen_1770635298094_25_49177.png"
+      },
+      "tag": ""
+    },
+    {
+      "chunkId": 26,
+      "chunkText": "प्रॉब्लम सॉल्विंग परफेक्ट होने का नाम नहीं है। ये है परसिस्टेन्ट, काम,",
+      "keywords": "Animated for kids explainer: A child continuously learning from mistakes, shown as gears turning, books opening, and lightbulbs flashing.",
+      "startTime": 129.359,
+      "endTime": 133.585,
+      "words": [
+        {
+          "word": "प्रॉब्लम",
+          "startTime": 129.359,
+          "endTime": 129.754
+        },
+        {
+          "word": "सॉल्विंग",
+          "startTime": 129.824,
+          "endTime": 130.183
+        },
+        {
+          "word": "परफेक्ट",
+          "startTime": 130.242,
+          "endTime": 130.613
+        },
+        {
+          "word": "होने",
+          "startTime": 130.659,
+          "endTime": 130.845
+        },
+        {
+          "word": "का",
+          "startTime": 130.892,
+          "endTime": 130.973
+        },
+        {
+          "word": "नाम",
+          "startTime": 131.031,
+          "endTime": 131.217
+        },
+        {
+          "word": "नहीं",
+          "startTime": 131.275,
+          "endTime": 131.472
+        },
+        {
+          "word": "है।",
+          "startTime": 131.53,
+          "endTime": 131.844
+        },
+        {
+          "word": "ये",
+          "startTime": 132.169,
+          "endTime": 132.355
+        },
+        {
+          "word": "है",
+          "startTime": 132.389,
+          "endTime": 132.482
+        },
+        {
+          "word": "परसिस्टेन्ट,",
+          "startTime": 132.564,
+          "endTime": 133.156
+        },
+        {
+          "word": "काम,",
+          "startTime": 133.19,
+          "endTime": 133.539
+        }
+      ],
+      "selectedUrl": "generated-nano-batch",
+      "alternateUrls": [],
+      "template": "slideshow",
+      "templateJson": {
+        "path": "batch_gen_1770635298094_26_76888.png"
+      },
+      "tag": ""
+    },
+    {
+      "chunkId": 27,
+      "chunkText": "और स्मार्ट बनने का तरीका। तो नेक्स्ट टाइम जब भी प्रॉब्लम आए—स्कूल",
+      "keywords": "Animated for kids explainer: The child facing school, home, and friends, and the steps appearing in each location, 'Define, Plan, Try, Check, Improve'.",
+      "startTime": 133.585,
+      "endTime": 138.148,
+      "words": [
+        {
+          "word": "और",
+          "startTime": 133.585,
+          "endTime": 133.701
+        },
+        {
+          "word": "स्मार्ट",
+          "startTime": 133.759,
+          "endTime": 134.084
+        },
+        {
+          "word": "बनने",
+          "startTime": 134.142,
+          "endTime": 134.374
+        },
+        {
+          "word": "का",
+          "startTime": 134.432,
+          "endTime": 134.502
+        },
+        {
+          "word": "तरीका।",
+          "startTime": 134.56,
+          "endTime": 135.129
+        },
+        {
+          "word": "तो",
+          "startTime": 135.454,
+          "endTime": 135.582
+        },
+        {
+          "word": "नेक्स्ट",
+          "startTime": 135.663,
+          "endTime": 135.942
+        },
+        {
+          "word": "टाइम",
+          "startTime": 136.023,
+          "endTime": 136.278
+        },
+        {
+          "word": "जब",
+          "startTime": 136.371,
+          "endTime": 136.58
+        },
+        {
+          "word": "भी",
+          "startTime": 136.65,
+          "endTime": 136.731
+        },
+        {
+          "word": "प्रॉब्लम",
+          "startTime": 136.789,
+          "endTime": 137.138
+        },
+        {
+          "word": "आए—स्कूल",
+          "startTime": 137.207,
+          "endTime": 138.078
+        }
+      ],
+      "selectedUrl": "generated-nano-batch",
+      "alternateUrls": [],
+      "template": "slideshow",
+      "templateJson": {
+        "path": "batch_gen_1770635298094_27_88071.png"
+      },
+      "tag": ""
+    },
+    {
+      "chunkId": 28,
+      "chunkText": "में, घर पर, या दोस्तों के साथ—ये स्टेप्स याद रखना: डिफाइन, प्लान, ट्राय, चेक, इम्प्रूव।",
+      "keywords": "Animated for kids explainer: The final screen: a summary of the 5 steps - define, plan, try, check, improve.",
+      "startTime": 138.148,
+      "endTime": 145.439,
+      "words": [
+        {
+          "word": "में,",
+          "startTime": 138.148,
+          "endTime": 138.287
+        },
+        {
+          "word": "घर",
+          "startTime": 138.333,
+          "endTime": 138.519
+        },
+        {
+          "word": "पर,",
+          "startTime": 138.6,
+          "endTime": 138.775
+        },
+        {
+          "word": "या",
+          "startTime": 138.821,
+          "endTime": 138.902
+        },
+        {
+          "word": "दोस्तों",
+          "startTime": 138.96,
+          "endTime": 139.332
+        },
+        {
+          "word": "के",
+          "startTime": 139.355,
+          "endTime": 139.436
+        },
+        {
+          "word": "साथ—ये",
+          "startTime": 139.494,
+          "endTime": 140.446
+        },
+        {
+          "word": "स्टेप्स",
+          "startTime": 140.481,
+          "endTime": 140.853
+        },
+        {
+          "word": "याद",
+          "startTime": 140.934,
+          "endTime": 141.12
+        },
+        {
+          "word": "रखना:",
+          "startTime": 141.166,
+          "endTime": 141.642
+        },
+        {
+          "word": "डिफाइन,",
+          "startTime": 141.886,
+          "endTime": 142.525
+        },
+        {
+          "word": "प्लान,",
+          "startTime": 142.699,
+          "endTime": 143.21
+        },
+        {
+          "word": "ट्राय,",
+          "startTime": 143.384,
+          "endTime": 143.918
+        },
+        {
+          "word": "चेक,",
+          "startTime": 144.127,
+          "endTime": 144.614
+        },
+        {
+          "word": "इम्प्रूव।",
+          "startTime": 144.789,
+          "endTime": 145.439
+        }
+      ],
+      "selectedUrl": "public/veo_video_user_1770635250214_ddfebpsth_28.mp4",
+      "alternateUrls": [],
+      "template": "slideshow",
+      "templateJson": {
+        "path": "veo_video_user_1770635250214_ddfebpsth_28.mp4"
+      },
+      "tag": ""
+    }
+  ],
   "words": [
     {
-      "word": "dhirubai",
+      "word": "हाय",
       "start": 0,
-      "end": 0.615
+      "end": 0.337
     },
     {
-      "word": "was",
-      "start": 0.615,
-      "end": 0.824
+      "word": "एवरीवन!",
+      "start": 0.406,
+      "end": 1.138
     },
     {
-      "word": "a",
-      "start": 0.824,
-      "end": 0.894
+      "word": "आज",
+      "start": 1.521,
+      "end": 1.788
     },
     {
-      "word": "man,",
-      "start": 0.894,
-      "end": 1.265
+      "word": "हम",
+      "start": 1.846,
+      "end": 1.974
     },
     {
-      "word": "who",
-      "start": 1.265,
-      "end": 1.428
+      "word": "एक",
+      "start": 2.043,
+      "end": 2.101
     },
     {
-      "word": "is",
-      "start": 1.428,
-      "end": 1.579
+      "word": "बहुत",
+      "start": 2.194,
+      "end": 2.589
     },
     {
-      "word": "behind",
-      "start": 1.579,
-      "end": 1.997
+      "word": "काम",
+      "start": 2.67,
+      "end": 2.937
     },
     {
-      "word": "this",
-      "start": 1.997,
-      "end": 2.218
+      "word": "का",
+      "start": 3.019,
+      "end": 3.1
     },
     {
-      "word": "billionare",
-      "start": 2.218,
-      "end": 2.972
+      "word": "स्किल",
+      "start": 3.146,
+      "end": 3.402
     },
     {
-      "word": "called",
-      "start": 2.972,
-      "end": 3.286
+      "word": "सीखेंगे:",
+      "start": 3.46,
+      "end": 4.133
     },
     {
-      "word": "mukesh",
-      "start": 3.286,
-      "end": 3.738
+      "word": "प्रॉब्लम",
+      "start": 4.516,
+      "end": 4.946
     },
     {
-      "word": "ambani",
-      "start": 3.738,
-      "end": 4.505
+      "word": "सॉल्विंग।",
+      "start": 5.027,
+      "end": 5.584
+    },
+    {
+      "word": "प्रॉब्लम",
+      "start": 6.188,
+      "end": 6.594
+    },
+    {
+      "word": "वो",
+      "start": 6.687,
+      "end": 6.85
+    },
+    {
+      "word": "सिचुएशन",
+      "start": 6.92,
+      "end": 7.442
+    },
+    {
+      "word": "है",
+      "start": 7.512,
+      "end": 7.663
+    },
+    {
+      "word": "जहाँ",
+      "start": 7.779,
+      "end": 7.999
+    },
+    {
+      "word": "चीज़ें",
+      "start": 8.057,
+      "end": 8.371
+    },
+    {
+      "word": "वैसी",
+      "start": 8.429,
+      "end": 8.777
+    },
+    {
+      "word": "नहीं",
+      "start": 8.847,
+      "end": 9.067
+    },
+    {
+      "word": "हो",
+      "start": 9.114,
+      "end": 9.23
+    },
+    {
+      "word": "रहीं",
+      "start": 9.276,
+      "end": 9.613
+    },
+    {
+      "word": "जैसी",
+      "start": 9.938,
+      "end": 10.252
+    },
+    {
+      "word": "आप",
+      "start": 10.321,
+      "end": 10.437
+    },
+    {
+      "word": "चाहते",
+      "start": 10.507,
+      "end": 10.809
+    },
+    {
+      "word": "हो।",
+      "start": 10.855,
+      "end": 11.169
+    },
+    {
+      "word": "और",
+      "start": 11.494,
+      "end": 11.668
+    },
+    {
+      "word": "प्रॉब्लम",
+      "start": 11.738,
+      "end": 12.121
+    },
+    {
+      "word": "सॉल्विंग",
+      "start": 12.19,
+      "end": 12.539
+    },
+    {
+      "word": "का",
+      "start": 12.574,
+      "end": 12.643
+    },
+    {
+      "word": "मतलब",
+      "start": 12.69,
+      "end": 12.992
+    },
+    {
+      "word": "है",
+      "start": 13.061,
+      "end": 13.282
+    },
+    {
+      "word": "स्टेप",
+      "start": 13.665,
+      "end": 14.071
+    },
+    {
+      "word": "बाय",
+      "start": 14.187,
+      "end": 14.443
+    },
+    {
+      "word": "स्टेप",
+      "start": 14.512,
+      "end": 14.838
+    },
+    {
+      "word": "सोचकर",
+      "start": 14.896,
+      "end": 15.453
+    },
+    {
+      "word": "एक",
+      "start": 15.778,
+      "end": 15.952
+    },
+    {
+      "word": "क्लियर",
+      "start": 16.022,
+      "end": 16.382
+    },
+    {
+      "word": "और",
+      "start": 16.498,
+      "end": 16.637
+    },
+    {
+      "word": "प्रैक्टिकल",
+      "start": 16.753,
+      "end": 17.276
+    },
+    {
+      "word": "सॉल्यूशन",
+      "start": 17.345,
+      "end": 17.821
+    },
+    {
+      "word": "ढूँढना।",
+      "start": 17.868,
+      "end": 18.46
+    },
+    {
+      "word": "ये",
+      "start": 18.843,
+      "end": 18.971
+    },
+    {
+      "word": "बिलकुल",
+      "start": 19.017,
+      "end": 19.354
+    },
+    {
+      "word": "डिटेक्टिव",
+      "start": 19.435,
+      "end": 19.899
+    },
+    {
+      "word": "बनने",
+      "start": 19.958,
+      "end": 20.201
+    },
+    {
+      "word": "जैसा",
+      "start": 20.259,
+      "end": 20.561
+    },
+    {
+      "word": "है—क्लूज़",
+      "start": 20.631,
+      "end": 21.455
+    },
+    {
+      "word": "देखो,",
+      "start": 21.502,
+      "end": 22.036
+    },
+    {
+      "word": "आइडियाज़",
+      "start": 22.245,
+      "end": 22.709
+    },
+    {
+      "word": "टेस्ट",
+      "start": 22.756,
+      "end": 22.999
+    },
+    {
+      "word": "करो,",
+      "start": 23.046,
+      "end": 23.51
+    },
+    {
+      "word": "और",
+      "start": 23.719,
+      "end": 23.858
+    },
+    {
+      "word": "जो",
+      "start": 23.928,
+      "end": 24.079
+    },
+    {
+      "word": "काम",
+      "start": 24.137,
+      "end": 24.346
+    },
+    {
+      "word": "करे",
+      "start": 24.416,
+      "end": 24.613
+    },
+    {
+      "word": "वो",
+      "start": 24.66,
+      "end": 24.752
+    },
+    {
+      "word": "चूज़",
+      "start": 24.822,
+      "end": 25.078
+    },
+    {
+      "word": "करो।",
+      "start": 25.112,
+      "end": 25.542
+    },
+    {
+      "word": "आज",
+      "start": 25.925,
+      "end": 26.157
+    },
+    {
+      "word": "एक",
+      "start": 26.239,
+      "end": 26.389
+    },
+    {
+      "word": "आसान",
+      "start": 26.482,
+      "end": 26.831
+    },
+    {
+      "word": "मेथड",
+      "start": 26.9,
+      "end": 27.225
+    },
+    {
+      "word": "याद",
+      "start": 27.283,
+      "end": 27.458
+    },
+    {
+      "word": "रखो:",
+      "start": 27.504,
+      "end": 28.003
+    },
+    {
+      "word": "डिफाइन,",
+      "start": 28.282,
+      "end": 28.758
+    },
+    {
+      "word": "प्लान,",
+      "start": 28.793,
+      "end": 29.153
+    },
+    {
+      "word": "ट्राय,",
+      "start": 29.187,
+      "end": 29.524
+    },
+    {
+      "word": "चेक,",
+      "start": 29.582,
+      "end": 29.849
+    },
+    {
+      "word": "इम्प्रूव।",
+      "start": 29.872,
+      "end": 30.453
+    },
+    {
+      "word": "चलो",
+      "start": 30.836,
+      "end": 31.068
+    },
+    {
+      "word": "एक",
+      "start": 31.115,
+      "end": 31.184
+    },
+    {
+      "word": "एग्ज़ाम्पल",
+      "start": 31.242,
+      "end": 31.649
+    },
+    {
+      "word": "लेते",
+      "start": 31.684,
+      "end": 31.904
+    },
+    {
+      "word": "हैं।",
+      "start": 31.951,
+      "end": 32.241
+    },
+    {
+      "word": "सोचो",
+      "start": 32.566,
+      "end": 32.891
+    },
+    {
+      "word": "आप",
+      "start": 32.984,
+      "end": 33.123
+    },
+    {
+      "word": "स्कूल",
+      "start": 33.181,
+      "end": 33.448
+    },
+    {
+      "word": "पहुँचे",
+      "start": 33.506,
+      "end": 33.913
+    },
+    {
+      "word": "और",
+      "start": 34.354,
+      "end": 34.493
+    },
+    {
+      "word": "पता",
+      "start": 34.551,
+      "end": 34.737
+    },
+    {
+      "word": "चला",
+      "start": 34.807,
+      "end": 35.016
+    },
+    {
+      "word": "कि",
+      "start": 35.074,
+      "end": 35.155
+    },
+    {
+      "word": "आप",
+      "start": 35.271,
+      "end": 35.434
+    },
+    {
+      "word": "मैथ्स",
+      "start": 35.515,
+      "end": 35.794
+    },
+    {
+      "word": "नोटबुक",
+      "start": 35.863,
+      "end": 36.235
+    },
+    {
+      "word": "घर",
+      "start": 36.27,
+      "end": 36.409
+    },
+    {
+      "word": "भूल",
+      "start": 36.479,
+      "end": 36.699
+    },
+    {
+      "word": "गए।",
+      "start": 36.757,
+      "end": 37.105
+    },
+    {
+      "word": "सबसे",
+      "start": 37.489,
+      "end": 37.779
+    },
+    {
+      "word": "पहले",
+      "start": 37.837,
+      "end": 38.069
+    },
+    {
+      "word": "डिफाइन:",
+      "start": 38.127,
+      "end": 38.684
+    },
+    {
+      "word": "“मेरे",
+      "start": 39.01,
+      "end": 39.335
+    },
+    {
+      "word": "पास",
+      "start": 39.381,
+      "end": 39.567
+    },
+    {
+      "word": "नोटबुक",
+      "start": 39.636,
+      "end": 39.985
+    },
+    {
+      "word": "नहीं",
+      "start": 40.043,
+      "end": 40.229
+    },
+    {
+      "word": "है,",
+      "start": 40.275,
+      "end": 40.542
+    },
+    {
+      "word": "इसलिए",
+      "start": 40.751,
+      "end": 41.123
+    },
+    {
+      "word": "मैं",
+      "start": 41.181,
+      "end": 41.285
+    },
+    {
+      "word": "क्लास",
+      "start": 41.332,
+      "end": 41.633
+    },
+    {
+      "word": "में",
+      "start": 41.703,
+      "end": 41.796
+    },
+    {
+      "word": "ठीक",
+      "start": 41.854,
+      "end": 42.028
+    },
+    {
+      "word": "से",
+      "start": 42.086,
+      "end": 42.156
+    },
+    {
+      "word": "फॉलो",
+      "start": 42.214,
+      "end": 42.446
+    },
+    {
+      "word": "नहीं",
+      "start": 42.504,
+      "end": 42.69
+    },
+    {
+      "word": "कर",
+      "start": 42.725,
+      "end": 42.829
+    },
+    {
+      "word": "पाऊँगा।”",
+      "start": 42.887,
+      "end": 43.468
+    },
+    {
+      "word": "फिर",
+      "start": 43.979,
+      "end": 44.176
+    },
+    {
+      "word": "प्लान:",
+      "start": 44.234,
+      "end": 44.71
+    },
+    {
+      "word": "ऑप्शन्स",
+      "start": 45.151,
+      "end": 45.755
+    },
+    {
+      "word": "सोचो।",
+      "start": 45.906,
+      "end": 46.521
+    },
+    {
+      "word": "आप",
+      "start": 46.846,
+      "end": 47.02
+    },
+    {
+      "word": "फ्रेंड",
+      "start": 47.102,
+      "end": 47.357
+    },
+    {
+      "word": "की",
+      "start": 47.427,
+      "end": 47.508
+    },
+    {
+      "word": "नोटबुक",
+      "start": 47.566,
+      "end": 47.938
+    },
+    {
+      "word": "बॉरो",
+      "start": 47.996,
+      "end": 48.228
+    },
+    {
+      "word": "कर",
+      "start": 48.274,
+      "end": 48.39
+    },
+    {
+      "word": "सकते",
+      "start": 48.448,
+      "end": 48.739
+    },
+    {
+      "word": "हो,",
+      "start": 48.797,
+      "end": 49.145
+    },
+    {
+      "word": "लूज़",
+      "start": 49.389,
+      "end": 49.726
+    },
+    {
+      "word": "शीट्स",
+      "start": 49.784,
+      "end": 50.074
+    },
+    {
+      "word": "पर",
+      "start": 50.143,
+      "end": 50.26
+    },
+    {
+      "word": "लिख",
+      "start": 50.329,
+      "end": 50.445
+    },
+    {
+      "word": "सकते",
+      "start": 50.503,
+      "end": 50.794
+    },
+    {
+      "word": "हो,",
+      "start": 50.852,
+      "end": 51.223
+    },
+    {
+      "word": "टीचर",
+      "start": 51.467,
+      "end": 51.792
+    },
+    {
+      "word": "से",
+      "start": 51.862,
+      "end": 51.943
+    },
+    {
+      "word": "कुछ",
+      "start": 52.001,
+      "end": 52.164
+    },
+    {
+      "word": "मिनट",
+      "start": 52.233,
+      "end": 52.443
+    },
+    {
+      "word": "माँगकर",
+      "start": 52.501,
+      "end": 52.826
+    },
+    {
+      "word": "क्वेश्चन्स",
+      "start": 52.884,
+      "end": 53.325
+    },
+    {
+      "word": "नोट",
+      "start": 53.395,
+      "end": 53.58
+    },
+    {
+      "word": "कर",
+      "start": 53.627,
+      "end": 53.743
+    },
+    {
+      "word": "सकते",
+      "start": 53.801,
+      "end": 54.091
+    },
+    {
+      "word": "हो,",
+      "start": 54.149,
+      "end": 54.486
+    },
+    {
+      "word": "या",
+      "start": 54.73,
+      "end": 54.892
+    },
+    {
+      "word": "आज",
+      "start": 54.974,
+      "end": 55.241
+    },
+    {
+      "word": "टेक्स्टबुक",
+      "start": 55.357,
+      "end": 55.879
+    },
+    {
+      "word": "से",
+      "start": 55.937,
+      "end": 56.019
+    },
+    {
+      "word": "काम",
+      "start": 56.077,
+      "end": 56.251
+    },
+    {
+      "word": "चला",
+      "start": 56.32,
+      "end": 56.518
+    },
+    {
+      "word": "सकते",
+      "start": 56.576,
+      "end": 56.854
+    },
+    {
+      "word": "हो।",
+      "start": 56.901,
+      "end": 57.18
+    },
+    {
+      "word": "अब",
+      "start": 57.389,
+      "end": 57.563
+    },
+    {
+      "word": "ट्राय:",
+      "start": 57.644,
+      "end": 58.097
+    },
+    {
+      "word": "बेस्ट",
+      "start": 58.306,
+      "end": 58.596
+    },
+    {
+      "word": "ऑप्शन",
+      "start": 58.666,
+      "end": 58.991
+    },
+    {
+      "word": "चूज़",
+      "start": 59.049,
+      "end": 59.246
+    },
+    {
+      "word": "करो।",
+      "start": 59.281,
+      "end": 59.676
+    },
+    {
+      "word": "बेस्ट",
+      "start": 60.001,
+      "end": 60.279
+    },
+    {
+      "word": "ऑप्शन",
+      "start": 60.349,
+      "end": 60.721
+    },
+    {
+      "word": "ये",
+      "start": 60.837,
+      "end": 60.964
+    },
+    {
+      "word": "हो",
+      "start": 60.999,
+      "end": 61.092
+    },
+    {
+      "word": "सकता",
+      "start": 61.15,
+      "end": 61.452
+    },
+    {
+      "word": "है—क्लास",
+      "start": 61.51,
+      "end": 62.346
+    },
+    {
+      "word": "के",
+      "start": 62.416,
+      "end": 62.497
+    },
+    {
+      "word": "दौरान",
+      "start": 62.555,
+      "end": 62.892
+    },
+    {
+      "word": "फ्रेंड",
+      "start": 63.008,
+      "end": 63.286
+    },
+    {
+      "word": "की",
+      "start": 63.356,
+      "end": 63.449
+    },
+    {
+      "word": "नोटबुक",
+      "start": 63.519,
+      "end": 63.913
+    },
+    {
+      "word": "बॉरो",
+      "start": 63.983,
+      "end": 64.285
+    },
+    {
+      "word": "करके",
+      "start": 64.343,
+      "end": 64.784
+    },
+    {
+      "word": "सिर्फ",
+      "start": 65.109,
+      "end": 65.446
+    },
+    {
+      "word": "इम्पोर्टेन्ट",
+      "start": 65.562,
+      "end": 66.177
+    },
+    {
+      "word": "पॉइंट्स",
+      "start": 66.247,
+      "end": 66.572
+    },
+    {
+      "word": "कॉपी",
+      "start": 66.618,
+      "end": 66.874
+    },
+    {
+      "word": "करना।",
+      "start": 66.92,
+      "end": 67.385
+    },
+    {
+      "word": "फिर",
+      "start": 67.826,
+      "end": 68.012
+    },
+    {
+      "word": "चेक:",
+      "start": 68.093,
+      "end": 68.534
+    },
+    {
+      "word": "क्या",
+      "start": 68.975,
+      "end": 69.149
+    },
+    {
+      "word": "ये",
+      "start": 69.231,
+      "end": 69.335
+    },
+    {
+      "word": "काम",
+      "start": 69.37,
+      "end": 69.556
+    },
+    {
+      "word": "किया?",
+      "start": 69.637,
+      "end": 70.078
+    },
+    {
+      "word": "हाँ,",
+      "start": 70.461,
+      "end": 70.844
+    },
+    {
+      "word": "आप",
+      "start": 70.995,
+      "end": 71.169
+    },
+    {
+      "word": "लेसन",
+      "start": 71.239,
+      "end": 71.494
+    },
+    {
+      "word": "मिस",
+      "start": 71.541,
+      "end": 71.669
+    },
+    {
+      "word": "नहीं",
+      "start": 71.75,
+      "end": 71.936
+    },
+    {
+      "word": "करोगे।",
+      "start": 71.959,
+      "end": 72.528
+    },
+    {
+      "word": "और",
+      "start": 72.679,
+      "end": 72.83
+    },
+    {
+      "word": "अंत",
+      "start": 72.888,
+      "end": 73.073
+    },
+    {
+      "word": "में",
+      "start": 73.143,
+      "end": 73.248
+    },
+    {
+      "word": "इम्प्रूव:",
+      "start": 73.306,
+      "end": 73.956
+    },
+    {
+      "word": "नेक्स्ट",
+      "start": 74.234,
+      "end": 74.501
+    },
+    {
+      "word": "टाइम",
+      "start": 74.536,
+      "end": 74.734
+    },
+    {
+      "word": "ये",
+      "start": 74.815,
+      "end": 74.896
+    },
+    {
+      "word": "अवॉइड",
+      "start": 74.931,
+      "end": 75.21
+    },
+    {
+      "word": "कैसे",
+      "start": 75.256,
+      "end": 75.5
+    },
+    {
+      "word": "करें?",
+      "start": 75.558,
+      "end": 75.988
+    },
+    {
+      "word": "रात",
+      "start": 76.371,
+      "end": 76.603
+    },
+    {
+      "word": "को",
+      "start": 76.661,
+      "end": 76.754
+    },
+    {
+      "word": "बैग",
+      "start": 76.823,
+      "end": 77.021
+    },
+    {
+      "word": "पैक",
+      "start": 77.09,
+      "end": 77.311
+    },
+    {
+      "word": "करो,",
+      "start": 77.334,
+      "end": 77.671
+    },
+    {
+      "word": "एक",
+      "start": 77.741,
+      "end": 77.868
+    },
+    {
+      "word": "चेकलिस्ट",
+      "start": 77.938,
+      "end": 78.333
+    },
+    {
+      "word": "बनाओ,",
+      "start": 78.391,
+      "end": 78.693
+    },
+    {
+      "word": "या",
+      "start": 78.727,
+      "end": 78.809
+    },
+    {
+      "word": "रिमाइंडर",
+      "start": 78.844,
+      "end": 79.262
+    },
+    {
+      "word": "लगाओ।",
+      "start": 79.308,
+      "end": 79.877
+    },
+    {
+      "word": "अब",
+      "start": 80.028,
+      "end": 80.202
+    },
+    {
+      "word": "एक",
+      "start": 80.353,
+      "end": 80.539
+    },
+    {
+      "word": "और",
+      "start": 80.655,
+      "end": 80.736
+    },
+    {
+      "word": "एग्ज़ाम्पल",
+      "start": 80.794,
+      "end": 81.212
+    },
+    {
+      "word": "देखते",
+      "start": 81.258,
+      "end": 81.572
+    },
+    {
+      "word": "हैं।",
+      "start": 81.618,
+      "end": 81.92
+    },
+    {
+      "word": "मान",
+      "start": 82.245,
+      "end": 82.477
+    },
+    {
+      "word": "लो",
+      "start": 82.536,
+      "end": 82.733
+    },
+    {
+      "word": "कल",
+      "start": 82.942,
+      "end": 83.162
+    },
+    {
+      "word": "साइंस",
+      "start": 83.255,
+      "end": 83.522
+    },
+    {
+      "word": "प्रोजेक्ट",
+      "start": 83.569,
+      "end": 83.917
+    },
+    {
+      "word": "सबमिट",
+      "start": 83.987,
+      "end": 84.335
+    },
+    {
+      "word": "करना",
+      "start": 84.393,
+      "end": 84.66
+    },
+    {
+      "word": "है,",
+      "start": 84.718,
+      "end": 85.032
+    },
+    {
+      "word": "लेकिन",
+      "start": 85.275,
+      "end": 85.531
+    },
+    {
+      "word": "आपका",
+      "start": 85.589,
+      "end": 85.798
+    },
+    {
+      "word": "मॉडल",
+      "start": 85.856,
+      "end": 86.146
+    },
+    {
+      "word": "बार-बार",
+      "start": 86.239,
+      "end": 86.692
+    },
+    {
+      "word": "टूट",
+      "start": 86.738,
+      "end": 86.97
+    },
+    {
+      "word": "रहा",
+      "start": 87.017,
+      "end": 87.203
+    },
+    {
+      "word": "है।",
+      "start": 87.261,
+      "end": 87.609
+    },
+    {
+      "word": "डिफाइन:",
+      "start": 87.992,
+      "end": 88.538
+    },
+    {
+      "word": "“मेरा",
+      "start": 88.909,
+      "end": 89.223
+    },
+    {
+      "word": "मॉडल",
+      "start": 89.269,
+      "end": 89.513
+    },
+    {
+      "word": "स्टेबल",
+      "start": 89.559,
+      "end": 89.861
+    },
+    {
+      "word": "नहीं",
+      "start": 89.908,
+      "end": 90.105
+    },
+    {
+      "word": "है।”",
+      "start": 90.175,
+      "end": 90.477
+    },
+    {
+      "word": "प्लान:",
+      "start": 91.069,
+      "end": 91.58
+    },
+    {
+      "word": "कारण",
+      "start": 91.812,
+      "end": 92.241
+    },
+    {
+      "word": "ढूँढो—ग्लू",
+      "start": 92.311,
+      "end": 93.147
+    },
+    {
+      "word": "वीक",
+      "start": 93.228,
+      "end": 93.449
+    },
+    {
+      "word": "है,",
+      "start": 93.542,
+      "end": 93.739
+    },
+    {
+      "word": "ऊपर",
+      "start": 93.786,
+      "end": 94.064
+    },
+    {
+      "word": "का",
+      "start": 94.111,
+      "end": 94.192
+    },
+    {
+      "word": "हिस्सा",
+      "start": 94.238,
+      "end": 94.517
+    },
+    {
+      "word": "हेवी",
+      "start": 94.575,
+      "end": 94.842
+    },
+    {
+      "word": "है,",
+      "start": 94.912,
+      "end": 95.097
+    },
+    {
+      "word": "या",
+      "start": 95.121,
+      "end": 95.225
+    },
+    {
+      "word": "बेस",
+      "start": 95.295,
+      "end": 95.515
+    },
+    {
+      "word": "पतला",
+      "start": 95.562,
+      "end": 95.875
+    },
+    {
+      "word": "है।",
+      "start": 95.933,
+      "end": 96.2
+    },
+    {
+      "word": "अब",
+      "start": 96.63,
+      "end": 96.804
+    },
+    {
+      "word": "सॉल्यूशन्स",
+      "start": 96.885,
+      "end": 97.443
+    },
+    {
+      "word": "सोचो:",
+      "start": 97.466,
+      "end": 98.058
+    },
+    {
+      "word": "स्ट्रॉन्गर",
+      "start": 98.337,
+      "end": 98.836
+    },
+    {
+      "word": "टेप",
+      "start": 98.906,
+      "end": 99.126
+    },
+    {
+      "word": "यूज़",
+      "start": 99.207,
+      "end": 99.405
+    },
+    {
+      "word": "करो,",
+      "start": 99.44,
+      "end": 99.788
+    },
+    {
+      "word": "सपोर्ट",
+      "start": 99.846,
+      "end": 100.229
+    },
+    {
+      "word": "स्टिक्स",
+      "start": 100.287,
+      "end": 100.566
+    },
+    {
+      "word": "लगाओ,",
+      "start": 100.624,
+      "end": 101.042
+    },
+    {
+      "word": "बेस",
+      "start": 101.088,
+      "end": 101.344
+    },
+    {
+      "word": "वाइड",
+      "start": 101.413,
+      "end": 101.622
+    },
+    {
+      "word": "करो,",
+      "start": 101.669,
+      "end": 102.098
+    },
+    {
+      "word": "या",
+      "start": 102.261,
+      "end": 102.377
+    },
+    {
+      "word": "ऊपर",
+      "start": 102.447,
+      "end": 102.725
+    },
+    {
+      "word": "का",
+      "start": 102.783,
+      "end": 102.865
+    },
+    {
+      "word": "वेट",
+      "start": 102.923,
+      "end": 103.12
+    },
+    {
+      "word": "कम",
+      "start": 103.178,
+      "end": 103.306
+    },
+    {
+      "word": "करो।",
+      "start": 103.376,
+      "end": 103.794
+    },
+    {
+      "word": "ट्राय:",
+      "start": 104.119,
+      "end": 104.665
+    },
+    {
+      "word": "बेस",
+      "start": 104.781,
+      "end": 105.048
+    },
+    {
+      "word": "वाइड",
+      "start": 105.117,
+      "end": 105.315
+    },
+    {
+      "word": "करो",
+      "start": 105.373,
+      "end": 105.628
+    },
+    {
+      "word": "और",
+      "start": 105.744,
+      "end": 105.86
+    },
+    {
+      "word": "सपोर्ट",
+      "start": 105.918,
+      "end": 106.255
+    },
+    {
+      "word": "स्टिक्स",
+      "start": 106.29,
+      "end": 106.569
+    },
+    {
+      "word": "जोड़ो।",
+      "start": 106.638,
+      "end": 107.126
+    },
+    {
+      "word": "चेक:",
+      "start": 107.822,
+      "end": 108.287
+    },
+    {
+      "word": "अब",
+      "start": 108.612,
+      "end": 108.751
+    },
+    {
+      "word": "मॉडल",
+      "start": 108.798,
+      "end": 109.065
+    },
+    {
+      "word": "ठीक",
+      "start": 109.123,
+      "end": 109.262
+    },
+    {
+      "word": "से",
+      "start": 109.309,
+      "end": 109.378
+    },
+    {
+      "word": "खड़ा",
+      "start": 109.425,
+      "end": 109.622
+    },
+    {
+      "word": "है?",
+      "start": 109.668,
+      "end": 109.947
+    },
+    {
+      "word": "इम्प्रूव:",
+      "start": 110.156,
+      "end": 110.818
+    },
+    {
+      "word": "टेबल",
+      "start": 111.062,
+      "end": 111.352
+    },
+    {
+      "word": "हल्का",
+      "start": 111.41,
+      "end": 111.712
+    },
+    {
+      "word": "सा",
+      "start": 111.77,
+      "end": 111.863
+    },
+    {
+      "word": "हिलाकर",
+      "start": 111.898,
+      "end": 112.292
+    },
+    {
+      "word": "टेस्ट",
+      "start": 112.374,
+      "end": 112.617
+    },
+    {
+      "word": "करो",
+      "start": 112.675,
+      "end": 112.931
+    },
+    {
+      "word": "और",
+      "start": 113.047,
+      "end": 113.198
+    },
+    {
+      "word": "वीक",
+      "start": 113.279,
+      "end": 113.5
+    },
+    {
+      "word": "पॉइंट्स",
+      "start": 113.569,
+      "end": 113.894
+    },
+    {
+      "word": "पहले",
+      "start": 113.964,
+      "end": 114.22
+    },
+    {
+      "word": "से",
+      "start": 114.266,
+      "end": 114.336
+    },
+    {
+      "word": "फिक्स",
+      "start": 114.394,
+      "end": 114.579
+    },
+    {
+      "word": "कर",
+      "start": 114.626,
+      "end": 114.73
+    },
+    {
+      "word": "दो।",
+      "start": 114.788,
+      "end": 115.137
+    },
+    {
+      "word": "देखा?",
+      "start": 115.462,
+      "end": 115.949
+    },
+    {
+      "word": "अच्छे",
+      "start": 116.193,
+      "end": 116.518
+    },
+    {
+      "word": "प्रॉब्लम",
+      "start": 116.565,
+      "end": 116.878
+    },
+    {
+      "word": "सॉल्वर्स",
+      "start": 116.948,
+      "end": 117.273
+    },
+    {
+      "word": "पैनिक",
+      "start": 117.331,
+      "end": 117.586
+    },
+    {
+      "word": "नहीं",
+      "start": 117.644,
+      "end": 117.819
+    },
+    {
+      "word": "करते।",
+      "start": 117.853,
+      "end": 118.353
+    },
+    {
+      "word": "वो",
+      "start": 118.678,
+      "end": 118.829
+    },
+    {
+      "word": "काम",
+      "start": 118.887,
+      "end": 119.049
+    },
+    {
+      "word": "रहते",
+      "start": 119.131,
+      "end": 119.351
+    },
+    {
+      "word": "हैं",
+      "start": 119.409,
+      "end": 119.537
+    },
+    {
+      "word": "और",
+      "start": 119.572,
+      "end": 119.63
+    },
+    {
+      "word": "स्मार्ट",
+      "start": 119.653,
+      "end": 119.932
+    },
+    {
+      "word": "क्वेश्चन्स",
+      "start": 119.978,
+      "end": 120.385
+    },
+    {
+      "word": "पूछते",
+      "start": 120.431,
+      "end": 120.791
+    },
+    {
+      "word": "हैं:",
+      "start": 120.849,
+      "end": 121.139
+    },
+    {
+      "word": "एक्ज़ैक्टली",
+      "start": 121.418,
+      "end": 121.882
+    },
+    {
+      "word": "क्या",
+      "start": 121.929,
+      "end": 122.115
+    },
+    {
+      "word": "गलत",
+      "start": 122.161,
+      "end": 122.416
+    },
+    {
+      "word": "है?",
+      "start": 122.498,
+      "end": 122.765
+    },
+    {
+      "word": "मेरे",
+      "start": 122.974,
+      "end": 123.171
+    },
+    {
+      "word": "पास",
+      "start": 123.206,
+      "end": 123.38
+    },
+    {
+      "word": "कौन",
+      "start": 123.426,
+      "end": 123.612
+    },
+    {
+      "word": "से",
+      "start": 123.659,
+      "end": 123.74
+    },
+    {
+      "word": "ऑप्शन्स",
+      "start": 123.81,
+      "end": 124.204
+    },
+    {
+      "word": "हैं?",
+      "start": 124.274,
+      "end": 124.587
+    },
+    {
+      "word": "सबसे",
+      "start": 124.866,
+      "end": 125.18
+    },
+    {
+      "word": "सेफ",
+      "start": 125.272,
+      "end": 125.516
+    },
+    {
+      "word": "और",
+      "start": 125.586,
+      "end": 125.667
+    },
+    {
+      "word": "फास्ट",
+      "start": 125.748,
+      "end": 126.039
+    },
+    {
+      "word": "ऑप्शन",
+      "start": 126.097,
+      "end": 126.364
+    },
+    {
+      "word": "कौन",
+      "start": 126.41,
+      "end": 126.596
+    },
+    {
+      "word": "सा",
+      "start": 126.654,
+      "end": 126.77
+    },
+    {
+      "word": "है?",
+      "start": 126.828,
+      "end": 127.107
+    },
+    {
+      "word": "मैं",
+      "start": 127.385,
+      "end": 127.548
+    },
+    {
+      "word": "इससे",
+      "start": 127.583,
+      "end": 127.769
+    },
+    {
+      "word": "क्या",
+      "start": 127.827,
+      "end": 127.989
+    },
+    {
+      "word": "लर्न",
+      "start": 128.07,
+      "end": 128.291
+    },
+    {
+      "word": "कर",
+      "start": 128.361,
+      "end": 128.465
+    },
+    {
+      "word": "सकता",
+      "start": 128.523,
+      "end": 128.802
+    },
+    {
+      "word": "हूँ?",
+      "start": 128.825,
+      "end": 129.115
+    },
+    {
+      "word": "प्रॉब्लम",
+      "start": 129.359,
+      "end": 129.754
+    },
+    {
+      "word": "सॉल्विंग",
+      "start": 129.824,
+      "end": 130.183
+    },
+    {
+      "word": "परफेक्ट",
+      "start": 130.242,
+      "end": 130.613
+    },
+    {
+      "word": "होने",
+      "start": 130.659,
+      "end": 130.845
+    },
+    {
+      "word": "का",
+      "start": 130.892,
+      "end": 130.973
+    },
+    {
+      "word": "नाम",
+      "start": 131.031,
+      "end": 131.217
+    },
+    {
+      "word": "नहीं",
+      "start": 131.275,
+      "end": 131.472
+    },
+    {
+      "word": "है।",
+      "start": 131.53,
+      "end": 131.844
+    },
+    {
+      "word": "ये",
+      "start": 132.169,
+      "end": 132.355
+    },
+    {
+      "word": "है",
+      "start": 132.389,
+      "end": 132.482
+    },
+    {
+      "word": "परसिस्टेन्ट,",
+      "start": 132.564,
+      "end": 133.156
+    },
+    {
+      "word": "काम,",
+      "start": 133.19,
+      "end": 133.539
+    },
+    {
+      "word": "और",
+      "start": 133.585,
+      "end": 133.701
+    },
+    {
+      "word": "स्मार्ट",
+      "start": 133.759,
+      "end": 134.084
+    },
+    {
+      "word": "बनने",
+      "start": 134.142,
+      "end": 134.374
+    },
+    {
+      "word": "का",
+      "start": 134.432,
+      "end": 134.502
+    },
+    {
+      "word": "तरीका।",
+      "start": 134.56,
+      "end": 135.129
+    },
+    {
+      "word": "तो",
+      "start": 135.454,
+      "end": 135.582
+    },
+    {
+      "word": "नेक्स्ट",
+      "start": 135.663,
+      "end": 135.942
+    },
+    {
+      "word": "टाइम",
+      "start": 136.023,
+      "end": 136.278
+    },
+    {
+      "word": "जब",
+      "start": 136.371,
+      "end": 136.58
+    },
+    {
+      "word": "भी",
+      "start": 136.65,
+      "end": 136.731
+    },
+    {
+      "word": "प्रॉब्लम",
+      "start": 136.789,
+      "end": 137.138
+    },
+    {
+      "word": "आए—स्कूल",
+      "start": 137.207,
+      "end": 138.078
+    },
+    {
+      "word": "में,",
+      "start": 138.148,
+      "end": 138.287
+    },
+    {
+      "word": "घर",
+      "start": 138.333,
+      "end": 138.519
+    },
+    {
+      "word": "पर,",
+      "start": 138.6,
+      "end": 138.775
+    },
+    {
+      "word": "या",
+      "start": 138.821,
+      "end": 138.902
+    },
+    {
+      "word": "दोस्तों",
+      "start": 138.96,
+      "end": 139.332
+    },
+    {
+      "word": "के",
+      "start": 139.355,
+      "end": 139.436
+    },
+    {
+      "word": "साथ—ये",
+      "start": 139.494,
+      "end": 140.446
+    },
+    {
+      "word": "स्टेप्स",
+      "start": 140.481,
+      "end": 140.853
+    },
+    {
+      "word": "याद",
+      "start": 140.934,
+      "end": 141.12
+    },
+    {
+      "word": "रखना:",
+      "start": 141.166,
+      "end": 141.642
+    },
+    {
+      "word": "डिफाइन,",
+      "start": 141.886,
+      "end": 142.525
+    },
+    {
+      "word": "प्लान,",
+      "start": 142.699,
+      "end": 143.21
+    },
+    {
+      "word": "ट्राय,",
+      "start": 143.384,
+      "end": 143.918
+    },
+    {
+      "word": "चेक,",
+      "start": 144.127,
+      "end": 144.614
+    },
+    {
+      "word": "इम्प्रूव।",
+      "start": 144.789,
+      "end": 145.439
     }
   ],
   "assets": [
     {
-      "path": "batch_gen_1767469244673_0_63615.png",
+      "path": "batch_gen_1770635298094_0_28550.png",
       "type": "image",
       "start": 0,
-      "end": 5
+      "end": 6.188
     },
     {
-      "path": "generated_nano_1767469515516_9455.png",
+      "path": "batch_gen_1770635298094_1_74902.png",
       "type": "image",
-      "start": 1.265,
-      "end": 4.54525
+      "start": 6.188,
+      "end": 11.494
+    },
+    {
+      "path": "batch_gen_1770635298094_2_59834.png",
+      "type": "image",
+      "start": 11.494,
+      "end": 16.498
+    },
+    {
+      "path": "batch_gen_1770635298094_3_80496.png",
+      "type": "image",
+      "start": 16.498,
+      "end": 22.245
+    },
+    {
+      "path": "batch_gen_1770635298094_4_74019.png",
+      "type": "image",
+      "start": 22.245,
+      "end": 26.9
+    },
+    {
+      "path": "veo_video_user_1770635250214_ddfebpsth_5_fixed.mp4",
+      "type": "video",
+      "start": 26.9,
+      "end": 32.566
+    },
+    {
+      "path": "batch_gen_1770635298094_6_83451.png",
+      "type": "image",
+      "start": 32.566,
+      "end": 36.27
+    },
+    {
+      "path": "batch_gen_1770635298094_7_24549.png",
+      "type": "image",
+      "start": 36.27,
+      "end": 41.332
+    },
+    {
+      "path": "batch_gen_1770635298094_8_40963.png",
+      "type": "image",
+      "start": 41.332,
+      "end": 46.846
+    },
+    {
+      "path": "batch_gen_1770635298094_9_47746.png",
+      "type": "image",
+      "start": 46.846,
+      "end": 51.467
+    },
+    {
+      "path": "batch_gen_1770635298094_10_21358.png",
+      "type": "image",
+      "start": 51.467,
+      "end": 55.937
+    },
+    {
+      "path": "veo_video_user_1770635250214_ddfebpsth_11_fixed.mp4",
+      "type": "video",
+      "start": 55.937,
+      "end": 60.837
+    },
+    {
+      "path": "batch_gen_1770635298094_12_69139.png",
+      "type": "image",
+      "start": 60.837,
+      "end": 66.618
+    },
+    {
+      "path": "batch_gen_1770635298094_13_37441.png",
+      "type": "image",
+      "start": 66.618,
+      "end": 72.679
+    },
+    {
+      "path": "batch_gen_1770635298094_14_32335.png",
+      "type": "image",
+      "start": 72.679,
+      "end": 77.09
+    },
+    {
+      "path": "batch_gen_1770635298094_15_21645.png",
+      "type": "image",
+      "start": 77.09,
+      "end": 81.258
+    },
+    {
+      "path": "batch_gen_1770635298094_16_38765.png",
+      "type": "image",
+      "start": 81.258,
+      "end": 85.856
+    },
+    {
+      "path": "batch_gen_1770635298094_17_23434.png",
+      "type": "image",
+      "start": 85.856,
+      "end": 91.812
+    },
+    {
+      "path": "batch_gen_1770635298094_18_55864.png",
+      "type": "image",
+      "start": 91.812,
+      "end": 96.63
+    },
+    {
+      "path": "veo_video_user_1770635250214_ddfebpsth_19_fixed.mp4",
+      "type": "video",
+      "start": 96.63,
+      "end": 101.413
+    },
+    {
+      "path": "batch_gen_1770635298094_20_15097.png",
+      "type": "image",
+      "start": 101.413,
+      "end": 106.29
+    },
+    {
+      "path": "batch_gen_1770635298094_21_1387.png",
+      "type": "image",
+      "start": 106.29,
+      "end": 111.77
+    },
+    {
+      "path": "batch_gen_1770635298094_22_46830.png",
+      "type": "image",
+      "start": 111.77,
+      "end": 116.193
+    },
+    {
+      "path": "batch_gen_1770635298094_23_292.png",
+      "type": "image",
+      "start": 116.193,
+      "end": 120.431
+    },
+    {
+      "path": "batch_gen_1770635298094_24_8499.png",
+      "type": "image",
+      "start": 120.431,
+      "end": 125.272
+    },
+    {
+      "path": "batch_gen_1770635298094_25_49177.png",
+      "type": "image",
+      "start": 125.272,
+      "end": 129.359
+    },
+    {
+      "path": "batch_gen_1770635298094_26_76888.png",
+      "type": "image",
+      "start": 129.359,
+      "end": 133.585
+    },
+    {
+      "path": "batch_gen_1770635298094_27_88071.png",
+      "type": "image",
+      "start": 133.585,
+      "end": 138.148
+    },
+    {
+      "path": "veo_video_user_1770635250214_ddfebpsth_28_fixed.mp4",
+      "type": "video",
+      "start": 138.148,
+      "end": 145.71102
     }
   ],
   "options": {
@@ -85,6 +4353,6 @@
       "normalColor": "#FFF"
     },
     "logoUrl": "logo.png",
-    "audioUrl": "../audio_test.mp3"
+    "audioUrl": "../audio_user_1770635250214_ddfebpsth.mp3"
   }
 }

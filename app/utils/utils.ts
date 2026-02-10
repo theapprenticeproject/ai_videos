@@ -84,6 +84,45 @@
 //     endIndex: Math.floor(fallbackDuration),
 //   };
 // }
+export interface ChunkWithTimes {
+  startTime: number;
+  endTime: number;
+  [key: string]: any;
+}
+
+/**
+ * Adjusts chunks so that each chunk's endTime matches the next chunk's startTime.
+ * The last chunk's endTime is set to the total duration.
+ */
+export function adjustTimestampsForContinuity(
+  chunks: ChunkWithTimes[],
+  totalDuration: number
+): void {
+  if (chunks.length === 0) return;
+
+  // 1. Force start of the first chunk to 0
+  chunks[0].startTime = 0;
+
+  // 2. Unify all intermediate boundaries
+  for (let i = 0; i < chunks.length - 1; i++) {
+    // We prioritize the start time of the NEXT chunk as the boundary,
+    // but we ensure the previous chunk ends exactly there.
+    // If the next chunk's start time is somehow earlier than the previous start, 
+    // we keep it as is but the loop ensures continuity.
+    chunks[i].endTime = chunks[i + 1].startTime;
+  }
+  
+  // 3. Force end of the last chunk to the total audio duration
+  chunks[chunks.length - 1].endTime = totalDuration;
+  
+  // 4. Optional: double check for any remaining gaps (should be none now)
+  for (let i = 0; i < chunks.length - 1; i++) {
+    if (chunks[i].endTime !== chunks[i+1].startTime) {
+       chunks[i+1].startTime = chunks[i].endTime;
+    }
+  }
+}
+
 export function getTimestampsForPhrase(
   transcriptWords: {
     word: string;
@@ -91,86 +130,98 @@ export function getTimestampsForPhrase(
     endTime: number;
   }[],
   phrase: string,
+  searchFromIndex: number = 0,
   fallbackDuration: number = 5
 ): { startTime: number; endTime: number; startIndex: number; endIndex: number } {
-
   const normalize = (w: string) =>
-    w
-      .toLowerCase()
-      .replace(/[^\p{L}\p{N}]+/gu, "") // remove punctuation, keep Hindi
-      .trim();
+    w.toLowerCase()
+     .replace(/[।.,!?]/g, "") // Remove common Hindi and English punctuation
+     .replace(/[^\p{L}\p{N}\s]+/gu, "") 
+     .trim();
 
-  if (!transcriptWords.length || !phrase.trim()) {
+  // 1. Atomization: Split multi-word transcript entries into single words
+  const atoms: { norm: string; originalIndex: number; startTime: number; endTime: number }[] = [];
+  transcriptWords.forEach((tw, idx) => {
+    // Some transcriptions might have multiple words in one entry
+    const parts = tw.word.split(/\s+/).filter(Boolean);
+    parts.forEach(p => {
+      atoms.push({
+        norm: normalize(p),
+        originalIndex: idx,
+        startTime: tw.startTime,
+        endTime: tw.endTime
+      });
+    });
+  });
+
+  const phraseWords = phrase.split(/\s+/).map(normalize).filter(Boolean);
+  
+  if (!phraseWords.length || !atoms.length) {
+    const start = transcriptWords[searchFromIndex]?.startTime || (transcriptWords.length > 0 ? transcriptWords[transcriptWords.length-1].endTime : 0);
     return {
-      startTime: 0,
-      endTime: fallbackDuration,
-      startIndex: 0,
-      endIndex: 0,
+      startTime: start,
+      endTime: start + fallbackDuration,
+      startIndex: searchFromIndex,
+      endIndex: searchFromIndex,
     };
   }
 
-  const words = transcriptWords.map(w => ({
-    ...w,
-    norm: normalize(w.word),
-  }));
-
-  const phraseWords = phrase
-    .split(/\s+/)
-    .map(normalize)
-    .filter(Boolean);
-
-  if (!phraseWords.length) {
-    return {
-      startTime: 0,
-      endTime: fallbackDuration,
-      startIndex: 0,
-      endIndex: 0,
-    };
-  }
-
-  // -------- sequence-based match --------
-  let t = 0;
-  let p = 0;
-  let startIndex = -1;
-  let endIndex = -1;
-
-  while (t < words.length && p < phraseWords.length) {
-    if (words[t].norm === phraseWords[p]) {
-      if (startIndex === -1) startIndex = t;
-      endIndex = t;
-      p++;
+  // Find mapping from original searchFromIndex to atoms index
+  let atomStartIndex = 0;
+  for (let i = 0; i < atoms.length; i++) {
+    if (atoms[i].originalIndex >= searchFromIndex) {
+      atomStartIndex = i;
+      break;
     }
-    t++;
   }
 
-  // -------- full match found --------
-  if (p === phraseWords.length && startIndex !== -1) {
-    const startTime = transcriptWords[startIndex].startTime;
+  // 2. Smart Window Search
+  const firstWord = phraseWords[0];
+  let currentSearchPos = atomStartIndex;
 
-    // 🔑 ALIGNMENT LOGIC (INSIDE FUNCTION)
-    // If there is a next word, extend till its startTime
-    // else use current word's endTime
-    const endTime =
-      endIndex + 1 < transcriptWords.length
-        ? transcriptWords[endIndex + 1].startTime
-        : transcriptWords[endIndex].endTime;
+  while (currentSearchPos < atoms.length) {
+    // Look for the normalized starting word
+    if (atoms[currentSearchPos].norm === firstWord) {
+      // Found a potential start. Now try matching the sequence in decreasing window sizes
+      // starting from the full phrase length.
+      for (let windowSize = phraseWords.length; windowSize > 0; windowSize--) {
+        if (currentSearchPos + windowSize > atoms.length) continue;
 
-    return {
-      startTime,
-      endTime,
-      startIndex,
-      endIndex,
-    };
+        const windowAtoms = atoms.slice(currentSearchPos, currentSearchPos + windowSize);
+        const windowNorms = windowAtoms.map(a => a.norm);
+        
+        // Compare joined strings to allow for minor variations in grouping
+        const windowStr = windowNorms.join("");
+        const targetStr = phraseWords.slice(0, windowSize).join("");
+
+        if (windowStr === targetStr) {
+          const startIndex = windowAtoms[0].originalIndex;
+          const endIndex = windowAtoms[windowAtoms.length - 1].originalIndex;
+          const startTime = transcriptWords[startIndex].startTime;
+          const endTime = transcriptWords[endIndex].endTime;
+
+          console.log(`✅ Smart Window match: "${phrase}" -> found first ${windowSize} words at indices ${startIndex}-${endIndex}`);
+          return { startTime, endTime, startIndex, endIndex };
+        }
+      }
+    }
+    // Look ahead for the next occurrence of the first word
+    currentSearchPos++;
   }
 
-  // -------- fallback --------
-  const last = transcriptWords[transcriptWords.length - 1];
+  // 3. Robust Fallback: If no match found, use the next available words from searchFromIndex
+  console.warn(`⚠️ Smart Window failed for: "${phrase}". Using fallback words.`);
+  const fallbackIndex = Math.min(searchFromIndex, transcriptWords.length - 1);
+  const fallbackEnd = Math.min(fallbackIndex + 2, transcriptWords.length - 1); // take 3 words as fallback if possible
+  
+  const start = transcriptWords[fallbackIndex]?.startTime || 0;
+  const end = transcriptWords[fallbackEnd]?.endTime || (start + fallbackDuration);
 
   return {
-    startTime: Math.max(0, last.endTime - fallbackDuration),
-    endTime: last.endTime,
-    startIndex: transcriptWords.length - 1,
-    endIndex: transcriptWords.length - 1,
+    startTime: start,
+    endTime: end,
+    startIndex: fallbackIndex,
+    endIndex: fallbackEnd,
   };
 }
 

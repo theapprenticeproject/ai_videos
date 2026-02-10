@@ -2,7 +2,7 @@
 
 import React, { useState, useCallback, useEffect } from 'react';
 import { ChevronRight, ChevronLeft, Play, Edit3, Settings, Video, Sparkles, ArrowRight } from 'lucide-react';
-import { callLlm,callStructuredLlm } from './llm';
+import { callLlm, callStructuredLlm } from './llm';
 import { promptFormation } from './prompts';
 import { LLM_API_KEY } from './constant';
 import data from '../dynamication.json'
@@ -23,24 +23,21 @@ const StepIndicator = ({ currentStep, steps }: { currentStep: number; steps: any
   <div className="flex items-center justify-center mb-8">
     {steps.map((step, index) => (
       <div key={step.id} className="flex items-center">
-        <div className={`flex items-center justify-center w-10 h-10 rounded-full border-2 transition-all duration-300 ${
-          index <= currentStep 
-            ? 'bg-blue-600 border-blue-600 text-white' 
-            : 'border-gray-300 text-gray-400'
-        }`}>
+        <div className={`flex items-center justify-center w-10 h-10 rounded-full border-2 transition-all duration-300 ${index <= currentStep
+          ? 'bg-blue-600 border-blue-600 text-white'
+          : 'border-gray-300 text-gray-400'
+          }`}>
           <step.icon className="w-5 h-5" />
         </div>
         <div className="ml-2 mr-4">
-          <div className={`text-sm font-medium ${
-            index <= currentStep ? 'text-blue-600' : 'text-gray-400'
-          }`}>
+          <div className={`text-sm font-medium ${index <= currentStep ? 'text-blue-600' : 'text-gray-400'
+            }`}>
             {step.title}
           </div>
         </div>
         {index < steps.length - 1 && (
-          <ChevronRight className={`w-4 h-4 mx-2 ${
-            index < currentStep ? 'text-blue-600' : 'text-gray-300'
-          }`} />
+          <ChevronRight className={`w-4 h-4 mx-2 ${index < currentStep ? 'text-blue-600' : 'text-gray-300'
+            }`} />
         )}
       </div>
     ))}
@@ -48,12 +45,12 @@ const StepIndicator = ({ currentStep, steps }: { currentStep: number; steps: any
 );
 
 // Prompt Input Step Component
-const PromptInputStep = ({ 
-  formData, 
-  setFormData, 
+const PromptInputStep = ({
+  formData,
+  setFormData,
   onSubmit, // for "Generate Script"
   onDirectScriptClick, // for "Direct Script"
-  isLoading 
+  isLoading
 }: {
   formData: FormData;
   setFormData: React.Dispatch<React.SetStateAction<FormData>>;
@@ -77,7 +74,7 @@ const PromptInputStep = ({
         <h2 className="text-2xl font-bold text-gray-900 mb-2">What's your vision?</h2>
         <p className="text-gray-600">Describe the video you want to create</p>
       </div>
-      
+
       <div className="space-y-6">
         <div>
           <label className="block text-sm font-medium text-gray-700 mb-2">
@@ -95,7 +92,7 @@ const PromptInputStep = ({
             <option value="high">High</option>
           </select>
         </div>
-        
+
         <div>
           <label className="block text-sm font-medium text-gray-700 mb-2">
             Video Prompt
@@ -112,7 +109,7 @@ const PromptInputStep = ({
             style={{ fontSize: '16px' }} // Prevents zoom on mobile
           />
         </div>
-        
+
         {/* Flex container for both buttons */}
         <div className="flex space-x-4">
           {/* Generate Script Button */}
@@ -167,7 +164,7 @@ const ScriptVerificationStep = ({
       <h2 className="text-2xl font-bold text-gray-900 mb-2">Review & Edit Script</h2>
       <p className="text-gray-600">Make any adjustments to perfect your video script</p>
     </div>
-    
+
     <div className="space-y-6">
       <div>
         <label className="block text-sm font-medium text-gray-700 mb-2">
@@ -184,7 +181,7 @@ const ScriptVerificationStep = ({
           style={{ fontSize: '14px' }}
         />
       </div>
-      
+
       <div className="flex space-x-4">
         <button
           onClick={onBack}
@@ -229,7 +226,7 @@ const AvatarSelection = ({
   onAvatarChange: (avatar: string) => void;
   playingAudio: string | null;
   onPlayAudio: (avatar: string) => void;
-  scriptLanguage:string
+  scriptLanguage: string
 }) => {
   // const avatars = [
   //   // { value: 'female', label: 'Female Avatar', emoji: '👩' },
@@ -243,21 +240,21 @@ const AvatarSelection = ({
   //   { value: 'f4_hiIn', label: 'Female Avatar (Hindi - India, Despina)', emoji: '👩🏽' })
   // }
 
-  console.log("sl ",scriptLanguage)
- const avatars: { value: string,label:string,emoji:string }[] = []; // Empty array to store avatars
+  console.log("sl ", scriptLanguage)
+  const avatars: { value: string, label: string, emoji: string }[] = []; // Empty array to store avatars
 
   // Push avatars based on `scriptLanguage`
-for (let ava of data.avatars) {
-  if (scriptLanguage.toLowerCase() === "english" && ava.langType.toLowerCase() === "english") {
-    avatars.push(ava);
-  } else if ((scriptLanguage.toLowerCase() === "hinglish" || scriptLanguage.toLowerCase() === "hindi") && 
-             (ava.langType.toLowerCase() === "hinglish" || ava.langType.toLowerCase() === "hindi")) {
-    avatars.push(ava);
+  for (let ava of data.avatars) {
+    if (scriptLanguage.toLowerCase() === "english" && ava.langType.toLowerCase() === "english") {
+      avatars.push(ava);
+    } else if ((scriptLanguage.toLowerCase() === "hinglish" || scriptLanguage.toLowerCase() === "hindi") &&
+      (ava.langType.toLowerCase() === "hinglish" || ava.langType.toLowerCase() === "hindi")) {
+      avatars.push(ava);
+    }
   }
-}
 
 
-  
+
 
   return (
     <div className="bg-gray-50 p-6 rounded-lg">
@@ -268,11 +265,10 @@ for (let ava of data.avatars) {
             <button
               type="button"
               onClick={() => onAvatarChange(avatar.value)}
-              className={`w-full p-4 rounded-lg border-2 transition-colors flex flex-col items-center space-y-2 ${
-                selectedAvatar === avatar.value
-                  ? 'border-blue-500 bg-blue-50 text-blue-700'
-                  : 'border-gray-200 hover:border-gray-300'
-              }`}
+              className={`w-full p-4 rounded-lg border-2 transition-colors flex flex-col items-center space-y-2 ${selectedAvatar === avatar.value
+                ? 'border-blue-500 bg-blue-50 text-blue-700'
+                : 'border-gray-200 hover:border-gray-300'
+                }`}
             >
               <span className="text-2xl">{avatar.emoji}</span>
               <span className="text-sm font-medium">{avatar.label}</span>
@@ -280,11 +276,10 @@ for (let ava of data.avatars) {
             <button
               type="button"
               onClick={() => onPlayAudio(avatar.value)}
-              className={`w-full px-3 py-2 text-xs rounded-md transition-colors flex items-center justify-center space-x-1 ${
-                playingAudio === avatar.value
-                  ? 'bg-green-100 text-green-700 border border-green-300'
-                  : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
-              }`}
+              className={`w-full px-3 py-2 text-xs rounded-md transition-colors flex items-center justify-center space-x-1 ${playingAudio === avatar.value
+                ? 'bg-green-100 text-green-700 border border-green-300'
+                : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+                }`}
             >
               {playingAudio === avatar.value ? (
                 <>
@@ -400,7 +395,7 @@ const PreferencesStep = ({
       <h2 className="text-2xl font-bold text-gray-900 mb-2">Video Preferences</h2>
       <p className="text-gray-600">Customize your video settings</p>
     </div>
-    
+
     <div className="space-y-6">
       <div className="bg-gray-50 p-6 rounded-lg">
         <h3 className="font-medium text-gray-900 mb-4">Subtitle Options</h3>
@@ -419,7 +414,7 @@ const PreferencesStep = ({
           </label>
         </div>
       </div>
-      
+
       <div className="bg-gray-50 p-6 rounded-lg">
         <h3 className="font-medium text-gray-900 mb-4">Video Style</h3>
         <div className="grid grid-cols-2 gap-3">
@@ -434,18 +429,17 @@ const PreferencesStep = ({
                 ...prev,
                 preferences: { ...prev.preferences, style: style.value }
               }))}
-              className={`p-3 rounded-lg border-2 transition-colors ${
-                formData.preferences.style === style.value
-                  ? 'border-blue-500 bg-blue-50 text-blue-700'
-                  : 'border-gray-200 hover:border-gray-300'
-              }`}
+              className={`p-3 rounded-lg border-2 transition-colors ${formData.preferences.style === style.value
+                ? 'border-blue-500 bg-blue-50 text-blue-700'
+                : 'border-gray-200 hover:border-gray-300'
+                }`}
             >
               {style.label}
             </button>
           ))}
         </div>
       </div>
-      
+
       {/* <AvatarSelection
         selectedAvatar={formData.preferences.avatar}
         onAvatarChange={(avatar) => setFormData(prev => ({
@@ -457,22 +451,22 @@ const PreferencesStep = ({
       /> */}
 
 
-<AudiosComponent
-  selectedAvatar={formData.preferences.avatar}
-  onAvatarChange={(avatar) =>
-    setFormData(prev => ({
-      ...prev,
-      preferences: {
-        ...prev.preferences,
-        avatar,
-      },
-      formData
-    }))
-  }
-  formData={formData}
-/>
+      <AudiosComponent
+        selectedAvatar={formData.preferences.avatar}
+        onAvatarChange={(avatar) =>
+          setFormData(prev => ({
+            ...prev,
+            preferences: {
+              ...prev.preferences,
+              avatar,
+            },
+            formData
+          }))
+        }
+        formData={formData}
+      />
 
-      
+
       <div className="flex space-x-4">
         <button
           type="button"
@@ -518,12 +512,12 @@ const ResultStep = ({
       <h2 className="text-2xl font-bold text-gray-900 mb-2">Your Video is Ready!</h2>
       <p className="text-gray-600">Video generated successfully</p>
     </div>
-    
+
     <div className="space-y-6">
       {videoUrl ? (
         <div className="bg-black rounded-lg aspect-video">
-          <video 
-            controls 
+          <video
+            controls
             className="w-full h-full rounded-lg"
             src={videoUrl}
           >
@@ -539,7 +533,7 @@ const ResultStep = ({
           </div>
         </div>
       )}
-      
+
       <div className="flex space-x-4">
         <button
           onClick={onReset}
@@ -591,6 +585,22 @@ const detectLanguage = async (text: string): Promise<string> => {
   // Return the detected language directly
   return lang.language;
 };
+
+// Progress Bar Component
+const ProgressBar = ({ progress, status }: { progress: number; status: string }) => (
+  <div className="w-full max-w-md mx-auto mt-4">
+    <div className="flex justify-between text-sm font-medium text-gray-700 mb-2">
+      <span>{status}</span>
+      <span>{Math.round(progress)}%</span>
+    </div>
+    <div className="w-full bg-gray-200 rounded-full h-2.5 overflow-hidden">
+      <div
+        className="bg-blue-600 h-2.5 rounded-full transition-all duration-300 ease-out"
+        style={{ width: `${Math.max(5, Math.min(100, progress))}%` }}
+      ></div>
+    </div>
+  </div>
+);
 // Main App Component
 const PromptToVideoApp: React.FC = () => {
   const [currentStep, setCurrentStep] = useState(0);
@@ -607,7 +617,9 @@ const PromptToVideoApp: React.FC = () => {
   });
   const [videoUrl, setVideoUrl] = useState<string | null>(null);
   const [playingAudio, setPlayingAudio] = useState<string | null>(null);
-  
+  const [progress, setProgress] = useState(0);
+  const [statusText, setStatusText] = useState("Initializing...");
+
 
   const steps = [
     { id: 'prompt', title: 'Prompt Input', icon: Edit3 },
@@ -621,7 +633,7 @@ const PromptToVideoApp: React.FC = () => {
       setPlayingAudio(null);
       return;
     }
-    
+
     setPlayingAudio(avatarType);
     setTimeout(() => {
       setPlayingAudio(null);
@@ -630,27 +642,27 @@ const PromptToVideoApp: React.FC = () => {
 
   const handlePromptSubmit = async () => {
     if (!formData.prompt.trim()) return;
-    
+
     setIsLoading(true);
     try {
       // Your API call here
       // const data = await callLlm(...);
-      
+
       // console.log("generating script ",LLM_API_KEY);
       // let script  = "";
-      let script = await callLlm( LLM_API_KEY, "systemPrompt", promptFormation(formData.prompt,"scriptFormation", formData)); 
+      let script = await callLlm(LLM_API_KEY, "systemPrompt", promptFormation(formData.prompt, "scriptFormation", formData));
       // let script = await callStructuredLlm( LLM_API_KEY, "systemPrompt", promptFormation(formData.prompt,"scriptFormation", formData),scriptSchema);
       //  console.log("data is ", script)
       // let scriptLang = script.language || "english";
       // setScriptLanguage(scriptLang);
       // script = script.script || "";
-     
+
       script = cleanNarrationStrictly(script);
-      if(script.length==0){
-           script = `Scene 1: ${formData.prompt}\n\nThis is a sample script generated from your prompt. You can edit this script to match your vision perfectly.\n\nScene 2: Additional content based on your requirements...`;
+      if (script.length == 0) {
+        script = `Scene 1: ${formData.prompt}\n\nThis is a sample script generated from your prompt. You can edit this script to match your vision perfectly.\n\nScene 2: Additional content based on your requirements...`;
       }
-      
-      
+
+
       setFormData(prev => ({ ...prev, script: script }));
       setCurrentStep(1);
     } catch (error) {
@@ -669,9 +681,11 @@ const PromptToVideoApp: React.FC = () => {
     }
 
     setIsLoading(true);
+    setProgress(0);
+    setStatusText("Starting...");
 
     try {
-      const userVideoId = "test";
+      const userVideoId = `user_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
       const payload = {
         script: formData.script,
         preferences: formData.preferences,
@@ -685,22 +699,49 @@ const PromptToVideoApp: React.FC = () => {
         body: JSON.stringify(payload),
       });
 
-      const data = await response.json();
-
       if (!response.ok) {
-        alert(data.error || "Video generation failed");
-        return;
+        throw new Error(response.statusText);
       }
 
-      if (data.videoUrl) {
-        setVideoUrl(data.videoUrl);
-        setCurrentStep(3);
-      } else {
-        alert("No video URL returned from server");
+      if (!response.body) {
+        throw new Error("No response body");
       }
-    } catch (error) {
+
+      const reader = response.body.getReader();
+      const decoder = new TextDecoder();
+      let buffer = "";
+
+      while (true) {
+        const { done, value } = await reader.read();
+        if (done) break;
+
+        buffer += decoder.decode(value, { stream: true });
+        const lines = buffer.split("\n");
+        buffer = lines.pop() || ""; // Keep incomplete line in buffer
+
+        for (const line of lines) {
+          if (!line.trim()) continue;
+          try {
+            const data = JSON.parse(line);
+
+            if (data.type === "progress") {
+              setProgress(data.progress);
+              setStatusText(data.status);
+            } else if (data.type === "result") {
+              setVideoUrl(data.videoUrl);
+              setCurrentStep(3);
+            } else if (data.type === "error") {
+              throw new Error(data.message);
+            }
+          } catch (e) {
+            console.error("Error parsing stream data:", e);
+          }
+        }
+      }
+
+    } catch (error: any) {
       console.error("Error generating video:", error);
-      alert("Error generating video");
+      alert("Error generating video: " + error.message);
     } finally {
       setIsLoading(false);
     }
@@ -746,7 +787,7 @@ const PromptToVideoApp: React.FC = () => {
               formData={formData}
               setFormData={setFormData}
               onSubmit={handlePromptSubmit}
-              onDirectScriptClick={() => setCurrentStep(1)} 
+              onDirectScriptClick={() => setCurrentStep(1)}
               isLoading={isLoading}
             />
           )}
@@ -760,15 +801,29 @@ const PromptToVideoApp: React.FC = () => {
           )}
 
           {currentStep === 2 && (
-            <PreferencesStep
-              formData={formData}
-              setFormData={setFormData}
-              onBack={() => setCurrentStep(1)}
-              onSubmit={handlePreferencesSubmit}
-              isLoading={isLoading}
-              playingAudio={playingAudio}
-              onPlayAudio={playAvatarAudio}
-            />
+            <>
+              <PreferencesStep
+                formData={formData}
+                setFormData={setFormData}
+                onBack={() => setCurrentStep(1)}
+                onSubmit={handlePreferencesSubmit}
+                isLoading={isLoading}
+                playingAudio={playingAudio}
+                onPlayAudio={playAvatarAudio}
+              />
+              {isLoading && (
+                <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
+                  <div className="bg-white p-8 rounded-xl shadow-2xl max-w-md w-full mx-4">
+                    <div className="text-center mb-6">
+                      <div className="animate-spin w-12 h-12 border-4 border-blue-600 border-t-transparent rounded-full mx-auto mb-4"></div>
+                      <h3 className="text-xl font-bold text-gray-900">Creating Your Video</h3>
+                      <p className="text-gray-600 mt-2">Please wait while we bring your story to life...</p>
+                    </div>
+                    <ProgressBar progress={progress} status={statusText} />
+                  </div>
+                </div>
+              )}
+            </>
           )}
           {currentStep === 3 && (
             <ResultStep

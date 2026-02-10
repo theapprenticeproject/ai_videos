@@ -4,6 +4,7 @@ import {
   fixIfBrokenVideo,
   getTimestampsForPhrase,
   saveDataAsJSON,
+  adjustTimestampsForContinuity,
 } from "./utils/utils";
 import { templateSelector } from "./templating";
 import { callAssetSearch } from "./assetSearch";
@@ -153,7 +154,7 @@ export async function callVideoGenerator(
     try {
       const fs = require('fs');
       const path = require('path');
-      const debugFilePath = path.join(process.cwd(), 'data', 'debug_render_data.json');
+      const debugFilePath = path.join(process.cwd(), 'debug_render_data.json');
 
       if (fs.existsSync(debugFilePath)) {
         const rawData = fs.readFileSync(debugFilePath, 'utf8');
@@ -475,6 +476,7 @@ Visual: Rahul (around 13 years old) sits comfortably in a beanbag chair surround
 
   // 6. Iterate over chunks and generate media
   const totalChunks = chunks.length;
+  let lastEndIndex = 0;
   for (const [chunk_index, chunk] of chunks.entries()) {
     const progressPercent = 40 + Math.floor(((chunk_index) / totalChunks) * 45); // 40% to 85%
     reportProgress(progressPercent, `Generating Visuals for Scene ${chunk_index + 1}/${totalChunks}...`);
@@ -494,8 +496,10 @@ Visual: Rahul (around 13 years old) sits comfortably in a beanbag chair surround
     // Get timestamps
     let { startTime, endTime, startIndex, endIndex } = getTimestampsForPhrase(
       transcriptData,
-      chunk.chunk
+      chunk.chunk,
+      lastEndIndex
     );
+    lastEndIndex = endIndex + 1;
     const chunkWords = transcriptData.slice(startIndex, endIndex + 1);
 
     // Generation Logic
@@ -789,6 +793,13 @@ If yes, provide a specific video generation prompt describing the movement.`;
 
     // Append chunkJson to sceneJson
     sceneJson.push(chunkJson);
+  }
+
+  // Adjust timestamps to ensure no black screens/gaps
+  if (sceneJson.length > 0) {
+      // Use the last chunk's end time as provisional total duration
+      // The real audio duration will update the final asset later
+      adjustTimestampsForContinuity(sceneJson, sceneJson[sceneJson.length - 1].endTime);
   }
 
   console.log("sceneJson is ", sceneJson);
