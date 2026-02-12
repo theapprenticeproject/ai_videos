@@ -1,5 +1,5 @@
 import React, { useState, useCallback, useEffect } from 'react';
-import { ChevronRight, ChevronLeft, Play, Edit3, Settings, Video, Sparkles, ArrowRight } from 'lucide-react';
+import { ChevronRight, ChevronLeft, Play, Edit3, Settings, Video, Sparkles, ArrowRight, LayoutGrid } from 'lucide-react';
 import { callLlm, callStructuredLlm } from './llm';
 import { promptFormation } from './prompts';
 import { LLM_API_KEY } from './constant';
@@ -182,6 +182,17 @@ const PromptInputStep = ({
           >
             <span>Direct Script</span>
             <ArrowRight className="w-5 h-5" />
+          </button>
+        </div>
+
+        <div className="flex justify-center mt-6 border-t pt-6">
+          <button
+            type="button"
+            onClick={() => window.location.href = '/gallery'}
+            className="text-gray-600 hover:text-blue-600 font-medium transition-colors flex items-center space-x-2 px-4 py-2 rounded-lg hover:bg-blue-50"
+          >
+            <LayoutGrid className="w-5 h-5" />
+            <span>View Video Gallery</span>
           </button>
         </div>
       </div>

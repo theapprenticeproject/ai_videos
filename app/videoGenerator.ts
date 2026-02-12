@@ -7,7 +7,7 @@ import {
   adjustTimestampsForContinuity,
 } from "./utils/utils";
 import { templateSelector } from "./templating";
-import { callAssetSearch } from "./assetSearch";
+// import { callAssetSearch } from "./assetSearch";
 // import { textToSpeech,speechToText } from "./utils/audioTranscript";
 import { downloadFile } from "./utils/downloadAsset";
 import { speechToText } from "./utils/speechToText";
