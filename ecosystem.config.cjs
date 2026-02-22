@@ -12,9 +12,9 @@ module.exports = {
   apps: [
     // ── Next.js HTTP Server ───────────────────────────────────────────────────
     {
-      name: 'nextjs-server',
+      name: 'saas2-anim-server',
       script: 'node_modules/.bin/next',
-      args: process.env.NODE_ENV === 'development' ? 'dev' : 'start',
+      args: process.argv.join(' ').includes('development') ? 'dev' : 'start',
       instances: 1,           // single instance — no cluster (as requested)
       exec_mode: 'fork',
       cwd: './',
