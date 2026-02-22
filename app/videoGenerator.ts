@@ -34,7 +34,16 @@ async function retryLlmCall<T>(
   args: any[],
   retries = 5,
   delayMs = 10000
-): Promise<T | ""> {
+): Promise<T> {
+  // Ensure model argument is never empty - default to gemini-2.0-flash-lite
+  // args for callStructuredLlm: [apiKey, systemPrompt, prompt, schema, otherPrompts, model]
+  // args for callLlm:           [apiKey, systemPrompt, prompt, otherPrompts, model]
+  const modelArgIndex = args.length - 1;
+  if (typeof args[modelArgIndex] !== 'string' || args[modelArgIndex] === '') {
+    console.warn(`[retryLlmCall] Empty or missing model name at index ${modelArgIndex}. Defaulting to gemini-2.0-flash-lite.`);
+    args[modelArgIndex] = 'gemini-2.0-flash-lite';
+  }
+
   for (let i = 0; i < retries; i++) {
     try {
       return await fn(...args);
@@ -45,14 +54,11 @@ async function retryLlmCall<T>(
       if (i < retries - 1) {
         await new Promise((res) => setTimeout(res, delayMs));
       } else {
-        console.error("All retry attempts failed. Returning blank.");
-        return "" as T | "";
+        throw new Error(`LLM Call failed after ${retries} attempts. Last error: ${errorMsg}`);
       }
     }
   }
-
-  // Should never reach here
-  return "" as T | "";
+  throw new Error("Unexpected end of retry loop");
 }
 
 function convertSceneToAsset(
@@ -142,6 +148,7 @@ export async function callVideoGenerator(
   modelName: string = "gemini-2.0-flash-lite",
   vidGen: string = "veo"
 ): Promise<string> {
+  console.log(`[videoGenerator] >>> STARTING Generator | Process: ${process.pid} | ID: ${user_video_id}`);
   // Helper to safely call progress
   const reportProgress = (p: number, s: string) => {
     if (onProgress) onProgress(p, s);
@@ -340,15 +347,13 @@ Output only the array of chunk objects. Do not include any explanations or extra
     modelName
   ]);
 
-  console.log(chunkResponseStr);
+  if (!chunkResponseStr || !chunkResponseStr.chunks) {
+    console.error("CRITICAL ERROR: LLM Chunking failed. Response:", chunkResponseStr);
+    throw new Error("Failed to chunk transcript via LLM. See logs for details.");
+  }
 
-  // Parse chunkResponseStr as JSON array
-  // const chunks: [string] = JSON.parse(chunkResponseStr);
   const chunks = chunkResponseStr.chunks;
-
   console.log("chunks are, ", chunks);
-
-  // saveDataAsJSON(chunks,"chunks.json")
 
   // Prepare Scene JSON array
   const sceneJson: SceneJson = [];
@@ -398,6 +403,11 @@ Decide whether to use Google Search (Real images/Specifics) or AI Generation (Ge
 
 Return a JSON object with a 'results' array containing an object for each chunk.`;
 
+  if (!chunks || !Array.isArray(chunks)) {
+    console.error("CRITICAL: chunks is missing or not an array before batch extraction.");
+    throw new Error("Invalid chunk data. Cannot proceed with keyword extraction.");
+  }
+
   const chunksPayload = chunks.map((c: any, i: number) => ({ index: i, text: c.chunk }));
 
   const batchUserPrompt = `
@@ -440,12 +450,14 @@ Visual: Rahul (around 13 years old) sits comfortably in a beanbag chair surround
       modelName
     ]);
 
-    if (batchResponse?.results) {
+    if (batchResponse && batchResponse.results) {
       batchResponse.results.forEach((r: any) => {
         batchKeywordsData[r.index] = r;
       });
+      console.log("Batch keywords generated successfully.");
+    } else {
+      console.warn("Batch keyword extraction returned no results. Fallback will be used.");
     }
-    console.log("Batch keywords generated:", batchKeywordsData);
   } catch (e) {
     console.error("Failed batch keyword extraction, falling back to chunk text", e);
   }

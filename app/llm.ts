@@ -2,8 +2,33 @@ export function sleep(ms: number): Promise<void> {
   return new Promise(resolve => setTimeout(resolve, ms));
 }
 
+// ─── Environment Management ──────────────────────────────────────────────────
 
-// gemini-llm.ts
+// We only want to load dotenv if we're running in a Node.js environment (standalone script or server-side).
+// Browsers don't have 'process.stdout' so dotenv's ANSI detection fails.
+if (typeof window === "undefined") {
+  const loadEnv = async () => {
+    try {
+      const dotenv = await import("dotenv");
+      const path = await import("path");
+      const { fileURLToPath } = await import("url");
+
+      const __filename = fileURLToPath(import.meta.url);
+      const __dirname = path.dirname(__filename);
+      const ROOT = path.resolve(__dirname, "..");
+      
+      dotenv.config({ path: path.join(ROOT, ".env.local") });
+      dotenv.config({ path: path.join(ROOT, ".env") });
+    } catch (e) {
+      // If any of the above fails (e.g. bundling environment), we skip manual loading
+    }
+  };
+  loadEnv();
+}
+
+const DEFAULT_KEY = (typeof process !== "undefined" ? (process.env.GEMINI_API_KEY || process.env.NEXT_PUBLIC_LLM_API_KEY) : "") || "";
+
+// ─── Types ───────────────────────────────────────────────────────────────────
 type Message = {
   role: "user" | "assistant";
   content: string;
@@ -21,14 +46,13 @@ type StructureSchema = {
   required?: string[];
 };
 
-// Helper: Convert OpenAI-style messages to Gemini chat format (no 'system' roles)
+// ─── Helpers ─────────────────────────────────────────────────────────────────
 function convertToGeminiMessages(
   systemPrompt: string,
   otherPrompts: Message[],
   prompt: string
 ) {
   const messages = [...otherPrompts, { role: "user", content: prompt }];
-  // Prepend system prompt to the first user message (Gemini does not allow a 'system' role)
   if (systemPrompt) {
     const firstUser = messages.find(m => m.role === "user");
     if (firstUser) {
@@ -43,107 +67,127 @@ function convertToGeminiMessages(
   }));
 }
 
-// Basic Gemini chat call (returns plain text response)
+// ─── Core LLM Functions ──────────────────────────────────────────────────────
+
+/** Basic Gemini chat call (returns plain text) */
 export async function callLlm(
-  apiKey: string,
+  apiKey: string = DEFAULT_KEY,
   systemPrompt: string,
   prompt: string,
   otherPrompts: Message[] = [],
   model: string = "gemini-2.0-flash-lite"
 ): Promise<string> {
+  console.log(`[llm] Calling Gemini model: "${model}"`);
+  if (!apiKey) throw new Error("GEMINI_API_KEY is not defined");
+
   const body = {
     contents: convertToGeminiMessages(systemPrompt, otherPrompts, prompt),
   };
-  let response;
-  await sleep(10000); // Optional: delay to avoid rate limits
-  try{
-  response = await fetch(
-    `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${apiKey}`,
-    {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(body),
-    }
-  );
-  }catch(err){
-    sleep(10000);
-    return callLlm(apiKey,systemPrompt,prompt);
+
+  await sleep(1000); // Subtle throttle
+
+  const url = `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${apiKey}`;
+  const response = await fetch(url, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(body),
+  });
+
+  const text = await response.text();
+  let data;
+  try {
+    data = JSON.parse(text);
+  } catch (err) {
+    console.error(`[llm] Failed to parse JSON response. Status: ${response.status}. Raw body:`, text);
+    throw new Error(`Invalid JSON response from Gemini API: ${text.substring(0, 100)}...`);
   }
 
-  const data = await response.json();
-  if (!data.candidates?.[0]?.content?.parts) throw new Error(JSON.stringify(data));
+  if (!response.ok) {
+    throw new Error(`Gemini API Error (${response.status}): ${JSON.stringify(data)}`);
+  }
+
+  if (!data.candidates?.[0]?.content?.parts) {
+    throw new Error(`Unexpected Gemini response structure: ${JSON.stringify(data)}`);
+  }
+
   return data.candidates[0].content.parts.map((p: any) => p.text).join("");
 }
 
-// Gemini with JSON-structured output
+/** Gemini with JSON-structured output */
 export async function callStructuredLlm(
-  apiKey: string,
+  apiKey: string = DEFAULT_KEY,
   systemPrompt: string,
   prompt: string,
   schema: StructureSchema,
   otherPrompts: Message[] = [],
   model: string = "gemini-2.0-flash-lite"
 ): Promise<any> {
+  console.log(`[llm] Calling Structured Gemini model: "${model}"`);
+  if (!apiKey) throw new Error("GEMINI_API_KEY is not defined");
+
   const body = {
     contents: convertToGeminiMessages(systemPrompt, otherPrompts, prompt),
     generationConfig: {
       response_mime_type: "application/json",
       response_schema: schema,
-      seed:30
+      seed: 30
     }
   };
-  const response = await fetch(
-    `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${apiKey}`,
-    {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(body),
-    }
-  );
-  const data = await response.json();
-  const text =
-    data.candidates?.[0]?.content?.parts
-      ?.map((p: any) => p.text)
-      .join("") || "";
+
+  const url = `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${apiKey}`;
+  const response = await fetch(url, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(body),
+  });
+
+  const text = await response.text();
+  let data;
   try {
-    return JSON.parse(text);
+    data = JSON.parse(text);
+  } catch (err) {
+    console.error(`[llm] Failed to parse JSON response. Status: ${response.status}. Raw body:`, text);
+    throw new Error(`Invalid JSON response from Gemini API: ${text.substring(0, 100)}...`);
+  }
+
+  if (!response.ok) {
+    throw new Error(`Gemini API Error (${response.status}): ${JSON.stringify(data)}`);
+  }
+
+  const resultText = data.candidates?.[0]?.content?.parts?.map((p: any) => p.text).join("") || "";
+  
+  try {
+    return JSON.parse(resultText);
   } catch (e) {
-    return { parseError: true, raw: text, data };
+    console.warn("[llm] Failed to parse Gemini content as JSON. Returning structured error object.");
+    return { parseError: true, raw: resultText, data };
   }
 }
 
-// --- Example usage ---
+// ─── Example usage ───────────────────────────────────────────────────────────
 
-// async function testPlain() {
-//   const apiKey = "";
-//   const res = await callLlm(
-//     apiKey,
-//     "You are a science tutor.",
-//     "Explain why the sky is blue in two short sentences."
-//   );
-//   console.log("PLAIN TEXT RESPONSE:\n", res);
-// }
+async function testStructured() {
+  const apiKey = DEFAULT_KEY;
+  if (!apiKey) {
+    console.error("ERROR: No API key found. Check .env.local");
+    return;
+  }
+  const schema: StructureSchema = {
+    type: "object",
+    properties: {
+      acid: { type: "string" },
+      base: { type: "string" }
+    },
+    required: ["acid", "base"]
+  };
+  try {
+    console.log("[test] Calling Structured LLM...");
+    const res = await callStructuredLlm(apiKey, "Expert chemist.", "Formula for HCl and its base as JSON.", schema);
+    console.log("STRUCTURED JSON RESPONSE:\n", JSON.stringify(res, null, 2));
+  } catch (err: any) {
+    console.error("[test] Request failed:", err.message);
+  }
+}
 
-// async function testStructured() {
-//   const apiKey = "";
-//   const schema: StructureSchema = {
-//     type: "object",
-//     properties: {
-//       acid: { type: "string", description: "Formula for hydrochloric acid" },
-//       base: { type: "string", description: "Formula for its opposite compound" }
-//     },
-//     required: ["acid", "base"]
-//   };
-//   const res = await callStructuredLlm(
-//     apiKey,
-//     "You are an expert chemist.",
-//     "Give only the formula for hydrochloric acid and its opposite as JSON.",
-//     schema
-//   );
-//   console.log("STRUCTURED JSON RESPONSE:\n", res);
-// }
-
-// // Uncomment to run the tests
-// testPlain();
+// Uncomment to run directly with 'node app/llm.ts'
 // testStructured();
-

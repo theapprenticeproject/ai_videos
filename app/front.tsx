@@ -119,7 +119,8 @@ const PromptInputStep = ({
             onChange={(e) => {
               setFormData(prev => ({ ...prev, modelName: e.target.value }));
             }}
-            placeholder="e.g. gemini-2.0-flash-exp"
+            placeholder="e.g. gemini-2.0-flash-lite"
+            list="model-suggestions"
             className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
           />
         </div>
@@ -184,6 +185,13 @@ const PromptInputStep = ({
             <ArrowRight className="w-5 h-5" />
           </button>
         </div>
+
+        <datalist id="model-suggestions">
+          <option value="gemini-2.0-flash-lite" />
+          <option value="gemini-2.0-flash" />
+          <option value="gemini-1.5-flash" />
+          <option value="gemini-1.5-pro" />
+        </datalist>
 
         <div className="flex justify-center mt-6 border-t pt-6">
           <button
@@ -550,7 +558,7 @@ const PromptToVideoApp: React.FC = () => {
 
     setIsLoading(true);
     setProgress(0);
-    setStatusText("Starting...");
+    setStatusText("Queuing render job...");
 
     try {
       const userVideoId = `user_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
@@ -569,44 +577,54 @@ const PromptToVideoApp: React.FC = () => {
       });
 
       if (!response.ok) {
-        throw new Error(response.statusText);
+        const errBody = await response.json().catch(() => ({}));
+        throw new Error(errBody.error || response.statusText);
       }
 
-      if (!response.body) {
-        throw new Error("No response body");
-      }
+      const { jobId } = await response.json();
+      if (!jobId) throw new Error("No jobId returned from server");
 
-      const reader = response.body.getReader();
-      const decoder = new TextDecoder();
-      let buffer = "";
+      setStatusText("Job queued — waiting for worker...");
 
-      while (true) {
-        const { done, value } = await reader.read();
-        if (done) break;
+      const POLL_INTERVAL = 2000;
+      const MAX_WAIT_MS = 30 * 60 * 1000;
+      const startedAt = Date.now();
 
-        buffer += decoder.decode(value, { stream: true });
-        const lines = buffer.split("\n");
-        buffer = lines.pop() || ""; // Keep incomplete line in buffer
+      await new Promise<void>((resolve, reject) => {
+        const poll = async () => {
+          if (Date.now() - startedAt > MAX_WAIT_MS) {
+            reject(new Error("Job timed out after 30 minutes"));
+            return;
+          }
 
-        for (const line of lines) {
-          if (!line.trim()) continue;
           try {
-            const data = JSON.parse(line);
+            const statusRes = await fetch(`/api/queue?jobId=${encodeURIComponent(jobId)}`);
+            if (!statusRes.ok) {
+              setTimeout(poll, POLL_INTERVAL);
+              return;
+            }
 
-            if (data.type === "progress") {
-              setProgress(data.progress);
-              setStatusText(data.status);
-            } else if (data.type === "result") {
-              setVideoUrl(data.videoUrl);
+            const job = await statusRes.json();
+            if (typeof job.progress === 'number') setProgress(job.progress);
+            if (job.statusMessage) setStatusText(job.statusMessage);
+
+            if (job.status === 'done') {
+              const videoUrl = job.videoUrl ? `/${job.videoUrl}`.replace(/^\/+/, '/') : `/video-${jobId}.mp4`;
+              setVideoUrl(videoUrl);
               setCurrentStep(3);
-            } else if (data.type === "error") {
-              throw new Error(data.message);
+              resolve();
+            } else if (job.status === 'failed') {
+              reject(new Error(job.error || "Rendering failed"));
+            } else {
+              setTimeout(poll, POLL_INTERVAL);
             }
           } catch (e) {
-            console.error("Error parsing stream data:", e);
+            console.error("Polling error:", e);
+            setTimeout(poll, POLL_INTERVAL);
           }
-        }
-      }
+        };
+        poll();
+      });
 
     } catch (error: any) {
       console.error("Error generating video:", error);

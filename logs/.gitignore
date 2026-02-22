@@ -1,0 +1,2 @@
+# PM2 and worker logs — do not commit
+*.log

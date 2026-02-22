@@ -1,7 +1,7 @@
 
 
 import React, { useState, useCallback, useEffect } from 'react';
-import { ChevronRight, ChevronLeft, Play, Edit3, Settings, Video, Sparkles, ArrowRight } from 'lucide-react';
+import { ChevronRight, ChevronLeft, Play, Edit3, Settings, Video, Sparkles, ArrowRight, LayoutGrid } from 'lucide-react';
 import { callLlm, callStructuredLlm } from './llm';
 import { promptFormation } from './prompts';
 import { LLM_API_KEY } from './constant';
@@ -9,6 +9,7 @@ import data from '../dynamication.json'
 
 interface FormData {
   prompt: string;
+  modelName: string;
   contentClass: string;
   script: string;
   preferences: {
@@ -75,73 +76,97 @@ const PromptInputStep = ({
         <p className="text-gray-600">Describe the video you want to create</p>
       </div>
 
-      <div className="space-y-6">
-        <div>
-          <label className="block text-sm font-medium text-gray-700 mb-2">
-            Content Class
-          </label>
-          <select
-            value={formData.contentClass}
-            onChange={(e) => {
-              const newValue = e.target.value;
-              setFormData(prev => ({ ...prev, contentClass: newValue }));
-            }}
-            className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-          >
-            <option value="low">Low</option>
-            <option value="high">High</option>
-          </select>
-        </div>
+      <div>
+        <label className="block text-sm font-medium text-gray-700 mb-2">
+          Model Name (Optional)
+        </label>
+        <input
+          type="text"
+          value={formData.modelName}
+          onChange={(e) => {
+            setFormData(prev => ({ ...prev, modelName: e.target.value }));
+          }}
+          placeholder="e.g. gemini-2.0-flash-lite"
+          className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+        />
+      </div>
 
-        <div>
-          <label className="block text-sm font-medium text-gray-700 mb-2">
-            Video Prompt
-          </label>
-          <textarea
-            value={formData.prompt}
-            onChange={(e) => {
-              const newValue = e.target.value;
-              setFormData(prev => ({ ...prev, prompt: newValue }));
-            }}
-            placeholder="Describe your video idea in detail... (e.g., 'A peaceful morning scene with coffee and sunrise')"
-            rows={6}
-            className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-none"
-            style={{ fontSize: '16px' }} // Prevents zoom on mobile
-          />
-        </div>
+      <div>
+        <label className="block text-sm font-medium text-gray-700 mb-2">
+          Content Class
+        </label>
+        <select
+          value={formData.contentClass}
+          onChange={(e) => {
+            const newValue = e.target.value;
+            setFormData(prev => ({ ...prev, contentClass: newValue }));
+          }}
+          className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+        >
+          <option value="low">Low</option>
+          <option value="high">High</option>
+        </select>
+      </div>
 
-        {/* Flex container for both buttons */}
-        <div className="flex space-x-4">
-          {/* Generate Script Button */}
-          <button
-            type="button"
-            onClick={onSubmit} // Generate script handler
-            disabled={isLoading || !formData.prompt.trim()}
-            className="w-full sm:w-auto bg-blue-600 text-white px-6 py-3 rounded-lg font-medium hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors flex items-center justify-center space-x-2"
-          >
-            {isLoading ? (
-              <>
-                <div className="animate-spin w-5 h-5 border-2 border-white border-t-transparent rounded-full"></div>
-                <span>Generating Script...</span>
-              </>
-            ) : (
-              <>
-                <span>Generate Script</span>
-                <ArrowRight className="w-5 h-5" />
-              </>
-            )}
-          </button>
+      <div>
+        <label className="block text-sm font-medium text-gray-700 mb-2">
+          Video Prompt
+        </label>
+        <textarea
+          value={formData.prompt}
+          onChange={(e) => {
+            const newValue = e.target.value;
+            setFormData(prev => ({ ...prev, prompt: newValue }));
+          }}
+          placeholder="Describe your video idea in detail... (e.g., 'A peaceful morning scene with coffee and sunrise')"
+          rows={6}
+          className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-none"
+          style={{ fontSize: '16px' }} // Prevents zoom on mobile
+        />
+      </div>
 
-          {/* Direct Script Button */}
-          <button
-            type="button"
-            onClick={handleDirectScript} // Direct Script handler
-            className="w-full sm:w-auto bg-green-600 text-white px-6 py-3 rounded-lg font-medium hover:bg-green-700 transition-colors flex items-center justify-center space-x-2"
-          >
-            <span>Direct Script</span>
-            <ArrowRight className="w-5 h-5" />
-          </button>
-        </div>
+      {/* Flex container for both buttons */}
+      <div className="flex space-x-4">
+        {/* Generate Script Button */}
+        <button
+          type="button"
+          onClick={onSubmit} // Generate script handler
+          disabled={isLoading || !formData.prompt.trim()}
+          className="w-full sm:w-auto bg-blue-600 text-white px-6 py-3 rounded-lg font-medium hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors flex items-center justify-center space-x-2"
+        >
+          {isLoading ? (
+            <>
+              <div className="animate-spin w-5 h-5 border-2 border-white border-t-transparent rounded-full"></div>
+              <span>Generating Script...</span>
+            </>
+          ) : (
+            <>
+              <span>Generate Script</span>
+              <ArrowRight className="w-5 h-5" />
+            </>
+          )}
+        </button>
+
+        {/* Direct Script Button */}
+        <button
+          type="button"
+          onClick={handleDirectScript} // Direct Script handler
+          className="w-full sm:w-auto bg-green-600 text-white px-6 py-3 rounded-lg font-medium hover:bg-green-700 transition-colors flex items-center justify-center space-x-2"
+        >
+          <span>Direct Script</span>
+          <ArrowRight className="w-5 h-5" />
+        </button>
+      </div>
+
+      <div className="flex justify-center mt-6 border-t pt-6">
+        <button
+          type="button"
+          onClick={() => window.location.href = '/gallery'}
+          className="text-gray-600 hover:text-blue-600 font-medium transition-colors flex items-center space-x-2 px-4 py-2 rounded-lg hover:bg-blue-50"
+        >
+          <LayoutGrid className="w-5 h-5" />
+          <span>View Video Gallery</span>
+        </button>
       </div>
     </div>
   );
@@ -571,7 +596,7 @@ const detectLanguage = async (text: string): Promise<string> => {
         "description": "The language of the script. 'english' or 'hinglish'."
       }
     },
-    "required": ["script", "language"],
+    "required": ["language"],
   };
 
   let text_size = text.split("").length || 1;
@@ -607,6 +632,7 @@ const PromptToVideoApp: React.FC = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [formData, setFormData] = useState<FormData>({
     prompt: '',
+    modelName: 'gemini-2.0-flash-lite',
     contentClass: 'low',
     script: '',
     preferences: {
@@ -650,7 +676,7 @@ const PromptToVideoApp: React.FC = () => {
 
       // console.log("generating script ",LLM_API_KEY);
       // let script  = "";
-      let script = await callLlm(LLM_API_KEY, "systemPrompt", promptFormation(formData.prompt, "scriptFormation", formData));
+      let script = await callLlm(LLM_API_KEY, "systemPrompt", promptFormation(formData.prompt, "scriptFormation", formData), [], formData.modelName || "gemini-2.0-flash-lite");
       // let script = await callStructuredLlm( LLM_API_KEY, "systemPrompt", promptFormation(formData.prompt,"scriptFormation", formData),scriptSchema);
       //  console.log("data is ", script)
       // let scriptLang = script.language || "english";
@@ -682,7 +708,7 @@ const PromptToVideoApp: React.FC = () => {
 
     setIsLoading(true);
     setProgress(0);
-    setStatusText("Starting...");
+    setStatusText("Queuing render job...");
 
     try {
       const userVideoId = `user_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
@@ -691,53 +717,79 @@ const PromptToVideoApp: React.FC = () => {
         preferences: formData.preferences,
         contentClass: formData.contentClass,
         user_video_id: userVideoId,
+        modelName: formData.modelName,
       };
 
-      const response = await fetch('/api/render', {
+      // ── Step 1: Enqueue the job (returns 202 + jobId immediately) ──────────
+      const enqueueRes = await fetch('/api/render', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(payload),
       });
 
-      if (!response.ok) {
-        throw new Error(response.statusText);
+      if (!enqueueRes.ok) {
+        const errBody = await enqueueRes.json().catch(() => ({}));
+        throw new Error(errBody.error || enqueueRes.statusText);
       }
 
-      if (!response.body) {
-        throw new Error("No response body");
-      }
+      const { jobId } = await enqueueRes.json();
+      if (!jobId) throw new Error("No jobId returned from server");
 
-      const reader = response.body.getReader();
-      const decoder = new TextDecoder();
-      let buffer = "";
+      setStatusText("Job queued — waiting for worker...");
 
-      while (true) {
-        const { done, value } = await reader.read();
-        if (done) break;
+      // ── Step 2: Poll GET /api/queue?jobId=xxx until done or failed ─────────
+      const POLL_INTERVAL = 2000; // 2 seconds
+      const MAX_WAIT_MS = 30 * 60 * 1000; // 30 min timeout
+      const startedAt = Date.now();
 
-        buffer += decoder.decode(value, { stream: true });
-        const lines = buffer.split("\n");
-        buffer = lines.pop() || ""; // Keep incomplete line in buffer
-
-        for (const line of lines) {
-          if (!line.trim()) continue;
-          try {
-            const data = JSON.parse(line);
-
-            if (data.type === "progress") {
-              setProgress(data.progress);
-              setStatusText(data.status);
-            } else if (data.type === "result") {
-              setVideoUrl(data.videoUrl);
-              setCurrentStep(3);
-            } else if (data.type === "error") {
-              throw new Error(data.message);
-            }
-          } catch (e) {
-            console.error("Error parsing stream data:", e);
+      await new Promise<void>((resolve, reject) => {
+        const poll = async () => {
+          if (Date.now() - startedAt > MAX_WAIT_MS) {
+            reject(new Error("Job timed out after 30 minutes"));
+            return;
           }
-        }
-      }
+
+          try {
+            const statusRes = await fetch(`/api/queue?jobId=${encodeURIComponent(jobId)}`);
+            if (!statusRes.ok) {
+              // Job not found yet — keep polling
+              setTimeout(poll, POLL_INTERVAL);
+              return;
+            }
+
+            const job = await statusRes.json();
+
+            // Update progress UI
+            if (typeof job.progress === 'number') {
+              setProgress(job.progress);
+            }
+            if (job.statusMessage) {
+              setStatusText(job.statusMessage);
+            }
+
+            if (job.status === 'done') {
+              // Next.js serves public/ as the root, so strip the leading path
+              const videoUrl = job.videoUrl
+                ? `/${job.videoUrl}`.replace(/^\/+/, '/')
+                : `/video-${jobId}.mp4`;
+              setVideoUrl(videoUrl);
+              setCurrentStep(3);
+              resolve();
+            } else if (job.status === 'failed') {
+              reject(new Error(job.error || "Rendering failed"));
+            } else {
+              // pending or running — keep polling
+              setTimeout(poll, POLL_INTERVAL);
+            }
+          } catch (err) {
+            // Network hiccup — keep polling
+            console.warn("Poll error (retrying):", err);
+            setTimeout(poll, POLL_INTERVAL);
+          }
+        };
+
+        poll();
+      });
 
     } catch (error: any) {
       console.error("Error generating video:", error);
@@ -752,6 +804,7 @@ const PromptToVideoApp: React.FC = () => {
     setVideoUrl(null);
     setFormData({
       prompt: '',
+      modelName: 'gemini-2.0-flash-lite',
       contentClass: 'low',
       script: '',
       preferences: {
