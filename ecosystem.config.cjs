@@ -14,13 +14,18 @@ module.exports = {
     {
       name: 'nextjs-server',
       script: 'node_modules/.bin/next',
-      args: 'start',
+      args: process.env.NODE_ENV === 'development' ? 'dev' : 'start',
       instances: 1,           // single instance — no cluster (as requested)
       exec_mode: 'fork',
       cwd: './',
       env: {
         NODE_ENV: 'production',
         PORT: 3000,
+      },
+      env_development: {
+        NODE_ENV: 'development',
+        PORT: 3000,
+        NEXT_PUBLIC_DEV_MODE: 'true'
       },
       // Restart on crash, but not on clean exit
       autorestart: true,
