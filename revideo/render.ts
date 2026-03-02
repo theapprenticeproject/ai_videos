@@ -202,8 +202,8 @@ export async function renderPersonalizedVideo(params: {
   // C:\Users\chawl\Desktop\PRESENT\Interhips\C4GT-The Apprentice Project\Deployment\saas2-prod\revideo\render.ts
   // let projectFilePath = "/Users/chawl/Desktop/PRESENTInterhips/C4GT-The Apprentice Project/Deployment/saas2-prod/revideo/p2_project.ts"
 let projectFilePath =  path.resolve(process.cwd(),'revideo/p2_project.ts');
-projectFilePath = "/" + projectFilePath.replace(/\\/g,"/").slice(1);
-// projectFilePath = "/" + projectFilePath.replace(/\\/g,"/");
+// projectFilePath = "/" + projectFilePath.replace(/\\/g,"/").slice(1);
+projectFilePath = "/" + projectFilePath.replace(/\\/g,"/");
 console.log("prject file path is : ", projectFilePath);
 
   await renderVideo({

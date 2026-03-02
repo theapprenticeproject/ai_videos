@@ -10,13 +10,13 @@ export default makeProject({
     },
     rendering: {
       // resolutionScale:0.75,
-      // exporter: {
-      //   name: '@revideo/core/ffmpeg',
-      //   options: {
-      //     format: 'mp4'
-      //   },
+      exporter: {
+        name: '@revideo/core/ffmpeg',
+        options: {
+          format: 'mp4'
+        },
         
-      // }
+      }
     }
   },
 });
