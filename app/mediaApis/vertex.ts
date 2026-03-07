@@ -146,6 +146,41 @@ async function downloadFromGCS(
   return localPath;
 }
 
+// ---- Delete GCS Folder ----
+async function deleteGCSFolder(gcsPrefix: string): Promise<void> {
+  const withoutScheme = gcsPrefix.replace("gs://", "");
+  const [bucketName, ...prefixParts] = withoutScheme.split("/");
+  const prefix = prefixParts.join("/");
+
+  try {
+    await storage.bucket(bucketName).deleteFiles({ prefix });
+    console.log(`🗑️ Deleted temp GCS files at: ${gcsPrefix}`);
+  } catch (err) {
+    console.error(`Failed to delete GCS folder ${gcsPrefix}`, err);
+  }
+}
+
+// ======================================================
+// GCS FINAL UPLOAD
+// ======================================================
+
+export async function uploadFinalVideoToGCS(localPath: string, destinationName: string): Promise<string> {
+  const bucketName = "axiomatic-veo-output";
+  const destination = `final_video/${destinationName}`;
+
+  await storage.bucket(bucketName).upload(localPath, {
+    destination,
+    metadata: {
+      cacheControl: "public, max-age=31536000",
+    },
+  });
+
+  // Make it public
+  await storage.bucket(bucketName).file(destination).makePublic();
+
+  return `https://storage.googleapis.com/${bucketName}/${destination}`;
+}
+
 // ======================================================
 // MAIN FUNCTION (FINAL & SAFE)
 // ======================================================
@@ -237,6 +272,9 @@ export async function generateVeoVideo(
       );
 
       console.log("⬇️ Saved locally:", localPath);
+
+      // Delete the temporary Veo files directly from GCS so no temp remains in GCS
+      await deleteGCSFolder(outputPrefix);
 
       return { gcsUri, localPath };
     }

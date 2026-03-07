@@ -119,14 +119,14 @@ const PromptInputStep = ({
             onChange={(e) => {
               setFormData(prev => ({ ...prev, modelName: e.target.value }));
             }}
-            placeholder="e.g. gemini-2.0-flash-lite"
+            placeholder="For default it is: gemini-2.0-flash-lite"
             list="model-suggestions"
             className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
           />
         </div>
         <div>
           <label className="block text-sm font-medium text-gray-700 mb-2">
-            Content Class
+            Target Audience Level
           </label>
           <select
             value={formData.contentClass}
@@ -135,8 +135,8 @@ const PromptInputStep = ({
             }}
             className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
           >
-            <option value="low">Low</option>
-            <option value="high">High</option>
+            <option value="low">Junior Students (Primary)</option>
+            <option value="high">Senior Students (Secondary)</option>
           </select>
         </div>
 
@@ -252,7 +252,8 @@ const ScriptVerificationStep = ({
         </button>
         <button
           onClick={onNext}
-          className="flex-1 bg-blue-600 text-white px-6 py-3 rounded-lg font-medium hover:bg-blue-700 transition-colors flex items-center justify-center space-x-2"
+          disabled={!formData.script.trim()}
+          className="flex-1 bg-blue-600 text-white px-6 py-3 rounded-lg font-medium hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors flex items-center justify-center space-x-2"
         >
           <span>Finalize Script</span>
           <ArrowRight className="w-5 h-5" />
@@ -349,12 +350,14 @@ const PreferencesStep = ({
               ...prev,
               preferences: { ...prev.preferences, style: 'slideshow', animation: false }
             }))}
-            className={`p-3 rounded-lg border-2 transition-colors ${formData.preferences.style === 'slideshow' && !formData.preferences.animation
-              ? 'border-blue-500 bg-blue-50 text-blue-700'
-              : 'border-gray-200 hover:border-gray-300'
+            className={`p-3 rounded-lg border-2 transition-all duration-200 flex flex-col items-center text-center ${formData.preferences.style === 'slideshow' && !formData.preferences.animation
+              ? 'border-blue-500 bg-blue-50 text-blue-700 shadow-sm'
+              : 'border-gray-200 hover:border-gray-300 bg-white'
               }`}
           >
-            Story
+            <span className="font-bold text-sm">Story</span>
+            <span className="text-[11px] mt-1 font-medium opacity-80">Narrative Storybook Slideshow</span>
+            <span className="text-[10px] mt-1 opacity-60">Classic slideshow with high-quality AI imagery</span>
           </button>
           <button
             type="button"
@@ -362,12 +365,14 @@ const PreferencesStep = ({
               ...prev,
               preferences: { ...prev.preferences, style: 'slideshow', animation: true }
             }))}
-            className={`p-3 rounded-lg border-2 transition-colors ${formData.preferences.animation
-              ? 'border-blue-500 bg-blue-50 text-blue-700'
-              : 'border-gray-200 hover:border-gray-300'
+            className={`p-3 rounded-lg border-2 transition-all duration-200 flex flex-col items-center text-center ${formData.preferences.animation
+              ? 'border-blue-500 bg-blue-50 text-blue-700 shadow-sm'
+              : 'border-gray-200 hover:border-gray-300 bg-white'
               }`}
           >
-            Animation
+            <span className="font-bold text-sm">Animation</span>
+            <span className="text-[11px] mt-1 font-medium opacity-80">Dynamic Character Animation</span>
+            <span className="text-[10px] mt-1 opacity-60">Lively scenes with fluid character movements</span>
           </button>
         </div>
       </div>
@@ -420,10 +425,14 @@ const PreferencesStep = ({
 // Result Step Component
 const ResultStep = ({
   videoUrl,
-  onReset
+  onReset,
+  prompt,
+  script
 }: {
   videoUrl: string | null;
   onReset: () => void;
+  prompt: string;
+  script: string;
 }) => (
   <div className="max-w-4xl mx-auto">
     <div className="text-center mb-8">
@@ -451,6 +460,29 @@ const ResultStep = ({
           </div>
         </div>
       )}
+
+      {/* Video Details Section */}
+      <div className="bg-blue-50 p-6 rounded-lg border border-blue-100 space-y-4">
+        <h3 className="text-lg font-semibold text-blue-900 flex items-center">
+          <Sparkles className="w-5 h-5 mr-2" />
+          Video Details
+        </h3>
+        <div>
+          <h4 className="text-sm font-bold text-blue-800 mb-1">Original Prompt:</h4>
+          <p className="text-sm text-gray-700 italic">"{prompt || 'No prompt provided'}"</p>
+        </div>
+        <div>
+          <h4 className="text-sm font-bold text-blue-800 mb-1">Script Chunks:</h4>
+          <div className="max-h-40 overflow-y-auto space-y-2 pr-2 custom-scrollbar">
+            {(script || '').split(/\n\n|Scene/).filter(Boolean).map((chunk, i) => (
+              <div key={i} className="text-xs bg-white p-2 rounded border border-blue-200 text-gray-600">
+                <span className="font-mono text-blue-400 mr-2">#{i + 1}</span>
+                {chunk.trim()}
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
 
       <div className="flex space-x-4">
         <button
@@ -516,6 +548,18 @@ const PromptToVideoApp: React.FC = () => {
     }
   });
   const [videoUrl, setVideoUrl] = useState<string | null>(null);
+  const [videoHistory, setVideoHistory] = useState<any[]>([]);
+
+  useEffect(() => {
+    const history = localStorage.getItem('video_creation_history');
+    if (history) {
+      try {
+        setVideoHistory(JSON.parse(history));
+      } catch (e) {
+        console.error("Failed to parse video history", e);
+      }
+    }
+  }, []);
 
   const steps = [
     { id: 'prompt', title: 'Prompt Input', icon: Edit3 },
@@ -611,6 +655,24 @@ const PromptToVideoApp: React.FC = () => {
             if (job.status === 'done') {
               const videoUrl = job.videoUrl ? `/${job.videoUrl}`.replace(/^\/+/, '/') : `/video-${jobId}.mp4`;
               setVideoUrl(videoUrl);
+
+              // Save to history
+              const newVideo = {
+                id: jobId,
+                prompt: formData.prompt,
+                script: formData.script,
+                videoUrl: videoUrl,
+                timestamp: new Date().toISOString(),
+                preferences: formData.preferences,
+                targetLevel: formData.contentClass === 'low' ? 'Junior' : 'Senior'
+              };
+
+              const updatedHistory = [newVideo, ...videoHistory].slice(0, 10);
+              setVideoHistory(updatedHistory);
+              localStorage.setItem('video_creation_history', JSON.stringify(updatedHistory));
+              localStorage.setItem('last_video_prompt', formData.prompt);
+              localStorage.setItem('last_video_script', formData.script);
+
               setCurrentStep(3);
               resolve();
             } else if (job.status === 'failed') {
@@ -712,9 +774,12 @@ const PromptToVideoApp: React.FC = () => {
             <ResultStep
               videoUrl={videoUrl}
               onReset={resetForm}
+              prompt={formData.prompt}
+              script={formData.script}
             />
           )}
         </div>
+
       </div>
     </div>
   );

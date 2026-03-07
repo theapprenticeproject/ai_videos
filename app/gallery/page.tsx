@@ -1,10 +1,10 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { Play, Download, ArrowLeft, Video, Film } from 'lucide-react';
+import { Play, Download, ArrowLeft, Video, Film, Sparkles } from 'lucide-react';
 
 export default function GalleryPage() {
-    const [videos, setVideos] = useState<string[]>([]);
+    const [videos, setVideos] = useState<any[]>([]);
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
@@ -71,29 +71,57 @@ export default function GalleryPage() {
                 ) : (
                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                         {videos.map((video, index) => (
-                            <div key={index} className="bg-white rounded-xl overflow-hidden shadow-md hover:shadow-xl transition-all duration-300 border border-gray-100 group">
+                            <div key={index} className="bg-white rounded-xl overflow-hidden shadow-md hover:shadow-xl transition-all duration-300 border border-gray-100 group flex flex-col">
                                 <div className="aspect-video relative bg-gray-100">
                                     <video
                                         controls
                                         preload="metadata"
                                         className="w-full h-full object-contain"
                                     >
-                                        <source src={`/${video}`} type="video/mp4" />
+                                        <source src={video.gcsUrl || `/${video.filename}`} type="video/mp4" />
                                         Your browser does not support the video tag.
                                     </video>
                                 </div>
 
-                                <div className="p-4">
-                                    <div className="flex items-start justify-between gap-2">
-                                        <p className="text-sm font-medium text-gray-700 truncate flex-1" title={video}>
-                                            {video}
+                                <div className="p-4 flex flex-col flex-1">
+                                    <div className="flex items-start justify-between gap-2 overflow-hidden">
+                                        <p className="text-[10px] font-mono text-gray-400 truncate flex-1" title={video.filename}>
+                                            {video.filename}
                                         </p>
                                     </div>
 
-                                    <div className="mt-4 flex justify-end">
+                                    {video.prompt && (
+                                        <div className="mt-3">
+                                            <p className="text-[10px] font-bold text-gray-400 uppercase tracking-wider">Original Prompt</p>
+                                            <p className="text-xs text-gray-600 italic line-clamp-3 mt-1 bg-gray-50 p-2 rounded border border-gray-100">
+                                                "{video.prompt}"
+                                            </p>
+                                        </div>
+                                    )}
+
+                                    {video.chunks && video.chunks.length > 0 && (
+                                        <div className="mt-4">
+                                            <p className="text-[10px] font-bold text-gray-400 uppercase tracking-wider mb-2 flex items-center gap-1">
+                                                <Sparkles className="w-3 h-3 text-blue-400" />
+                                                Script Segments
+                                            </p>
+                                            <div className="space-y-1.5 max-h-32 overflow-y-auto pr-1">
+                                                {video.chunks.map((chunk: any, i: number) => (
+                                                    <div key={i} className="text-[10px] text-gray-500 bg-blue-50/50 p-1.5 rounded border border-blue-100/30 leading-relaxed">
+                                                        <span className="font-bold text-blue-400 mr-1">#{i + 1}</span>
+                                                        {chunk.chunkText || chunk.chunk}
+                                                    </div>
+                                                ))}
+                                            </div>
+                                        </div>
+                                    )}
+
+                                    <div className="mt-auto pt-4 flex justify-end">
                                         <a
-                                            href={`/${video}`}
-                                            download
+                                            href={video.gcsUrl || `/${video.filename}`}
+                                            download={!video.gcsUrl}
+                                            target={video.gcsUrl ? "_blank" : undefined}
+                                            rel="noopener noreferrer"
                                             className="flex items-center space-x-1.5 text-xs font-medium text-blue-600 bg-blue-50 px-3 py-1.5 rounded-full hover:bg-blue-100 transition-colors"
                                         >
                                             <Download className="w-3.5 h-3.5" />

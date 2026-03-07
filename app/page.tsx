@@ -3,8 +3,8 @@
 import PromptToVideoApp from './front'; // Pointing back to front.tsx as requested
 
 
-console.log('PromptToVideoApp:', PromptToVideoApp);
-console.log('Type is:', typeof PromptToVideoApp);
+
+// Removed logs that were causing dev server crashes on Windows
 
 export default function Home() {
 	return (

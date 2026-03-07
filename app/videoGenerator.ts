@@ -93,7 +93,7 @@ function formatSceneJsonToAssets(
   sceneJson: any
 ): { path: string; type: string; start: number; end: number }[] {
   return sceneJson.map((chunk: any) => ({
-    path: chunk.templateJson.path,
+    path: chunk.templateJson.path ? `../public/${chunk.templateJson.path}` : null,
     type: chunk.templateJson.path?.includes(".mp4") ? "video" : "image",
     start: chunk.startTime,
     end: chunk.endTime,
@@ -147,7 +147,7 @@ export async function callVideoGenerator(
   onProgress?: (progress: number, status: string) => void,
   modelName: string = "gemini-2.0-flash-lite",
   vidGen: string = "veo"
-): Promise<string> {
+): Promise<{ videoUrl: string; chunks: any[] }> {
   console.log(`[videoGenerator] >>> STARTING Generator | Process: ${process.pid} | ID: ${user_video_id}`);
   // Helper to safely call progress
   const reportProgress = (p: number, s: string) => {
@@ -172,7 +172,7 @@ export async function callVideoGenerator(
         reportProgress(90, "Rendering static video...");
         await renderPersonalizedVideo(renderParams);
         reportProgress(100, "Video generated successfully!");
-        return `video-${renderParams.user_video_id}.mp4`;
+        return { videoUrl: `video-${renderParams.user_video_id}.mp4`, chunks: renderParams.chunks };
       } else {
         console.warn("Debug file not found. Falling back to normal generation.");
       }
@@ -922,7 +922,7 @@ If yes, provide a specific video generation prompt describing the movement.`;
   //   body: JSON.stringify({ words, assets, options })
   // });
   deleteFiles(tempFiles);
-  return finalVideoPath;
+  return { videoUrl: finalVideoPath, chunks: sceneJson };
 }
 
 // async function callAssetSearch(chunkText: string): Promise<{ selectedUrl: string; alternateUrls: string[] }> {

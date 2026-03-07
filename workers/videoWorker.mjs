@@ -20,9 +20,11 @@ import './loadEnv.mjs';
 
 // ─── Static import (resolved by tsx/esm at startup) ──────────────────────────
 import { callVideoGenerator } from '../app/videoGenerator.ts';
+import { uploadFinalVideoToGCS } from '../app/mediaApis/vertex.ts';
 
 import { fileURLToPath } from 'url';
 import path from 'path';
+import fs from 'fs';
 import { writeJob, getJobsByStatus, purgeOldJobs } from './jobStore.mjs';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
@@ -61,7 +63,7 @@ async function processJob(job) {
       vidGen    = 'veo',
     } = params;
 
-    const videoUrl = await callVideoGenerator(
+    const { videoUrl, chunks } = await callVideoGenerator(
       script,
       preferences,
       contentClass,
@@ -75,12 +77,43 @@ async function processJob(job) {
       vidGen
     );
 
-    console.log(`[worker] Job ${jobId} completed -> ${videoUrl}`);
+    const localFinalPath = path.join(ROOT, 'public', videoUrl);
+    console.log(`[worker] Uploading final video to GCS...`);
+    const gcsUrl = await uploadFinalVideoToGCS(localFinalPath, videoUrl);
+    
+    // Update gallery.json track
+    const galleryDbPath = path.join(ROOT, 'public', 'final_videos.json');
+    let galleryDb = [];
+    if (fs.existsSync(galleryDbPath)) {
+      try {
+        galleryDb = JSON.parse(fs.readFileSync(galleryDbPath, 'utf8'));
+      } catch (e) {
+        console.error("Failed to parse galleryDB:", e);
+      }
+    }
+    galleryDb.push({
+      filename: videoUrl,
+      gcsUrl,
+      prompt: params.prompt || "",
+      chunks: chunks,
+      createdAt: Date.now()
+    });
+    fs.writeFileSync(galleryDbPath, JSON.stringify(galleryDb, null, 2));
+
+    // Delete local final video
+    if (fs.existsSync(localFinalPath)) {
+      fs.unlinkSync(localFinalPath);
+      console.log(`[worker] Deleted local final video: ${localFinalPath}`);
+    }
+
+    console.log(`[worker] Job ${jobId} completed -> ${gcsUrl}`);
     writeJob(jobId, {
       status: 'done',
       progress: 100,
       statusMessage: 'Video generated successfully!',
-      videoUrl,
+      videoUrl: gcsUrl,
+      chunks, // Save chunks
+      prompt: params.prompt, // Save prompt from params
       finishedAt: Date.now(),
     });
 

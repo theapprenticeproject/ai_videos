@@ -1,8 +1,9 @@
-import type {Metadata} from 'next';
-import {Inter} from 'next/font/google';
+import type { Metadata } from 'next';
+import { Inter } from 'next/font/google';
+import { ClerkProvider, SignInButton, SignUpButton, Show, UserButton } from "@clerk/nextjs";
 import './globals.css';
 
-const inter = Inter({subsets: ['latin']});
+const inter = Inter({ subsets: ['latin'] });
 
 export const metadata: Metadata = {
 	title: 'Create Next App',
@@ -19,7 +20,25 @@ export default function RootLayout({
 			<head>
 				<link rel="stylesheet" href="http://localhost:4000/player/project.css" />
 			</head>
-			<body className={inter.className}>{children}</body>
+			<body className={inter.className}>
+				<ClerkProvider>
+					<header className="flex justify-between items-center p-4 border-b">
+						<div className="text-xl font-bold italic">AI Video Generator</div>
+						<div className="flex gap-4 items-center">
+							<Show when="signed-out">
+								<SignInButton />
+								<SignUpButton />
+							</Show>
+							<Show when="signed-in">
+								<UserButton />
+							</Show>
+						</div>
+					</header>
+					<main>
+						{children}
+					</main>
+				</ClerkProvider>
+			</body>
 		</html>
 	);
 }

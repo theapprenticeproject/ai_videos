@@ -44,3 +44,6 @@ transcription.json
 *.mp3
 
 app/mediaApis/axiomatic-treat-417617-84f05b46f512.json
+
+# clerk configuration (can include secrets)
+/.clerk/
