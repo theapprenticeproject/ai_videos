@@ -1,51 +1,76 @@
 {
-  "user_video_id": "user_1772755133494_oppyksdcs",
+  "user_video_id": "user_1773256761992_xykalbz7v",
   "chunks": [
     {
       "chunkId": 0,
-      "chunkText": "Hey everyone",
-      "keywords": "Animated text saying \"Hey everyone\"",
+      "chunkText": "in given script ai is revolutionary if used ethically",
+      "keywords": "Animated for kids explainer: A futuristic city skyline with AI-powered robots working alongside humans in various ethical scenarios. Highlight examples of AI in healthcare, education, and environmental protection.",
       "startTime": 0,
-      "endTime": 1.161,
+      "endTime": 1.126,
       "words": [
         {
-          "word": "Hey",
+          "word": "ai",
           "startTime": 0,
-          "endTime": 0.302
+          "endTime": 0.128
         },
         {
-          "word": "everyone",
-          "startTime": 0.36,
-          "endTime": 1.161
+          "word": "is",
+          "startTime": 0.372,
+          "endTime": 0.453
+        },
+        {
+          "word": "revolutionary",
+          "startTime": 0.522,
+          "endTime": 1.126
         }
       ],
-      "selectedUrl": "generated-imagen4",
+      "selectedUrl": "generated-nano-batch",
       "alternateUrls": [],
       "template": "slideshow",
       "templateJson": {
-        "path": "generated_imagen4_1772755202390_1807.jpeg"
+        "path": "batch_gen_1773256772628_0_52821.png"
       },
       "tag": ""
     }
   ],
   "words": [
     {
-      "word": "Hey",
+      "word": "ai",
       "start": 0,
-      "end": 0.302
+      "end": 0.128
     },
     {
-      "word": "everyone",
-      "start": 0.36,
-      "end": 1.161
+      "word": "is",
+      "start": 0.372,
+      "end": 0.453
+    },
+    {
+      "word": "revolutionary",
+      "start": 0.522,
+      "end": 1.126
+    },
+    {
+      "word": "if",
+      "start": 1.161,
+      "end": 1.242
+    },
+    {
+      "word": "used",
+      "start": 1.324,
+      "end": 1.498
+    },
+    {
+      "word": "ethically",
+      "start": 1.533,
+      "end": 2.276
     }
   ],
   "assets": [
     {
-      "path": "generated_imagen4_1772755202390_1807.jpeg",
+      "path": "../public/batch_gen_1773256772628_0_52821.png",
       "type": "image",
       "start": 0,
-      "end": 1.201633
+      "end": 2.324898
     }
   ],
   "options": {
@@ -57,6 +82,6 @@
       "normalColor": "#FFF"
     },
     "logoUrl": "logo.png",
-    "audioUrl": "../audio_user_1772755133494_oppyksdcs.mp3"
+    "audioUrl": "http://localhost:9000/audio_user_1773256761992_xykalbz7v.mp3"
   }
 }

@@ -90,6 +90,15 @@ const nextConfig = {
     return config;
   },
 
+  // async rewrites() {
+  //   return [
+  //     {
+  //       source: "/clerk/:path*",
+  //       destination: "https://clerk.aivideogenerator.duckdns.org/:path*",
+  //     },
+  //   ];
+  // },
+
   async headers() {
     return [
       {

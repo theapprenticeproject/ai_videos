@@ -1,6 +1,6 @@
 import type { Metadata } from 'next';
 import { Inter } from 'next/font/google';
-import { ClerkProvider, SignInButton, SignUpButton, Show, UserButton } from "@clerk/nextjs";
+import { ClerkProvider, SignInButton, SignUpButton, SignedIn, SignedOut, UserButton } from "@clerk/nextjs";
 import './globals.css';
 
 const inter = Inter({ subsets: ['latin'] });
@@ -18,20 +18,19 @@ export default function RootLayout({
 	return (
 		<html lang="en">
 			<head>
-				<link rel="stylesheet" href="http://localhost:4000/player/project.css" />
 			</head>
 			<body className={inter.className}>
 				<ClerkProvider>
 					<header className="flex justify-between items-center p-4 border-b">
 						<div className="text-xl font-bold italic">AI Video Generator</div>
 						<div className="flex gap-4 items-center">
-							<Show when="signed-out">
+							<SignedOut>
 								<SignInButton />
 								<SignUpButton />
-							</Show>
-							<Show when="signed-in">
+							</SignedOut>
+							<SignedIn>
 								<UserButton />
-							</Show>
+							</SignedIn>
 						</div>
 					</header>
 					<main>

@@ -19,7 +19,7 @@
     "pm2:status": "npx pm2 list"
   },
   "dependencies": {
-    "@clerk/nextjs": "^7.0.1",
+    "@clerk/nextjs": "^5.0.0",
     "@elevenlabs/elevenlabs-js": "^2.26.0",
     "@google-cloud/speech": "^7.2.0",
     "@google-cloud/storage": "^7.18.0",
@@ -34,6 +34,7 @@
     "@revideo/player": "^0.10.4",
     "@revideo/player-react": "^0.10.4",
     "class-variance-authority": "^0.7.0",
+    "cross-env": "^10.1.0",
     "dotenv": "^17.2.3",
     "ffprobe-static": "^3.1.0",
     "fluent-ffmpeg": "^2.1.3",

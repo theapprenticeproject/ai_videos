@@ -175,8 +175,8 @@ export async function uploadFinalVideoToGCS(localPath: string, destinationName: 
     },
   });
 
-  // Make it public
-  await storage.bucket(bucketName).file(destination).makePublic();
+  // No longer making the file public via code as it requires 'storage.objects.getIamPolicy' permissions.
+  // Instead, manage public access at the bucket level.
 
   return `https://storage.googleapis.com/${bucketName}/${destination}`;
 }
@@ -273,8 +273,7 @@ export async function generateVeoVideo(
 
       console.log("⬇️ Saved locally:", localPath);
 
-      // Delete the temporary Veo files directly from GCS so no temp remains in GCS
-      await deleteGCSFolder(outputPrefix);
+      // We skip deleteGCSFolder(outputPrefix) as requested to keep temp files in cloud
 
       return { gcsUri, localPath };
     }

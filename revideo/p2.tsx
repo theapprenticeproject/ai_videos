@@ -106,9 +106,26 @@ export default makeScene2D("SCENE2", function* (view) {
   let assets: any = getAssets();
   let options: any = getOptions();
 
-  words = JSON.parse(words);
-  assets = JSON.parse(assets);
-  options = JSON.parse(options);
+  console.log("DEBUG: getWords Type:", typeof getWords, "Value (stringified):", JSON.stringify(getWords()));
+  console.log("DEBUG: getAssets Type:", typeof getAssets, "Value (stringified):", JSON.stringify(getAssets()));
+  console.log("DEBUG: getOptions Type:", typeof getOptions, "Value (stringified):", JSON.stringify(getOptions()));
+
+  try {
+    if (typeof words === 'string') words = JSON.parse(words);
+    if (typeof assets === 'string') assets = JSON.parse(assets);
+    if (typeof options === 'string') options = JSON.parse(options);
+  } catch (e) {
+    console.error("FATAL: JSON parse error in scene:", e);
+  }
+
+  const workerId = vars.get('workerIndex', '?')();
+  console.log(`[Worker ${workerId}] Options:`, JSON.stringify(options));
+  console.log(`[Worker ${workerId}] Audio URL:`, options.audioUrl);
+  console.log(`[Worker ${workerId}] Logo URL:`, options.logoUrl);
+
+  console.log("DEBUG: words Type (after parse):", Array.isArray(words) ? "array" : typeof words);
+  console.log("DEBUG: assets Type (after parse):", Array.isArray(assets) ? "array" : typeof assets);
+  console.log("DEBUG: options Type (after parse):", typeof options, "Keys:", Object.keys(options));
 
   console.log("👤 username:", username);
   console.log("📝 words:", words);
@@ -136,6 +153,7 @@ export default makeScene2D("SCENE2", function* (view) {
 
   // Logo
   if (options.logoUrl) {
+    console.log("Adding logo with src:", options.logoUrl);
     view.add(
       <Img src={options.logoUrl} width={200} height={50} x={-540} y={340} zIndex={30} />
     );
@@ -143,6 +161,7 @@ export default makeScene2D("SCENE2", function* (view) {
 
   // Audio
   if (options.audioUrl) {
+    console.log("Adding audio with src:", options.audioUrl);
     view.add(<Audio src={options.audioUrl} play={true} />);
   }
 
@@ -190,6 +209,7 @@ export default makeScene2D("SCENE2", function* (view) {
 
     if (asset.type === 'image') {
       mediaRef = createRef<Img>();
+      console.log("Adding image asset with src:", asset.path);
       view.add(
         <Img
           ref={mediaRef}
@@ -202,6 +222,7 @@ export default makeScene2D("SCENE2", function* (view) {
       );
     } else {
       mediaRef = createRef<Video>();
+      console.log("Adding video asset with src:", asset.path);
       view.add(
         <Video
           ref={mediaRef}
