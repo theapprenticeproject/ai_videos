@@ -5,7 +5,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createJob, getJob } from '../../../workers/jobStore.mjs';
 
-// ─── GET: Poll job status ─────────────────────────────────────────────────────
+// ——— GET: Poll job status ——————————————————————————————————————————————————
 export async function GET(request: NextRequest) {
   const { searchParams } = new URL(request.url);
   const jobId = searchParams.get('jobId');
@@ -24,7 +24,7 @@ export async function GET(request: NextRequest) {
   return NextResponse.json(job);
 }
 
-// ─── POST: Enqueue a new render job ──────────────────────────────────────────
+// ——— POST: Enqueue a new render job ————————————————————————————————————————
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json();

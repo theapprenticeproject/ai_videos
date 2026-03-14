@@ -287,7 +287,7 @@ export async function callVideoGenerator(
 
   // Each chunk should be meaningful and suitable for a visual video scene.
   // Limit each chunk to a maximum of 10-15 words.
-  // Strictly Do not change any spelling, punctuation, or characters from the original text — even if they are incorrect. Keep everything exactly as it appears.`,
+  // Strictly Do not change any spelling, punctuation, or characters from the original text â€” even if they are incorrect. Keep everything exactly as it appears.`,
   //       },
   //     },
   //     required: ["chunks"],
@@ -311,7 +311,7 @@ export async function callVideoGenerator(
         "description": `Return an array of string chunks without any spell changes from the given transcript.
 Each chunk should be meaningful and suitable for a visual video scene.
 Limit each chunk to a maximum of 10-15 words.
-Strictly Do not change any spelling, punctuation, or characters from the original text — even if they are incorrect. Keep everything exactly as it appears.`,
+Strictly Do not change any spelling, punctuation, or characters from the original text â€” even if they are incorrect. Keep everything exactly as it appears.`,
       }
     },
     "required": ["chunks"]
@@ -329,7 +329,7 @@ No spelling, punctuation, formatting, or word changes.
 Preserve original sentence structure and wording exactly.
 Do not add, remove, or rephrase anything.
 Focus solely on segmenting the text into chunks that make sense visually.
-Strictly Do not change any spelling, punctuation, or characters from the original text — even if they are incorrect. Keep everything exactly as it appears.
+Strictly Do not change any spelling, punctuation, or characters from the original text â€” even if they are incorrect. Keep everything exactly as it appears.
 Output only the array of chunk objects. Do not include any explanations or extra text.`;
   // You are a helpful assistant that divides a transcript into meaningful chunks which can be represented with independent visual for video scenes. Return array of chunk objects with chunkText.chunk should not be more than maximum 8-10 words. Strictly make sure not to make any spelling or punctuation or any changes to given in sentence words
   // const chunkResponseStr = await callStructuredLlm(
@@ -983,14 +983,14 @@ If yes, provide a specific video generation prompt describing the movement.`;
 // Zombies will pop up in front of you, and you will tap on them to make them disappear.
 // Sounds fun, right?
 // Through this project, you will learn how critical thinking and problem-solving skills are applied in the real world.
-// Just like in the game, where zombies pop up and you tap them to make them disappear, in real life, you need to ""tap"" away unhealthy habits and negative thoughts — meaning, get rid of them — so you don't become a zombie yourself.
+// Just like in the game, where zombies pop up and you tap them to make them disappear, in real life, you need to ""tap"" away unhealthy habits and negative thoughts â€” meaning, get rid of them â€” so you don't become a zombie yourself.
 // So, take care of yourself, stay active, eat healthy, think positive, and always be ready to ""tap"" away real-life zombies!
 // This skill will be very helpful to you in life, because every day we face new challenges that we need to solve.
 
 // (async () => {
 //   try {
 //     const script = `
-// Imagine you have ₹100 and need to buy either a notebook or a toy. But you can only buy one.
+// Imagine you have â‚¹100 and need to buy either a notebook or a toy. But you can only buy one.
 // What would you choose?
 // `;
 //     const preferences = {
@@ -1033,23 +1033,26 @@ If yes, provide a specific video generation prompt describing the movement.`;
 
 // Haan lekin tum mera yeh sandesh sab tak kaise pahunchaogi
 
-// Arey! Earth aur Saturn toh Sun se bhi chhote lag rahe hain! (fun fact — kya aapko pata hai ke Sun is 109 times wider than Earth aur Saturn is 9.5 times bigger than Earth?) Ab ise kaise fix karein? Inhe aise click karne se to kuchh nahi ho raha!
-// Yahan humari madad karenge ‘Look’ category ke blocks! Scratch Jr. mein, hum characters ka size bada ya chota karne ke liye in purple blocks ka use karte hain. Is category ko ‘Looks’ kehte hain. Isse hum apne characters ke looks change kar sakte hain — jaise unki sizes, unko chhupana, dikhana, ya dialogues add karna.
-// Ab Sun ka size badhane ke liye pehle Sun pe click karenge, fir looks category mein jaake ‘grow’ block dhundhenge. Ye blocks thode same lag rahe hain. Click karne se hum unke names dekhte hain. Usse white programming area mein drag karenge aur tap karenge — aur Sun ka size badhne lagega. Isse fir se tap karte hai - haan ab ye perfect lag raha hai! Ab poore project me Sun ka size yahi rahega - toh humne iss grow block ki zaroorat nahi hai, to hum usse programming area se aise nikalke delete kar sakte hain.
+// Arey! Earth aur Saturn toh Sun se bhi chhote lag rahe hain! (fun fact â€” kya aapko pata hai ke Sun is 109 times wider than Earth aur Saturn is 9.5 times bigger than Earth?) Ab ise kaise fix karein? Inhe aise click karne se to kuchh nahi ho raha!
+// Yahan humari madad karenge â€˜Lookâ€™ category ke blocks! Scratch Jr. mein, hum characters ka size bada ya chota karne ke liye in purple blocks ka use karte hain. Is category ko â€˜Looksâ€™ kehte hain. Isse hum apne characters ke looks change kar sakte hain â€” jaise unki sizes, unko chhupana, dikhana, ya dialogues add karna.
+// Ab Sun ka size badhane ke liye pehle Sun pe click karenge, fir looks category mein jaake â€˜growâ€™ block dhundhenge. Ye blocks thode same lag rahe hain. Click karne se hum unke names dekhte hain. Usse white programming area mein drag karenge aur tap karenge â€” aur Sun ka size badhne lagega. Isse fir se tap karte hai - haan ab ye perfect lag raha hai! Ab poore project me Sun ka size yahi rahega - toh humne iss grow block ki zaroorat nahi hai, to hum usse programming area se aise nikalke delete kar sakte hain.
 // Aise hi hum Saturn ka size bhi badhaenge.(repeat)
 
 // Ab baari hai Earth ko chhota karne ki, toh hum shrink block use karenge. Ye raha, ab ise aise drag karte hain aur tap karte hain. Well done!
-// Ab hum in characters mein thoda action aur life add karte hai. Earth pehle cough karta hai, phir ek baari hide hoke wapis dikhai deta hai, aur bolta hai ‘Help! Save me!’
-// Iske liye hum use karenge ‘say’ blocks aur usmein dialogues type karenge. In dono say blocks ke beech mein hum ‘hide’ aur ‘show’ blocks bhi add karenge to give a coughing effect.
+// Ab hum in characters mein thoda action aur life add karte hai. Earth pehle cough karta hai, phir ek baari hide hoke wapis dikhai deta hai, aur bolta hai â€˜Help! Save me!â€™
+// Iske liye hum use karenge â€˜sayâ€™ blocks aur usmein dialogues type karenge. In dono say blocks ke beech mein hum â€˜hideâ€™ aur â€˜showâ€™ blocks bhi add karenge to give a coughing effect.
 // Ab ye green flag press karne par hum chahte hain ki code apne aap run ho. Iske liye hum ye yellow block category se start on green flag ka block use karenge. Is category ke blocks character ko batate hain ki kab start karna hai. Ise lagate hain in dono blocks ke aage. Aur humara code end karne ke liye hum lagate hain red color se ye END block.
 // Ye blocks train ke dibbon ki tarhan hain. Starting me use hote hain yellow category ke blocks, last me red, and middle mein baaki color ke blocks. Inko hum jab saath mein lagate hain tab humara code work karta hai.
-// Ab Saturn ko code karte hain. Saturn thoda grow aur shrink hota hai, fir wo bolta hai ‘Hey Earth, are you ok?.’ Blocks pe click kar ke dekhte hain. Ab upar iss green flag par click karte hain. Are Saturn to Green flag se start hi nahi hua? Something is missing na! Hmm, iska matlab hume Saturn ke code ke liye bhi start on green flag ka yellow block lagana padega! Aur aise hi lagate hain end block. There you go! Now it’s working perfectly!
-// Lastly, hum apne project ke liye ek title add karenge. Us ke liye,iss  ABC icon pe click karenge, aur type karenge ‘Outer Space’. Iska size thoda bada lag raha hai, toh mai size chhota karungi, aur iska color bhi change kar sakti hoon to any of these color options.
-// Aur bus, our project is ready! Chalo isse full screen pe dekhte hain — uske liye left side pe icon pe click karna hoga! There you go! Kitna sundar lag raha hai ye, what do you think?"
+// Ab Saturn ko code karte hain. Saturn thoda grow aur shrink hota hai, fir wo bolta hai â€˜Hey Earth, are you ok?.â€™ Blocks pe click kar ke dekhte hain. Ab upar iss green flag par click karte hain. Are Saturn to Green flag se start hi nahi hua? Something is missing na! Hmm, iska matlab hume Saturn ke code ke liye bhi start on green flag ka yellow block lagana padega! Aur aise hi lagate hain end block. There you go! Now itâ€™s working perfectly!
+// Lastly, hum apne project ke liye ek title add karenge. Us ke liye,iss  ABC icon pe click karenge, aur type karenge â€˜Outer Spaceâ€™. Iska size thoda bada lag raha hai, toh mai size chhota karungi, aur iska color bhi change kar sakti hoon to any of these color options.
+// Aur bus, our project is ready! Chalo isse full screen pe dekhte hain â€” uske liye left side pe icon pe click karna hoga! There you go! Kitna sundar lag raha hai ye, what do you think?"
 
 // output1
 // Our objective today is to kill the zombie. Your game will look something like this:
 // Sounds fun, right?
 // Through this project, you will learn how critical thinking and problem-solving skills are applied in the real world.
-// Just like in the game, where zombies pop up and you tap them to make them disappear, in real life, you need to ""tap"" away unhealthy habits and negative thoughts — meaning, get rid of them — so you don't become a zombie yourself.
+// Just like in the game, where zombies pop up and you tap them to make them disappear, in real life, you need to ""tap"" away unhealthy habits and negative thoughts â€” meaning, get rid of them â€” so you don't become a zombie yourself.
 // So, take care of yourself, stay active, eat healthy, think positive, and always be ready to ""tap"" away real-life zombies!
+
+
+

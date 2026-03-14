@@ -164,6 +164,16 @@ async function deleteGCSFolder(gcsPrefix: string): Promise<void> {
 // GCS FINAL UPLOAD
 // ======================================================
 
+async function isPubliclyAccessible(url: string): Promise<boolean> {
+  try {
+    // We use a regular fetch without credentials to see if it's public
+    const res = await fetch(url, { method: "HEAD" });
+    return res.ok;
+  } catch (e) {
+    return false;
+  }
+}
+
 export async function uploadFinalVideoToGCS(localPath: string, destinationName: string): Promise<string> {
   const bucketName = "axiomatic-veo-output";
   const destination = `final_video/${destinationName}`;
@@ -175,10 +185,19 @@ export async function uploadFinalVideoToGCS(localPath: string, destinationName: 
     },
   });
 
-  // No longer making the file public via code as it requires 'storage.objects.getIamPolicy' permissions.
-  // Instead, manage public access at the bucket level.
+  const directUrl = `https://storage.googleapis.com/${bucketName}/${destination}`;
 
-  return `https://storage.googleapis.com/${bucketName}/${destination}`;
+  // Check if it's already public
+  const isPublic = await isPubliclyAccessible(directUrl);
+
+  if (isPublic) {
+    console.log(`✅ File is public: ${directUrl}`);
+    return directUrl;
+  }
+
+  // Otherwise return the proxy URL
+  console.log(`🔒 File is private, using proxy: /api/video/${destination}`);
+  return `/api/video/${destination}`;
 }
 
 // ======================================================

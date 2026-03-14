@@ -43,7 +43,7 @@ export async function POST(request: NextRequest) {
 
     preferences.style = "slideshow";
 
-    // ── STREAM MODE (local dev fallback) ───────────────────────────────────
+    // — STREET MODE (local dev fallback) —————————————————————————————————————
     if (useStream) {
       console.log("[api/render] Stream mode — running inline (dev only)");
       const { callVideoGenerator } = await import("../../videoGenerator");
@@ -53,7 +53,7 @@ export async function POST(request: NextRequest) {
           const send = (data: any) =>
             controller.enqueue(encoder.encode(JSON.stringify(data) + "\n"));
           try {
-            const videoUrl = await callVideoGenerator(
+            const { videoUrl, chunks } = await callVideoGenerator(
               script,
               preferences,
               contentClass,
@@ -64,7 +64,7 @@ export async function POST(request: NextRequest) {
               modelName,
               vidGen
             );
-            send({ type: "result", videoUrl });
+            send({ type: "result", videoUrl, chunks });
           } catch (err: any) {
             send({ type: "error", message: err.message || "Internal Server Error" });
           } finally {
@@ -80,7 +80,7 @@ export async function POST(request: NextRequest) {
       });
     }
 
-    // ── QUEUE MODE (production default) ────────────────────────────────────
+    // — QUEUE MODE (production default) —————————————————————————————————————
     const jobId = user_video_id;
 
     // Prevent duplicate submissions
@@ -123,4 +123,3 @@ export async function POST(request: NextRequest) {
     );
   }
 }
-

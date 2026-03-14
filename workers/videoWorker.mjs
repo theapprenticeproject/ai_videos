@@ -15,10 +15,10 @@
  *   POLL_INTERVAL_MS        (default: 2000)
  */
 
-// ─── Load Environment Variables First (Hoisting Fix) ─────────────────────────
+// — Load Environment Variables First (Hoisting Fix) —————————————————————
 import './loadEnv.mjs'; 
 
-// ─── Static import (resolved by tsx/esm at startup) ──────────────────────────
+// — Static import (resolved by tsx/esm at startup) ——————————————————————
 import { callVideoGenerator } from '../app/videoGenerator.ts';
 import { uploadFinalVideoToGCS } from '../app/mediaApis/vertex.ts';
 
@@ -37,7 +37,7 @@ const PURGE_INTERVAL_MS = 60 * 60 * 1000; // 1 hour
 let activeRenders = 0;
 let lastPurgeAt   = Date.now();
 
-// ─── Main render function ─────────────────────────────────────────────────────
+// — Main render function ————————————————————————————————————————————————
 async function processJob(job) {
   const { jobId, params } = job;
   activeRenders++;
@@ -132,7 +132,7 @@ async function processJob(job) {
   }
 }
 
-// ─── Poll loop ────────────────────────────────────────────────────────────────
+// — Poll loop ———————————————————————————————————————————————————————————
 async function tick() {
   if (Date.now() - lastPurgeAt > PURGE_INTERVAL_MS) {
     purgeOldJobs();
@@ -159,7 +159,7 @@ async function tick() {
   }
 }
 
-// ─── Graceful shutdown ────────────────────────────────────────────────────────
+// — Graceful shutdown ———————————————————————————————————————————————————
 let shuttingDown = false;
 
 process.on('SIGTERM', () => {
@@ -173,7 +173,7 @@ process.on('SIGINT', () => {
   if (activeRenders === 0) process.exit(0);
 });
 
-// ─── Start ────────────────────────────────────────────────────────────────────
+// — Start ———————————————————————————————————————————————————————————————
 console.log(`[worker] Video Worker starting — max concurrency: ${MAX_CONCURRENT}`);
 console.log(`[worker] Polling every ${POLL_INTERVAL_MS}ms`);
 console.log(`[worker] callVideoGenerator ready: ${typeof callVideoGenerator === 'function'}`);

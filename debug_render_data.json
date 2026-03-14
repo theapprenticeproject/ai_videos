@@ -1,76 +1,183 @@
 {
-  "user_video_id": "user_1773256761992_xykalbz7v",
+  "user_video_id": "user_1773461598243_zyl4klynq",
   "chunks": [
     {
       "chunkId": 0,
-      "chunkText": "in given script ai is revolutionary if used ethically",
-      "keywords": "Animated for kids explainer: A futuristic city skyline with AI-powered robots working alongside humans in various ethical scenarios. Highlight examples of AI in healthcare, education, and environmental protection.",
+      "chunkText": "Arre bhai, kabhi toh socha hai, ki movies",
+      "keywords": "Animated explainer: A person thinking deeply, with thought bubbles appearing around their head showing different movie scenes.",
       "startTime": 0,
-      "endTime": 1.126,
+      "endTime": 2.02,
       "words": [
         {
-          "word": "ai",
+          "word": "Arre",
           "startTime": 0,
-          "endTime": 0.128
+          "endTime": 0.29
         },
         {
-          "word": "is",
-          "startTime": 0.372,
-          "endTime": 0.453
+          "word": "bhai,",
+          "startTime": 0.337,
+          "endTime": 0.534
         },
         {
-          "word": "revolutionary",
-          "startTime": 0.522,
-          "endTime": 1.126
+          "word": "kabhi",
+          "startTime": 0.557,
+          "endTime": 0.755
+        },
+        {
+          "word": "toh",
+          "startTime": 0.789,
+          "endTime": 0.882
+        },
+        {
+          "word": "socha",
+          "startTime": 0.906,
+          "endTime": 1.242
+        },
+        {
+          "word": "hai,",
+          "startTime": 1.289,
+          "endTime": 1.393
+        },
+        {
+          "word": "ki",
+          "startTime": 1.416,
+          "endTime": 1.579
+        },
+        {
+          "word": "movies",
+          "startTime": 1.66,
+          "endTime": 1.974
         }
       ],
       "selectedUrl": "generated-nano-batch",
       "alternateUrls": [],
       "template": "slideshow",
       "templateJson": {
-        "path": "batch_gen_1773256772628_0_52821.png"
+        "path": "batch_gen_1773461609298_0_50104.png"
+      },
+      "tag": ""
+    },
+    {
+      "chunkId": 1,
+      "chunkText": "kitni interesting hoti hain, right?",
+      "keywords": "Animated explainer: A collection of various animated film reels and movie tickets are arranged artistically with the word 'interesting' written on the reels in a fun font style.",
+      "startTime": 2.02,
+      "endTime": 3.692,
+      "words": [
+        {
+          "word": "kitni",
+          "startTime": 2.02,
+          "endTime": 2.241
+        },
+        {
+          "word": "interesting",
+          "startTime": 2.287,
+          "endTime": 2.67
+        },
+        {
+          "word": "hoti",
+          "startTime": 2.705,
+          "endTime": 2.902
+        },
+        {
+          "word": "hain,",
+          "startTime": 2.926,
+          "endTime": 3.158
+        },
+        {
+          "word": "right?",
+          "startTime": 3.367,
+          "endTime": 3.692
+        }
+      ],
+      "selectedUrl": "generated-nano-batch",
+      "alternateUrls": [],
+      "template": "slideshow",
+      "templateJson": {
+        "path": "batch_gen_1773461609298_1_27605.png"
       },
       "tag": ""
     }
   ],
   "words": [
     {
-      "word": "ai",
+      "word": "Arre",
       "start": 0,
-      "end": 0.128
+      "end": 0.29
     },
     {
-      "word": "is",
-      "start": 0.372,
-      "end": 0.453
+      "word": "bhai,",
+      "start": 0.337,
+      "end": 0.534
     },
     {
-      "word": "revolutionary",
-      "start": 0.522,
-      "end": 1.126
+      "word": "kabhi",
+      "start": 0.557,
+      "end": 0.755
     },
     {
-      "word": "if",
-      "start": 1.161,
+      "word": "toh",
+      "start": 0.789,
+      "end": 0.882
+    },
+    {
+      "word": "socha",
+      "start": 0.906,
       "end": 1.242
     },
     {
-      "word": "used",
-      "start": 1.324,
-      "end": 1.498
+      "word": "hai,",
+      "start": 1.289,
+      "end": 1.393
     },
     {
-      "word": "ethically",
-      "start": 1.533,
-      "end": 2.276
+      "word": "ki",
+      "start": 1.416,
+      "end": 1.579
+    },
+    {
+      "word": "movies",
+      "start": 1.66,
+      "end": 1.974
+    },
+    {
+      "word": "kitni",
+      "start": 2.02,
+      "end": 2.241
+    },
+    {
+      "word": "interesting",
+      "start": 2.287,
+      "end": 2.67
+    },
+    {
+      "word": "hoti",
+      "start": 2.705,
+      "end": 2.902
+    },
+    {
+      "word": "hain,",
+      "start": 2.926,
+      "end": 3.158
+    },
+    {
+      "word": "right?",
+      "start": 3.367,
+      "end": 3.692
     }
   ],
   "assets": [
     {
-      "path": "../public/batch_gen_1773256772628_0_52821.png",
+      "path": "../public/batch_gen_1773461609298_0_50104.png",
       "type": "image",
       "start": 0,
-      "end": 2.324898
+      "end": 2.02
+    },
+    {
+      "path": "../public/batch_gen_1773461609298_1_27605.png",
+      "type": "image",
+      "start": 2.02,
+      "end": 4.022857
     }
   ],
   "options": {
@@ -82,6 +189,6 @@
       "normalColor": "#FFF"
     },
     "logoUrl": "logo.png",
-    "audioUrl": "http://localhost:9000/audio_user_1773256761992_xykalbz7v.mp3"
+    "audioUrl": "../audio_user_1773461598243_zyl4klynq.mp3"
   }
 }
