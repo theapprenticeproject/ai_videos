@@ -374,7 +374,7 @@ const PreferencesStep = ({
               <span>View Style References</span>
             </button>
             {showStyles && (
-              <div className="absolute right-0 mt-2 p-2 bg-white border border-gray-200 rounded-lg shadow-xl z-50 w-[400px]">
+              <div className="absolute right-0 mt-2 p-2 bg-white border border-gray-200 rounded-lg shadow-xl z-50 w-[800px] max-w-[90vw]">
                 <img src="/themes.png" alt="Style Themes" className="w-full h-auto rounded" />
                 <p className="text-[10px] text-gray-500 mt-1 text-center italic">Different visual themes for your video prompts</p>
               </div>
@@ -385,25 +385,13 @@ const PreferencesStep = ({
         <div className="space-y-4">
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">
-              Visual Theme (Default: Animated for kids)
-            </label>
-            <input
-              type="text"
-              value={formData.visualTheme}
-              onChange={(e) => setFormData(prev => ({ ...prev, visualTheme: e.target.value }))}
-              placeholder="e.g. Pixar-style, Realistic, 3D Render, Cyberpunk"
-              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm"
-            />
-          </div>
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
-              Style Reference / Instructions
+              Visual Style & Direction (Default: Animated for kids)
             </label>
             <textarea
-              value={formData.reference}
-              onChange={(e) => setFormData(prev => ({ ...prev, reference: e.target.value }))}
-              placeholder="e.g. Refer to Studio Ghibli art style, high contrast, warm lighting"
-              rows={2}
+              value={formData.visualTheme}
+              onChange={(e) => setFormData(prev => ({ ...prev, visualTheme: e.target.value }))}
+              placeholder="e.g. Pixar-style, Realistic 3D, Cyberpunk, or detailed instructions like 'warm lighting, Studio Ghibli art style'"
+              rows={3}
               className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm resize-none"
             />
           </div>

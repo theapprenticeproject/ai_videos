@@ -427,7 +427,7 @@ STORY CONTEXT: "${scriptContextSummary}"
 CHUNKS:
 ${JSON.stringify(chunksPayload, null, 2)}
 
-Generate visual prompts with the visual theme/style: "${effectiveTheme}" for all chunks.${referenceInstruction}
+Generate visual prompts with the visual style & direction: "${effectiveTheme}" for all chunks.${referenceInstruction}
 
 
 Example visual prompts are :
