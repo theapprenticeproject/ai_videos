@@ -61,6 +61,7 @@ async function processJob(job) {
       rebuild   = false,
       modelName = 'gemini-2.0-flash-lite',
       vidGen    = 'veo',
+      reviewData = null,
     } = params;
 
     const { videoUrl, chunks } = await callVideoGenerator(
@@ -74,7 +75,8 @@ async function processJob(job) {
         writeJob(jobId, { progress, statusMessage });
       },
       modelName,
-      vidGen
+      vidGen,
+      reviewData
     );
 
     const localFinalPath = path.join(ROOT, 'public', videoUrl);

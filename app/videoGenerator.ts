@@ -25,6 +25,7 @@ import { generateImagen4Image } from "./mediaApis/imagegen4";
 import { searchPexels } from "./mediaApis/pexels";
 import { searchYouTubeImages } from "./mediaApis/googleSearch";
 import data from "../dynamication.json"
+import type { ReviewPlanData } from "./videoReview";
 
 
 import { AUDIO_API_KEY, LLM_API_KEY, TRANSCRIPT_API_KEY, ELEVENLABS_API_KEY } from "./constant";
@@ -139,6 +140,8 @@ export async function callVideoGenerator(
     style: string;
     avatar: string;
     animation?: boolean;
+    reviewChunks?: boolean;
+    reviewPrompts?: boolean;
   },
   contentClass: string,
   user_video_id: string,
@@ -146,7 +149,8 @@ export async function callVideoGenerator(
   staticGen: boolean = false,
   onProgress?: (progress: number, status: string) => void,
   modelName: string = "gemini-2.0-flash-lite",
-  vidGen: string = "veo"
+  vidGen: string = "veo",
+  reviewData?: ReviewPlanData | null
 ): Promise<{ videoUrl: string; chunks: any[] }> {
   console.log(`[videoGenerator] >>> STARTING Generator | Process: ${process.pid} | ID: ${user_video_id}`);
   // Helper to safely call progress
@@ -293,33 +297,39 @@ export async function callVideoGenerator(
   //     required: ["chunks"],
   //   };
 
-  const chunkingStructure = {
-    "type": "object",
-    "properties": {
-      "chunks": {
-        "type": "array",
-        "items": {
-          "type": "object",
-          "properties": {
-            "chunk": {
-              "type": "string",
-              "description": "string chunk strictly without any spell changes even if there is any incorrect, no punctuation changes or addition  from the given transcript."
-            }
+  const reviewedItems = reviewData?.items?.length ? reviewData.items : null;
+  const hasReviewedChunks = Boolean(reviewedItems?.length);
+  const hasReviewedPrompts = Boolean(reviewedItems?.every((item) => item.prompt || item.mediaPath || item.selectedUrl));
+
+  let chunks: any[] = [];
+  if (hasReviewedChunks && reviewedItems) {
+    chunks = reviewedItems.map((item) => ({ chunk: item.chunkText }));
+  } else {
+    const chunkingStructure = {
+      "type": "object",
+      "properties": {
+        "chunks": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "chunk": {
+                "type": "string",
+                "description": "string chunk strictly without any spell changes even if there is any incorrect, no punctuation changes or addition  from the given transcript."
+              }
+            },
+            "required": ["chunk"]
           },
-          "required": ["chunk"]
-        },
-        "description": `Return an array of string chunks without any spell changes from the given transcript.
+          "description": `Return an array of string chunks without any spell changes from the given transcript.
 Each chunk should be meaningful and suitable for a visual video scene.
 Limit each chunk to a maximum of 10-15 words.
 Strictly Do not change any spelling, punctuation, or characters from the original text â€” even if they are incorrect. Keep everything exactly as it appears.`,
-      }
-    },
-    "required": ["chunks"]
-  }
+        }
+      },
+      "required": ["chunks"]
+    }
 
-  // OpenAI expects structure as stringified JSON schema
-
-  const systemPrompt = `Your only task is to divide the given transcript into meaningful visual chunks for video scenes.
+    const systemPrompt = `Your only task is to divide the given transcript into meaningful visual chunks for video scenes.
 
 Instructions:
 
@@ -331,28 +341,22 @@ Do not add, remove, or rephrase anything.
 Focus solely on segmenting the text into chunks that make sense visually.
 Strictly Do not change any spelling, punctuation, or characters from the original text â€” even if they are incorrect. Keep everything exactly as it appears.
 Output only the array of chunk objects. Do not include any explanations or extra text.`;
-  // You are a helpful assistant that divides a transcript into meaningful chunks which can be represented with independent visual for video scenes. Return array of chunk objects with chunkText.chunk should not be more than maximum 8-10 words. Strictly make sure not to make any spelling or punctuation or any changes to given in sentence words
-  // const chunkResponseStr = await callStructuredLlm(
-  //   apiKey,
-  //   systemPrompt,
-  //   script,
-  //   chunkingStructure
-  // );
-  const chunkResponseStr = await retryLlmCall(callStructuredLlm, [
-    LLM_API_KEY,
-    systemPrompt,
-    `Do not change any spell even if its incorrect, no chnages in punctuation , just chunk it as per instruction nothing else,  in given script ${script}`,
-    chunkingStructure,
-    [], // otherPrompts
-    modelName
-  ]);
+    const chunkResponseStr = await retryLlmCall(callStructuredLlm, [
+      LLM_API_KEY,
+      systemPrompt,
+      `Do not change any spell even if its incorrect, no chnages in punctuation , just chunk it as per instruction nothing else,  in given script ${script}`,
+      chunkingStructure,
+      [],
+      modelName
+    ]);
 
-  if (!chunkResponseStr || !chunkResponseStr.chunks) {
-    console.error("CRITICAL ERROR: LLM Chunking failed. Response:", chunkResponseStr);
-    throw new Error("Failed to chunk transcript via LLM. See logs for details.");
+    if (!chunkResponseStr || !chunkResponseStr.chunks) {
+      console.error("CRITICAL ERROR: LLM Chunking failed. Response:", chunkResponseStr);
+      throw new Error("Failed to chunk transcript via LLM. See logs for details.");
+    }
+
+    chunks = chunkResponseStr.chunks;
   }
-
-  const chunks = chunkResponseStr.chunks;
   console.log("chunks are, ", chunks);
 
   // Prepare Scene JSON array
@@ -440,26 +444,37 @@ Visual: Rahul (around 13 years old) sits comfortably in a beanbag chair surround
 
   let batchKeywordsData: any = {};
 
-  try {
-    const batchResponse = await retryLlmCall(callStructuredLlm, [
-      LLM_API_KEY,
-      batchSystemPrompt,
-      batchUserPrompt,
-      batchKeywordSchema,
-      [], // otherPrompts
-      modelName
-    ]);
+  if (hasReviewedPrompts && reviewedItems) {
+    reviewedItems.forEach((item, index) => {
+      batchKeywordsData[index] = {
+        index,
+        visual_query: item.prompt || item.chunkText,
+        google_search: item.useGoogle,
+        reasoning: item.reasoning || "",
+      };
+    });
+  } else {
+    try {
+      const batchResponse = await retryLlmCall(callStructuredLlm, [
+        LLM_API_KEY,
+        batchSystemPrompt,
+        batchUserPrompt,
+        batchKeywordSchema,
+        [],
+        modelName
+      ]);
 
-    if (batchResponse && batchResponse.results) {
-      batchResponse.results.forEach((r: any) => {
-        batchKeywordsData[r.index] = r;
-      });
-      console.log("Batch keywords generated successfully.");
-    } else {
-      console.warn("Batch keyword extraction returned no results. Fallback will be used.");
+      if (batchResponse && batchResponse.results) {
+        batchResponse.results.forEach((r: any) => {
+          batchKeywordsData[r.index] = r;
+        });
+        console.log("Batch keywords generated successfully.");
+      } else {
+        console.warn("Batch keyword extraction returned no results. Fallback will be used.");
+      }
+    } catch (e) {
+      console.error("Failed batch keyword extraction, falling back to chunk text", e);
     }
-  } catch (e) {
-    console.error("Failed batch keyword extraction, falling back to chunk text", e);
   }
 
   // 5. Pre-process Batch Generation for AI chunks
@@ -470,7 +485,8 @@ Visual: Rahul (around 13 years old) sits comfortably in a beanbag chair surround
 
   for (const [chunk_index, chunk] of chunks.entries()) {
     const promptData = batchKeywordsData[chunk_index] || { visual_query: chunk.chunk, google_search: false };
-    if (!promptData.google_search) {
+    const reviewedItem = reviewedItems?.[chunk_index];
+    if (!hasReviewedPrompts && !promptData.google_search && !reviewedItem?.mediaPath) {
       batchPrompts.push(promptData.visual_query);
       chunkIndicesForBatch.push(chunk_index);
     }
@@ -496,8 +512,9 @@ Visual: Rahul (around 13 years old) sits comfortably in a beanbag chair surround
     console.log(`Processing chunk ${chunk_index}: ${chunk.chunk}`);
 
     const promptData = batchKeywordsData[chunk_index] || { visual_query: chunk.chunk, google_search: false };
-    const keywordsStr = promptData.visual_query;
-    const useGoogle = promptData.google_search;
+    const reviewedItem = reviewedItems?.[chunk_index];
+    const keywordsStr = reviewedItem?.prompt || promptData.visual_query;
+    const useGoogle = typeof reviewedItem?.useGoogle === "boolean" ? reviewedItem.useGoogle : promptData.google_search;
 
     console.log(`Prompt: "${keywordsStr}", Google Search: ${useGoogle}`);
 
@@ -506,16 +523,39 @@ Visual: Rahul (around 13 years old) sits comfortably in a beanbag chair surround
     let generated = false;
 
     // Get timestamps
-    let { startTime, endTime, startIndex, endIndex } = getTimestampsForPhrase(
-      transcriptData,
-      chunk.chunk,
-      lastEndIndex
-    );
-    lastEndIndex = endIndex + 1;
-    const chunkWords = transcriptData.slice(startIndex, endIndex + 1);
+    let startTime = 0;
+    let endTime = 0;
+    let chunkWords: any[] = [];
+
+    if (reviewedItem?.words?.length) {
+      startTime = reviewedItem.startTime;
+      endTime = reviewedItem.endTime;
+      chunkWords = reviewedItem.words;
+    } else {
+      let { startTime: matchedStartTime, endTime: matchedEndTime, startIndex, endIndex } = getTimestampsForPhrase(
+        transcriptData,
+        chunk.chunk,
+        lastEndIndex
+      );
+      lastEndIndex = endIndex + 1;
+      startTime = matchedStartTime;
+      endTime = matchedEndTime;
+      chunkWords = transcriptData.slice(startIndex, endIndex + 1);
+    }
+
+    if (reviewedItem?.mediaPath) {
+      mediaPath = reviewedItem.mediaPath.replace(/^public[\\/]/, "");
+      selectedUrl = reviewedItem.selectedUrl || reviewedItem.previewUrl || "";
+      generated = true;
+      console.log(`Using reviewed media for chunk ${chunk_index}: ${mediaPath}`);
+    }
 
     // Generation Logic
-    if (useGoogle) {
+    if (!generated && hasReviewedPrompts) {
+      console.warn(`Reviewed prompts are enabled but chunk ${chunk_index} has no reviewed media. Skipping regeneration and leaving media empty.`);
+    }
+
+    if (!generated && !hasReviewedPrompts && useGoogle) {
       console.log("Using Google Search...");
       try {
         // Using searchYouTubeImages which actually searches Google Custom Search for images
@@ -640,7 +680,7 @@ Visual: Rahul (around 13 years old) sits comfortably in a beanbag chair surround
 
     if (!generated) {
       console.warn(`All generation/search methods failed for chunk: ${chunk_index}`);
-    } else if (preferences.animation) {
+    } else if (preferences.animation && (!hasReviewedPrompts || Boolean(reviewedItem?.mediaPath))) {
       // ----------------------------------------------------
       // NEW VIDEO GENERATION LOGIC (Veo or Freepik)
       // vidGen parameter: "veo" (default) or "freepik"
@@ -1053,6 +1093,8 @@ If yes, provide a specific video generation prompt describing the movement.`;
 // Through this project, you will learn how critical thinking and problem-solving skills are applied in the real world.
 // Just like in the game, where zombies pop up and you tap them to make them disappear, in real life, you need to ""tap"" away unhealthy habits and negative thoughts â€” meaning, get rid of them â€” so you don't become a zombie yourself.
 // So, take care of yourself, stay active, eat healthy, think positive, and always be ready to ""tap"" away real-life zombies!
+
+
 
 
 

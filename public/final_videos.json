@@ -462,5 +462,252 @@
       }
     ],
     "createdAt": 1773461826038
+  },
+  {
+    "filename": "video-user_1773463157976_h96dm48ea.mp4",
+    "gcsUrl": "/api/video/final_video/video-user_1773463157976_h96dm48ea.mp4",
+    "prompt": "",
+    "chunks": [
+      {
+        "chunkId": 0,
+        "chunkText": "So, imagine, you're at a super crowded railway station, right?",
+        "keywords": "Animated video: A bustling railway station, packed with people, luggage, and trains. Focus on the overall crowd and general activity.",
+        "startTime": 0,
+        "endTime": 4.389,
+        "words": [
+          {
+            "word": "So,",
+            "startTime": 0,
+            "endTime": 0.221
+          },
+          {
+            "word": "imagine,",
+            "startTime": 0.244,
+            "endTime": 0.917
+          },
+          {
+            "word": "you're",
+            "startTime": 1.3,
+            "endTime": 1.509
+          },
+          {
+            "word": "at",
+            "startTime": 1.533,
+            "endTime": 1.614
+          },
+          {
+            "word": "a",
+            "startTime": 1.672,
+            "endTime": 1.695
+          },
+          {
+            "word": "super",
+            "startTime": 1.788,
+            "endTime": 2.206
+          },
+          {
+            "word": "crowded",
+            "startTime": 2.264,
+            "endTime": 2.682
+          },
+          {
+            "word": "railway",
+            "startTime": 2.728,
+            "endTime": 3.042
+          },
+          {
+            "word": "station,",
+            "startTime": 3.077,
+            "endTime": 3.541
+          },
+          {
+            "word": "right?",
+            "startTime": 3.692,
+            "endTime": 4.063
+          }
+        ],
+        "selectedUrl": "generated-nano-batch",
+        "alternateUrls": [],
+        "template": "slideshow",
+        "templateJson": {
+          "path": "batch_gen_1773464911716_0_89692.png"
+        },
+        "tag": ""
+      },
+      {
+        "chunkId": 1,
+        "chunkText": "And you want to find your platform quickly.",
+        "keywords": "Animated video: A person urgently looking at platform information boards amidst the crowd at a railway station.",
+        "startTime": 4.389,
+        "endTime": 6.943,
+        "words": [
+          {
+            "word": "And",
+            "startTime": 4.389,
+            "endTime": 4.551
+          },
+          {
+            "word": "you",
+            "startTime": 4.621,
+            "endTime": 4.714
+          },
+          {
+            "word": "want",
+            "startTime": 4.807,
+            "endTime": 4.992
+          },
+          {
+            "word": "to",
+            "startTime": 5.027,
+            "endTime": 5.085
+          },
+          {
+            "word": "find",
+            "startTime": 5.155,
+            "endTime": 5.364
+          },
+          {
+            "word": "your",
+            "startTime": 5.41,
+            "endTime": 5.526
+          },
+          {
+            "word": "platform",
+            "startTime": 5.561,
+            "endTime": 5.968
+          },
+          {
+            "word": "quickly.",
+            "startTime": 6.014,
+            "endTime": 6.502
+          }
+        ],
+        "selectedUrl": "generated-imagen4",
+        "alternateUrls": [],
+        "template": "slideshow",
+        "templateJson": {
+          "path": "generated_imagen4_1773465032199_408.jpeg"
+        },
+        "tag": ""
+      },
+      {
+        "chunkId": 2,
+        "chunkText": "But there are so many people, announcements are confusing,",
+        "keywords": "Animated video: Close up of a confused person at a railway station with many people and the train announcements are confusing.",
+        "startTime": 6.943,
+        "endTime": 9.892,
+        "words": [
+          {
+            "word": "But",
+            "startTime": 6.943,
+            "endTime": 7.094
+          },
+          {
+            "word": "there",
+            "startTime": 7.129,
+            "endTime": 7.291
+          },
+          {
+            "word": "are",
+            "startTime": 7.326,
+            "endTime": 7.465
+          },
+          {
+            "word": "so",
+            "startTime": 7.558,
+            "endTime": 7.825
+          },
+          {
+            "word": "many",
+            "startTime": 7.918,
+            "endTime": 8.139
+          },
+          {
+            "word": "people,",
+            "startTime": 8.197,
+            "endTime": 8.557
+          },
+          {
+            "word": "announcements",
+            "startTime": 8.58,
+            "endTime": 9.114
+          },
+          {
+            "word": "are",
+            "startTime": 9.149,
+            "endTime": 9.242
+          },
+          {
+            "word": "confusing,",
+            "startTime": 9.288,
+            "endTime": 9.868
+          }
+        ],
+        "selectedUrl": "generated-nano-batch",
+        "alternateUrls": [],
+        "template": "slideshow",
+        "templateJson": {
+          "path": "batch_gen_1773464911716_2_35082.png"
+        },
+        "tag": ""
+      },
+      {
+        "chunkId": 3,
+        "chunkText": "and you're getting late. What do you do?",
+        "keywords": "Animated video: A person looking at a watch and panicking at a railway station. The platform is not visible. Focus on the feeling of being late",
+        "startTime": 9.892,
+        "endTime": 12.817,
+        "words": [
+          {
+            "word": "and",
+            "startTime": 9.892,
+            "endTime": 9.973
+          },
+          {
+            "word": "you're",
+            "startTime": 10.019,
+            "endTime": 10.194
+          },
+          {
+            "word": "getting",
+            "startTime": 10.217,
+            "endTime": 10.472
+          },
+          {
+            "word": "late.",
+            "startTime": 10.53,
+            "endTime": 10.879
+          },
+          {
+            "word": "What",
+            "startTime": 11.157,
+            "endTime": 11.401
+          },
+          {
+            "word": "do",
+            "startTime": 11.517,
+            "endTime": 11.726
+          },
+          {
+            "word": "you",
+            "startTime": 11.842,
+            "endTime": 12.016
+          },
+          {
+            "word": "do?",
+            "startTime": 12.19,
+            "endTime": 12.817
+          }
+        ],
+        "selectedUrl": "generated-nano-batch",
+        "alternateUrls": [],
+        "template": "slideshow",
+        "templateJson": {
+          "path": "batch_gen_1773464911716_3_70521.png"
+        },
+        "tag": ""
+      }
+    ],
+    "createdAt": 1773465182959
   }
 ]

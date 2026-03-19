@@ -38,6 +38,7 @@ export async function POST(request: NextRequest) {
       rebuild = false,
       modelName = 'gemini-2.0-flash-lite',
       vidGen = 'veo',
+      reviewData = null,
     } = body;
 
     if (
@@ -79,6 +80,7 @@ export async function POST(request: NextRequest) {
       rebuild,
       modelName,
       vidGen,
+      reviewData,
     });
 
     console.log(`[api/queue] Enqueued job ${jobId}`);
