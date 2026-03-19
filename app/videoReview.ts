@@ -143,19 +143,19 @@ async function createAudioAndTranscript(
       ELEVENLABS_API_KEY,
       ttsOptions.voiceId,
       ttsOptions.text,
-      `audio_${ttsOptions.user_video_id}.mp3`
+      `audio_${ttsOptions.user_video_id}.wav`
     ));
   } else {
     audioPath = await textToSpeech(ttsOptions.text, {
       apiKey: AUDIO_API_KEY,
       languageCode: ttsOptions.language,
       ssmlGender: ttsOptions.gender,
-      fileName: `audio_${ttsOptions.user_video_id}.mp3`,
+      fileName: `audio_${ttsOptions.user_video_id}.wav`,
       name: ttsOptions.voiceId,
     });
 
     transcriptData = await speechToText(
-      `audio_${ttsOptions.user_video_id}.mp3`,
+      `audio_${ttsOptions.user_video_id}.wav`,
       {
         apiKey: TRANSCRIPT_API_KEY,
         languageCode: ttsOptions.language,

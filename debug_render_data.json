@@ -1,81 +1,195 @@
-﻿{
-  "user_video_id": "user_1773914603998_935nrxi9f",
+{
+  "user_video_id": "user_1773920685185_k0n98aif2",
   "chunks": [
     {
       "chunkId": 0,
-      "chunkText": "ai is dangerous and useful",
-      "keywords": "pixar style, an AI robot with glowing eyes and sharp edges holding a glowing lightbulb, next to a group of diverse people working together to build a city, the robot and the city are in contrast",
+      "chunkText": "a man walking down the lane",
+      "keywords": "anime style, a man walking down a lane, early morning, soft lighting",
       "startTime": 0,
-      "endTime": 1.672,
+      "endTime": 0,
       "words": [
         {
-          "word": "ai",
+          "word": "a",
           "startTime": 0,
-          "endTime": 0.372
+          "endTime": 0.104
         },
         {
-          "word": "is",
-          "startTime": 0.441,
-          "endTime": 0.569
+          "word": "man",
+          "startTime": 0.186,
+          "endTime": 0.395
         },
         {
-          "word": "dangerous",
-          "startTime": 0.627,
-          "endTime": 1.068
+          "word": "walking",
+          "startTime": 0.453,
+          "endTime": 0.743
         },
         {
-          "word": "and",
-          "startTime": 1.115,
-          "endTime": 1.219
+          "word": "down",
+          "startTime": 0.778,
+          "endTime": 0.917
         },
         {
-          "word": "useful",
-          "startTime": 1.254,
-          "endTime": 1.672
+          "word": "the",
+          "startTime": 0.952,
+          "endTime": 1.022
+        },
+        {
+          "word": "lane",
+          "startTime": 1.068,
+          "endTime": 1.625
         }
       ],
       "selectedUrl": "generated-nano-batch",
       "alternateUrls": [],
       "template": "slideshow",
       "templateJson": {
-        "path": "batch_gen_1773914613568_0_54503.png"
+        "path": "batch_gen_1773920698804_0_28608.png"
+      },
+      "tag": ""
+    },
+    {
+      "chunkId": 1,
+      "chunkText": "a man walking down the lane",
+      "keywords": "anime style, a man walking down a lane, sunset, warm colors",
+      "startTime": 0,
+      "endTime": 0,
+      "words": [
+        {
+          "word": "a",
+          "startTime": 0,
+          "endTime": 0.104
+        },
+        {
+          "word": "man",
+          "startTime": 0.186,
+          "endTime": 0.395
+        },
+        {
+          "word": "walking",
+          "startTime": 0.453,
+          "endTime": 0.743
+        },
+        {
+          "word": "down",
+          "startTime": 0.778,
+          "endTime": 0.917
+        },
+        {
+          "word": "the",
+          "startTime": 0.952,
+          "endTime": 1.022
+        },
+        {
+          "word": "lane",
+          "startTime": 1.068,
+          "endTime": 1.625
+        }
+      ],
+      "selectedUrl": "generated-nano-batch",
+      "alternateUrls": [],
+      "template": "slideshow",
+      "templateJson": {
+        "path": "batch_gen_1773920698804_1_36752.png"
+      },
+      "tag": ""
+    },
+    {
+      "chunkId": 2,
+      "chunkText": "a man walking down the lane",
+      "keywords": "anime style, a man walking down a lane, rainy weather, puddles on the ground",
+      "startTime": 0,
+      "endTime": 1.625,
+      "words": [
+        {
+          "word": "a",
+          "startTime": 0,
+          "endTime": 0.104
+        },
+        {
+          "word": "man",
+          "startTime": 0.186,
+          "endTime": 0.395
+        },
+        {
+          "word": "walking",
+          "startTime": 0.453,
+          "endTime": 0.743
+        },
+        {
+          "word": "down",
+          "startTime": 0.778,
+          "endTime": 0.917
+        },
+        {
+          "word": "the",
+          "startTime": 0.952,
+          "endTime": 1.022
+        },
+        {
+          "word": "lane",
+          "startTime": 1.068,
+          "endTime": 1.625
+        }
+      ],
+      "selectedUrl": "generated-nano-batch",
+      "alternateUrls": [],
+      "template": "slideshow",
+      "templateJson": {
+        "path": "batch_gen_1773920698804_2_65711.png"
       },
       "tag": ""
     }
   ],
   "words": [
     {
-      "word": "ai",
+      "word": "a",
       "start": 0,
-      "end": 0.372
+      "end": 0.104
     },
     {
-      "word": "is",
-      "start": 0.441,
-      "end": 0.569
+      "word": "man",
+      "start": 0.186,
+      "end": 0.395
     },
     {
-      "word": "dangerous",
-      "start": 0.627,
-      "end": 1.068
+      "word": "walking",
+      "start": 0.453,
+      "end": 0.743
     },
     {
-      "word": "and",
-      "start": 1.115,
-      "end": 1.219
+      "word": "down",
+      "start": 0.778,
+      "end": 0.917
     },
     {
-      "word": "useful",
-      "start": 1.254,
-      "end": 1.672
+      "word": "the",
+      "start": 0.952,
+      "end": 1.022
+    },
+    {
+      "word": "lane",
+      "start": 1.068,
+      "end": 1.625
     }
   ],
   "assets": [
     {
-      "path": "../public/batch_gen_1773914613568_0_54503.png",
+      "path": "../public/batch_gen_1773920698804_0_28608.png",
       "type": "image",
       "start": 0,
-      "end": 1.697959
+      "end": 0
+    },
+    {
+      "path": "../public/batch_gen_1773920698804_1_36752.png",
+      "type": "image",
+      "start": 0,
+      "end": 0
+    },
+    {
+      "path": "../public/batch_gen_1773920698804_2_65711.png",
+      "type": "image",
+      "start": 0,
+      "end": 1.625417
     }
   ],
   "options": {
@@ -87,6 +201,6 @@
       "normalColor": "#FFF"
     },
     "logoUrl": "logo.png",
-    "audioUrl": "../audio_user_1773914603998_935nrxi9f.mp3"
+    "audioUrl": "../audio_user_1773920685185_k0n98aif2.wav"
   }
 }

@@ -215,7 +215,7 @@ export async function callVideoGenerator(
 
 
   console.log("tts options ", tts_options);
-  // let audioPath = `audio_${tts_options.user_video_id}.mp3`;
+  // let audioPath = `audio_${tts_options.user_video_id}.wav`;
   // Output: Audio file saved at: ./bhashini-audio/user_abcd_1234.wav
 
   let tempFiles: string[] = [];
@@ -230,7 +230,7 @@ export async function callVideoGenerator(
       ELEVENLABS_API_KEY,
       tts_options.voiceId,
       tts_options.text,
-      `audio_${tts_options.user_video_id}.mp3`,
+      `audio_${tts_options.user_video_id}.wav`,
     )
     )
   } else {
@@ -239,7 +239,7 @@ export async function callVideoGenerator(
       apiKey: AUDIO_API_KEY, // <-- Replace with your API key
       languageCode: tts_options.language,
       ssmlGender: tts_options.gender,
-      fileName: `audio_${tts_options.user_video_id}.mp3`,
+      fileName: `audio_${tts_options.user_video_id}.wav`,
       name: tts_options.voiceId,
     });
 
@@ -247,7 +247,7 @@ export async function callVideoGenerator(
     console.log("done with audioPath");
     // 2. Audio to Text (ASR with word timestamps)
     transcriptData = await speechToText(
-      `audio_${tts_options.user_video_id}.mp3`,
+      `audio_${tts_options.user_video_id}.wav`,
       {
         apiKey: TRANSCRIPT_API_KEY,
         languageCode: tts_options.language
@@ -924,7 +924,7 @@ If yes, provide a specific video generation prompt describing the movement.`;
   //       normalColor: "#FFF"
   //     },
   //   logoUrl: "https://cdn.pixabay.com/photo/2019/11/23/10/31/sea-of-clouds-4646744_1280.jpg",
-  //   audioUrl: "audio_" + tts_options.user_video_id + ".mp3",
+  //   audioUrl: "audio_" + tts_options.user_video_id + ".wav",
   // }
   // );
 
@@ -943,7 +943,7 @@ If yes, provide a specific video generation prompt describing the movement.`;
         normalColor: "#FFF",
       },
       logoUrl: "logo.png",
-      audioUrl: "../audio_" + tts_options.user_video_id + ".mp3",
+      audioUrl: "../audio_" + tts_options.user_video_id + ".wav",
     },
   };
 

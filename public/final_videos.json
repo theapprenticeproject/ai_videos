@@ -709,5 +709,151 @@
       }
     ],
     "createdAt": 1773465182959
+  },
+  {
+    "filename": "video-user_1773920685185_k0n98aif2.mp4",
+    "gcsUrl": "/api/video/final_video/video-user_1773920685185_k0n98aif2.mp4",
+    "prompt": "",
+    "chunks": [
+      {
+        "chunkId": 0,
+        "chunkText": "a man walking down the lane",
+        "keywords": "anime style, a man walking down a lane, early morning, soft lighting",
+        "startTime": 0,
+        "endTime": 0,
+        "words": [
+          {
+            "word": "a",
+            "startTime": 0,
+            "endTime": 0.104
+          },
+          {
+            "word": "man",
+            "startTime": 0.186,
+            "endTime": 0.395
+          },
+          {
+            "word": "walking",
+            "startTime": 0.453,
+            "endTime": 0.743
+          },
+          {
+            "word": "down",
+            "startTime": 0.778,
+            "endTime": 0.917
+          },
+          {
+            "word": "the",
+            "startTime": 0.952,
+            "endTime": 1.022
+          },
+          {
+            "word": "lane",
+            "startTime": 1.068,
+            "endTime": 1.625
+          }
+        ],
+        "selectedUrl": "generated-nano-batch",
+        "alternateUrls": [],
+        "template": "slideshow",
+        "templateJson": {
+          "path": "batch_gen_1773920698804_0_28608.png"
+        },
+        "tag": ""
+      },
+      {
+        "chunkId": 1,
+        "chunkText": "a man walking down the lane",
+        "keywords": "anime style, a man walking down a lane, sunset, warm colors",
+        "startTime": 0,
+        "endTime": 0,
+        "words": [
+          {
+            "word": "a",
+            "startTime": 0,
+            "endTime": 0.104
+          },
+          {
+            "word": "man",
+            "startTime": 0.186,
+            "endTime": 0.395
+          },
+          {
+            "word": "walking",
+            "startTime": 0.453,
+            "endTime": 0.743
+          },
+          {
+            "word": "down",
+            "startTime": 0.778,
+            "endTime": 0.917
+          },
+          {
+            "word": "the",
+            "startTime": 0.952,
+            "endTime": 1.022
+          },
+          {
+            "word": "lane",
+            "startTime": 1.068,
+            "endTime": 1.625
+          }
+        ],
+        "selectedUrl": "generated-nano-batch",
+        "alternateUrls": [],
+        "template": "slideshow",
+        "templateJson": {
+          "path": "batch_gen_1773920698804_1_36752.png"
+        },
+        "tag": ""
+      },
+      {
+        "chunkId": 2,
+        "chunkText": "a man walking down the lane",
+        "keywords": "anime style, a man walking down a lane, rainy weather, puddles on the ground",
+        "startTime": 0,
+        "endTime": 1.625,
+        "words": [
+          {
+            "word": "a",
+            "startTime": 0,
+            "endTime": 0.104
+          },
+          {
+            "word": "man",
+            "startTime": 0.186,
+            "endTime": 0.395
+          },
+          {
+            "word": "walking",
+            "startTime": 0.453,
+            "endTime": 0.743
+          },
+          {
+            "word": "down",
+            "startTime": 0.778,
+            "endTime": 0.917
+          },
+          {
+            "word": "the",
+            "startTime": 0.952,
+            "endTime": 1.022
+          },
+          {
+            "word": "lane",
+            "startTime": 1.068,
+            "endTime": 1.625
+          }
+        ],
+        "selectedUrl": "generated-nano-batch",
+        "alternateUrls": [],
+        "template": "slideshow",
+        "templateJson": {
+          "path": "batch_gen_1773920698804_2_65711.png"
+        },
+        "tag": ""
+      }
+    ],
+    "createdAt": 1773921064589
   }
 ]

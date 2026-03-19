@@ -1,5 +1,6 @@
 import * as fs from "fs";
 import { ElevenLabsClient, play } from '@elevenlabs/elevenlabs-js';
+import { execSync } from "child_process";
 
 // The main text-to-speech function
 export async function textToSpeech(
@@ -8,7 +9,7 @@ export async function textToSpeech(
     apiKey,
     languageCode = "en-US",
     ssmlGender = "NEUTRAL",
-    fileName = "output.mp3",
+    fileName = "output.wav",
     name
   }: {
     apiKey: string;
@@ -44,8 +45,20 @@ export async function textToSpeech(
     throw new Error("No audio content received from API.");
   }
 
-  fs.writeFileSync(fileName, Buffer.from(data.audioContent, "base64"));
-  console.log(`Audio content written to file: ${fileName}`);
+  // Save to a temporary file first
+  const tempFileName = `temp_${fileName}`;
+  fs.writeFileSync(tempFileName, Buffer.from(data.audioContent, "base64"));
+  
+  // Convert to standard WAV (48kHz, 16-bit, stereo)
+  console.log(`⚙️ Converting ${tempFileName} to standard WAV (48kHz, 16-bit, stereo)...`);
+  execSync(`ffmpeg -y -i "${tempFileName}" -ac 2 -ar 48000 -sample_fmt s16 "${fileName}"`);
+  
+  // Clean up temporary file
+  if (fs.existsSync(tempFileName)) {
+    fs.unlinkSync(tempFileName);
+  }
+
+  console.log(`✅ Audio content converted and written to file: ${fileName}`);
   return fileName;
 }
 
@@ -55,7 +68,7 @@ export async function textToSpeech(
 //     apiKey: "", // <-- Replace with your API key
 //     languageCode: "en-US",
 //     ssmlGender: "NEUTRAL",
-//     fileName: "hello.mp3"
+//     fileName: "hello.wav"
 //   });
 // })();
 
@@ -73,13 +86,13 @@ interface SpeechResult {
 }
 
 /**
- * ✅ Generate speech → Save MP3 → Return wordsArray in YOUR format
+ * ✅ Generate speech → Save WAV → Return wordsArray in YOUR format
  */
 export async function generateSpeechWithTranscript(
   apiKey: string,
   voiceId: string|"21m00Tcm4TlvDq8ikWAM",
   text: string,
-  filename: string = "speech.mp3"
+  filename: string = "speech.wav"
 ): Promise<SpeechResult> {
   const client = new ElevenLabsClient({ apiKey });
 
@@ -91,10 +104,21 @@ export async function generateSpeechWithTranscript(
     outputFormat: "mp3_44100_128",
   });
 
-  // ✅ SAVE AUDIO FILE
+  // ✅ SAVE AUDIO FILE TEMPORARILY
   const audioBase64 = response.audioBase64!;
   const audioBuffer = Buffer.from(audioBase64, "base64");
-  fs.writeFileSync(filename, audioBuffer);
+  const tempFilename = `temp_${filename}`;
+  fs.writeFileSync(tempFilename, audioBuffer);
+  
+  // ✅ CONVERT TO WAV 48kHz, 16-bit, stereo
+  console.log(`⚙️ Converting ${tempFilename} to standard WAV (48kHz, 16-bit, stereo)...`);
+  execSync(`ffmpeg -y -i "${tempFilename}" -ac 2 -ar 48000 -sample_fmt s16 "${filename}"`);
+  
+  // Clean up temporary file
+  if (fs.existsSync(tempFilename)) {
+    fs.unlinkSync(tempFilename);
+  }
+
   console.log(`✅ SAVED: ${filename}`);
 
   // ✅ YOUR EXACT FORMAT: wordsArray

@@ -25,7 +25,7 @@ export async function speechToText(
   const url = `https://speech.googleapis.com/v1p1beta1/speech:recognize?key=${apiKey}`;
   const payload = {
     config: {
-      encoding: "OGG_OPUS",
+      encoding: "LINEAR16",
       sampleRateHertz: 48000 , //LINEAR16, FLAC, MULAW, AMR, etc.`
       languageCode: languageCode,
       enableWordTimeOffsets: true,
@@ -90,7 +90,7 @@ export async function speechToText(
 
 // Example usage:
 // (async () => {
-//   const words = await speechToText("audio_unique_user_video_id_test6_fullscrptcontext_generated_2_IN.mp3", {
+//   const words = await speechToText("audio_unique_user_video_id_test6_fullscrptcontext_generated_2_IN.wav", {
 //     apiKey: "",
 //     languageCode: "hi-IN"
 //   });
