@@ -150,7 +150,9 @@ export async function callVideoGenerator(
   onProgress?: (progress: number, status: string) => void,
   modelName: string = "gemini-2.0-flash-lite",
   vidGen: string = "veo",
-  reviewData?: ReviewPlanData | null
+  reviewData?: ReviewPlanData | null,
+  visualTheme: string = "",
+  reference: string = ""
 ): Promise<{ videoUrl: string; chunks: any[] }> {
   console.log(`[videoGenerator] >>> STARTING Generator | Process: ${process.pid} | ID: ${user_video_id}`);
   // Helper to safely call progress
@@ -407,12 +409,17 @@ Decide whether to use Google Search (Real images/Specifics) or AI Generation (Ge
 
 Return a JSON object with a 'results' array containing an object for each chunk.`;
 
+
   if (!chunks || !Array.isArray(chunks)) {
     console.error("CRITICAL: chunks is missing or not an array before batch extraction.");
     throw new Error("Invalid chunk data. Cannot proceed with keyword extraction.");
   }
 
   const chunksPayload = chunks.map((c: any, i: number) => ({ index: i, text: c.chunk }));
+  const effectiveTheme = visualTheme?.trim() || 'animated for kids explainer';
+  const referenceInstruction = reference?.trim()
+    ? `\nSTYLE REFERENCE: ${reference.trim()}\nPlease incorporate the above style reference into all visual prompts.`
+    : '';
 
   const batchUserPrompt = `
 STORY CONTEXT: "${scriptContextSummary}"
@@ -420,19 +427,19 @@ STORY CONTEXT: "${scriptContextSummary}"
 CHUNKS:
 ${JSON.stringify(chunksPayload, null, 2)}
 
-Generate visual prompts with all types as animated for all chunks.
+Generate visual prompts with the visual theme/style: "${effectiveTheme}" for all chunks.${referenceInstruction}
 
 
 Example visual prompts are :
 
 1
-TYPE: Animated for kids explainer
+TYPE: ${effectiveTheme}
 Scene: Split Screen.
 Left: A friendly-looking man, Mr. Gupta, busy arranging clothes in a modest retail shop.
 Right: A woman, Meena, writing on a blackboard in a classroom filled with children.
 
 2
-type:animated kids explaners
+type: ${effectiveTheme}
 
 Scene: A teenage boy's room.
 

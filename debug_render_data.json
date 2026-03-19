@@ -1,183 +1,81 @@
-{
-  "user_video_id": "user_1773461598243_zyl4klynq",
+﻿{
+  "user_video_id": "user_1773914603998_935nrxi9f",
   "chunks": [
     {
       "chunkId": 0,
-      "chunkText": "Arre bhai, kabhi toh socha hai, ki movies",
-      "keywords": "Animated explainer: A person thinking deeply, with thought bubbles appearing around their head showing different movie scenes.",
+      "chunkText": "ai is dangerous and useful",
+      "keywords": "pixar style, an AI robot with glowing eyes and sharp edges holding a glowing lightbulb, next to a group of diverse people working together to build a city, the robot and the city are in contrast",
       "startTime": 0,
-      "endTime": 2.02,
+      "endTime": 1.672,
       "words": [
         {
-          "word": "Arre",
+          "word": "ai",
           "startTime": 0,
-          "endTime": 0.29
+          "endTime": 0.372
         },
         {
-          "word": "bhai,",
-          "startTime": 0.337,
-          "endTime": 0.534
+          "word": "is",
+          "startTime": 0.441,
+          "endTime": 0.569
         },
         {
-          "word": "kabhi",
-          "startTime": 0.557,
-          "endTime": 0.755
+          "word": "dangerous",
+          "startTime": 0.627,
+          "endTime": 1.068
         },
         {
-          "word": "toh",
-          "startTime": 0.789,
-          "endTime": 0.882
+          "word": "and",
+          "startTime": 1.115,
+          "endTime": 1.219
         },
         {
-          "word": "socha",
-          "startTime": 0.906,
-          "endTime": 1.242
-        },
-        {
-          "word": "hai,",
-          "startTime": 1.289,
-          "endTime": 1.393
-        },
-        {
-          "word": "ki",
-          "startTime": 1.416,
-          "endTime": 1.579
-        },
-        {
-          "word": "movies",
-          "startTime": 1.66,
-          "endTime": 1.974
+          "word": "useful",
+          "startTime": 1.254,
+          "endTime": 1.672
         }
       ],
       "selectedUrl": "generated-nano-batch",
       "alternateUrls": [],
       "template": "slideshow",
       "templateJson": {
-        "path": "batch_gen_1773461609298_0_50104.png"
-      },
-      "tag": ""
-    },
-    {
-      "chunkId": 1,
-      "chunkText": "kitni interesting hoti hain, right?",
-      "keywords": "Animated explainer: A collection of various animated film reels and movie tickets are arranged artistically with the word 'interesting' written on the reels in a fun font style.",
-      "startTime": 2.02,
-      "endTime": 3.692,
-      "words": [
-        {
-          "word": "kitni",
-          "startTime": 2.02,
-          "endTime": 2.241
-        },
-        {
-          "word": "interesting",
-          "startTime": 2.287,
-          "endTime": 2.67
-        },
-        {
-          "word": "hoti",
-          "startTime": 2.705,
-          "endTime": 2.902
-        },
-        {
-          "word": "hain,",
-          "startTime": 2.926,
-          "endTime": 3.158
-        },
-        {
-          "word": "right?",
-          "startTime": 3.367,
-          "endTime": 3.692
-        }
-      ],
-      "selectedUrl": "generated-nano-batch",
-      "alternateUrls": [],
-      "template": "slideshow",
-      "templateJson": {
-        "path": "batch_gen_1773461609298_1_27605.png"
+        "path": "batch_gen_1773914613568_0_54503.png"
       },
       "tag": ""
     }
   ],
   "words": [
     {
-      "word": "Arre",
+      "word": "ai",
       "start": 0,
-      "end": 0.29
+      "end": 0.372
     },
     {
-      "word": "bhai,",
-      "start": 0.337,
-      "end": 0.534
+      "word": "is",
+      "start": 0.441,
+      "end": 0.569
     },
     {
-      "word": "kabhi",
-      "start": 0.557,
-      "end": 0.755
+      "word": "dangerous",
+      "start": 0.627,
+      "end": 1.068
     },
     {
-      "word": "toh",
-      "start": 0.789,
-      "end": 0.882
+      "word": "and",
+      "start": 1.115,
+      "end": 1.219
     },
     {
-      "word": "socha",
-      "start": 0.906,
-      "end": 1.242
-    },
-    {
-      "word": "hai,",
-      "start": 1.289,
-      "end": 1.393
-    },
-    {
-      "word": "ki",
-      "start": 1.416,
-      "end": 1.579
-    },
-    {
-      "word": "movies",
-      "start": 1.66,
-      "end": 1.974
-    },
-    {
-      "word": "kitni",
-      "start": 2.02,
-      "end": 2.241
-    },
-    {
-      "word": "interesting",
-      "start": 2.287,
-      "end": 2.67
-    },
-    {
-      "word": "hoti",
-      "start": 2.705,
-      "end": 2.902
-    },
-    {
-      "word": "hain,",
-      "start": 2.926,
-      "end": 3.158
-    },
-    {
-      "word": "right?",
-      "start": 3.367,
-      "end": 3.692
+      "word": "useful",
+      "start": 1.254,
+      "end": 1.672
     }
   ],
   "assets": [
     {
-      "path": "../public/batch_gen_1773461609298_0_50104.png",
+      "path": "../public/batch_gen_1773914613568_0_54503.png",
       "type": "image",
       "start": 0,
-      "end": 2.02
-    },
-    {
-      "path": "../public/batch_gen_1773461609298_1_27605.png",
-      "type": "image",
-      "start": 2.02,
-      "end": 4.022857
+      "end": 1.697959
     }
   ],
   "options": {
@@ -189,6 +87,6 @@
       "normalColor": "#FFF"
     },
     "logoUrl": "logo.png",
-    "audioUrl": "../audio_user_1773461598243_zyl4klynq.mp3"
+    "audioUrl": "../audio_user_1773914603998_935nrxi9f.mp3"
   }
 }

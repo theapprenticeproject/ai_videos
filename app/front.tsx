@@ -10,6 +10,8 @@ interface FormData {
   modelName: string;
   contentClass: string;
   script: string;
+  visualTheme: string;
+  reference: string;
   preferences: {
     subtitles: boolean;
     style: string;
@@ -348,7 +350,10 @@ const PreferencesStep = ({
   onSubmit: () => void;
   isLoading: boolean;
   loadingLabel?: string;
-}) => (
+}) => {
+  const [showStyles, setShowStyles] = useState(false);
+
+  return (
   <div className="max-w-2xl mx-auto">
     <div className="text-center mb-8">
       <h2 className="text-2xl font-bold text-gray-900 mb-2">Video Preferences</h2>
@@ -356,6 +361,55 @@ const PreferencesStep = ({
     </div>
 
     <div className="space-y-6">
+      <div className="bg-gray-50 p-6 rounded-lg">
+        <div className="flex items-center justify-between mb-4">
+          <h3 className="font-medium text-gray-900">Visual Style & Direction</h3>
+          <div className="relative">
+            <button
+              onMouseEnter={() => setShowStyles(true)}
+              onMouseLeave={() => setShowStyles(false)}
+              className="text-blue-600 hover:text-blue-700 text-sm font-medium flex items-center space-x-1"
+            >
+              <LayoutGrid className="w-4 h-4" />
+              <span>View Style References</span>
+            </button>
+            {showStyles && (
+              <div className="absolute right-0 mt-2 p-2 bg-white border border-gray-200 rounded-lg shadow-xl z-50 w-[400px]">
+                <img src="/themes.png" alt="Style Themes" className="w-full h-auto rounded" />
+                <p className="text-[10px] text-gray-500 mt-1 text-center italic">Different visual themes for your video prompts</p>
+              </div>
+            )}
+          </div>
+        </div>
+        
+        <div className="space-y-4">
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1">
+              Visual Theme (Default: Animated for kids)
+            </label>
+            <input
+              type="text"
+              value={formData.visualTheme}
+              onChange={(e) => setFormData(prev => ({ ...prev, visualTheme: e.target.value }))}
+              placeholder="e.g. Pixar-style, Realistic, 3D Render, Cyberpunk"
+              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm"
+            />
+          </div>
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1">
+              Style Reference / Instructions
+            </label>
+            <textarea
+              value={formData.reference}
+              onChange={(e) => setFormData(prev => ({ ...prev, reference: e.target.value }))}
+              placeholder="e.g. Refer to Studio Ghibli art style, high contrast, warm lighting"
+              rows={2}
+              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm resize-none"
+            />
+          </div>
+        </div>
+      </div>
+
       <div className="bg-gray-50 p-6 rounded-lg">
         <h3 className="font-medium text-gray-900 mb-4">Subtitle Options</h3>
 
@@ -490,7 +544,8 @@ const PreferencesStep = ({
       </div>
     </div>
   </div>
-);
+  );
+};
 
 const ReviewStep = ({
   reviewData,
@@ -982,6 +1037,8 @@ const PromptToVideoApp: React.FC = () => {
       modelName: '',
       contentClass: 'low',
       script: '',
+      visualTheme: '',
+      reference: '',
       preferences: {
         subtitles: false,
         style: 'slideshow',
@@ -994,7 +1051,6 @@ const PromptToVideoApp: React.FC = () => {
   const [videoUrl, setVideoUrl] = useState<string | null>(null);
   const [videoHistory, setVideoHistory] = useState<any[]>([]);
   const [reviewData, setReviewData] = useState<ReviewData | null>(null);
-
   useEffect(() => {
     const history = localStorage.getItem('video_creation_history');
     if (history) {
@@ -1082,6 +1138,8 @@ const PromptToVideoApp: React.FC = () => {
         contentClass: formData.contentClass,
         user_video_id: userVideoId,
         modelName: formData.modelName,
+        visualTheme: formData.visualTheme,
+        reference: formData.reference,
         reviewData: activeReviewData,
       };
 
@@ -1160,6 +1218,8 @@ const PromptToVideoApp: React.FC = () => {
         contentClass: formData.contentClass,
         user_video_id: userVideoId,
         modelName: formData.modelName,
+        visualTheme: formData.visualTheme,
+        reference: formData.reference,
         chunkingMaxWords: options?.chunkingMaxWords ?? reviewData?.chunkingMaxWords ?? 15,
         manualChunks: options?.manualChunks,
       }),
@@ -1436,6 +1496,8 @@ const PromptToVideoApp: React.FC = () => {
       contentClass: 'low',
       script: '',
       modelName: 'gemini-2.0-flash-lite',
+      visualTheme: '',
+      reference: '',
       preferences: {
         subtitles: false,
         style: 'slideshow',

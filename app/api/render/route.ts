@@ -27,6 +27,8 @@ export async function POST(request: NextRequest) {
       flow = "eleven",
       vidGen = "veo",
       reviewData = null,
+      visualTheme = "",
+      reference = "",
     } = body;
 
     // Validate required fields
@@ -64,7 +66,9 @@ export async function POST(request: NextRequest) {
               (progress: number, status: string) => send({ type: "progress", progress, status }),
               modelName,
               vidGen,
-              reviewData
+              reviewData,
+              visualTheme,
+              reference
             );
             send({ type: "result", videoUrl, chunks });
           } catch (err: any) {
@@ -104,6 +108,8 @@ export async function POST(request: NextRequest) {
       modelName,
       vidGen,
       reviewData,
+      visualTheme,
+      reference,
     });
 
     console.log(`[api/render] Enqueued job ${jobId} | PID: ${process.pid}`);
