@@ -53,13 +53,23 @@ export async function GET(
     const stream = file.createReadStream();
 
     // Return the stream as a response
-    return new Response(stream as any, {
-      headers: {
-        "Content-Type": metadata.contentType || "video/mp4",
-        "Cache-Control": "public, max-age=31536000",
-        "Content-Length": metadata.size,
-      },
-    });
+    // return new Response(stream as any, {
+    //   headers: {
+    //     "Content-Type": metadata.contentType || "video/mp4",
+    //     "Cache-Control": "public, max-age=31536000",
+    //     "Content-Length": metadata.size,
+    //   },
+    // });
+    const headers = new Headers()
+
+    headers.set("Content-Type", metadata.contentType || "video/mp4")
+    headers.set("Cache-Control", "public, max-age=31536000")
+
+    if (metadata.size !== undefined) {
+      headers.set("Content-Length", metadata.size.toString())
+    }
+
+    return new Response(stream as any, { headers })
 
   } catch (error: any) {
     console.error("[Proxy] Error:", error);

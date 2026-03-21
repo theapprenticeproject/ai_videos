@@ -9,17 +9,21 @@ export async function POST(request: NextRequest) {
       items,
       changedChunkIds,
       modelName = "gemini-2.0-flash-lite",
+      visualTheme = "",
+      promptsOnly = false,
     } = body;
 
-    if (typeof script !== "string" || !Array.isArray(items) || !Array.isArray(changedChunkIds)) {
+    if (typeof script !== "string" || !Array.isArray(items)) {
       return NextResponse.json({ error: "Missing or invalid parameters" }, { status: 400 });
     }
 
     const refreshedItems = await refreshReviewPromptsForChunks({
       script,
       items,
-      changedChunkIds,
+      changedChunkIds: changedChunkIds || items.map((i: any) => i.chunkId),
       modelName,
+      visualTheme,
+      promptsOnly,
     });
 
     return NextResponse.json({ items: refreshedItems });

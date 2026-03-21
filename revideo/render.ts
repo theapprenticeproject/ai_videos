@@ -7,6 +7,8 @@ export async function renderPersonalizedVideo(params: {
   words: { word: string; start: number; end: number }[];
   assets: { path: string; type: string; start: number; end: number }[];
   options: {
+    animation?: boolean;
+    vidGen?: string;
     subtitles:boolean,
     wordsPerLine: number;
     subtitleStyle: { fontSize: number; highlightColor: string; normalColor: string };

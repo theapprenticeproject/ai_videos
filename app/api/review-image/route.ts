@@ -5,6 +5,7 @@ export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
     const { prompt, useGoogle = false } = body;
+    console.log(`[api/review-image] Request | prompt="${prompt}" | useGoogle=${Boolean(useGoogle)}`);
 
     if (typeof prompt !== "string" || prompt.trim().length === 0) {
       return NextResponse.json({ error: "Prompt is required" }, { status: 400 });
@@ -14,6 +15,7 @@ export async function POST(request: NextRequest) {
       prompt,
       useGoogle: Boolean(useGoogle),
     });
+    console.log(`[api/review-image] Response | mediaPath="${result.mediaPath}" | selectedUrl="${result.selectedUrl}"`);
 
     return NextResponse.json(result);
   } catch (error: any) {

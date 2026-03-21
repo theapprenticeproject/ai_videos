@@ -23,6 +23,35 @@ if (!fs.existsSync(JOBS_DIR)) {
   fs.mkdirSync(JOBS_DIR, { recursive: true });
 }
 
+function safeWriteJsonSync(data) {
+  const json = JSON.stringify(data, null, 2);
+  let attempts = 0;
+  while (attempts < 10) {
+    try {
+      fs.writeFileSync(JOBS_TMP, json, 'utf8');
+      fs.renameSync(JOBS_TMP, JOBS_FILE);
+      return;
+    } catch (err) {
+      if (err.code === 'EPERM' || err.code === 'EBUSY' || err.code === 'EACCES') {
+        attempts++;
+        const start = Date.now();
+        // Fallback to a tight loop sleep for 50ms to allow file locks to clear on Windows
+        while (Date.now() - start < 50) {
+          // block
+        }
+      } else {
+        throw err;
+      }
+    }
+  }
+  // Ultimate fallback, write directly which might break atomicity but bypasses rename EPERM on Windows
+  try {
+    fs.writeFileSync(JOBS_FILE, json, 'utf8');
+  } catch (finalErr) {
+    console.warn("Failed to write JOBS_FILE synchronously even with fallback:", finalErr.message);
+  }
+}
+
 /**
  * Read all jobs from disk.
  * @returns {Record<string, JobRecord>}
@@ -45,9 +74,7 @@ export function readAllJobs() {
 export function writeJob(jobId, update) {
   const all = readAllJobs();
   all[jobId] = { ...(all[jobId] || {}), ...update, jobId };
-  const json = JSON.stringify(all, null, 2);
-  fs.writeFileSync(JOBS_TMP, json, 'utf8');
-  fs.renameSync(JOBS_TMP, JOBS_FILE);
+  safeWriteJsonSync(all);
 }
 
 /**
@@ -71,14 +98,27 @@ export function getJobsByStatus(status) {
 }
 
 /**
+ * Get all jobs for a specific user ID.
+ * @param {string} userId
+ * @returns {JobRecord[]}
+ */
+export function getJobsByUser(userId) {
+  if (!userId) return [];
+  const all = readAllJobs();
+  return Object.values(all).filter(j => j.userId === userId);
+}
+
+/**
  * Create a brand new pending job.
  * @param {string} jobId
+ * @param {string} userId
  * @param {object} params  - callVideoGenerator arguments
  * @returns {JobRecord}
  */
-export function createJob(jobId, params) {
+export function createJob(jobId, userId, params) {
   const record = {
     jobId,
+    userId: userId || 'anonymous',
     status: 'pending',
     progress: 0,
     statusMessage: 'Queued...',
@@ -109,8 +149,53 @@ export function purgeOldJobs(maxAgeMs = 24 * 60 * 60 * 1000) {
     }
   }
   if (changed) {
-    const json = JSON.stringify(all, null, 2);
-    fs.writeFileSync(JOBS_TMP, json, 'utf8');
-    fs.renameSync(JOBS_TMP, JOBS_FILE);
+    safeWriteJsonSync(all);
   }
+}
+
+/**
+ * Pause an active or pending job.
+ * @param {string} jobId
+ */
+export function pauseJob(jobId) {
+  const job = getJob(jobId);
+  if (!job) return;
+  if (job.status === 'running' || job.status === 'pending') {
+    writeJob(jobId, { status: 'paused', statusMessage: 'Paused by user.' });
+  }
+}
+
+/**
+ * Resume a paused job.
+ * @param {string} jobId
+ */
+export function resumeJob(jobId) {
+  const job = getJob(jobId);
+  if (!job) return;
+  if (job.status === 'paused') {
+    writeJob(jobId, { status: 'running', statusMessage: 'Resuming...' });
+  }
+}
+
+/**
+ * Abort an active or pending job.
+ * @param {string} jobId
+ */
+export function abortJob(jobId) {
+  const job = getJob(jobId);
+  if (!job) return;
+  if (job.status === 'running' || job.status === 'paused' || job.status === 'pending') {
+    writeJob(jobId, { status: 'aborted', statusMessage: 'Stopped by user.', finishedAt: Date.now() });
+  }
+}
+
+/**
+ * Delete a job permanently from the job store.
+ * @param {string} jobId
+ */
+export function deleteJob(jobId) {
+  const all = readAllJobs();
+  if (!all[jobId]) return;
+  delete all[jobId];
+  safeWriteJsonSync(all);
 }

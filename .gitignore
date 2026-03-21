@@ -48,3 +48,6 @@ app/mediaApis/axiomatic-treat-417617-84f05b46f512.json
 
 # clerk configuration (can include secrets)
 /.clerk/
+
+
+public/final_videos copy.json

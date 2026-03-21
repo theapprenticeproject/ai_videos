@@ -1,4 +1,5 @@
-
+import fs from 'fs';
+import path from 'path';
 import { callLlm, callStructuredLlm } from "./llm";
 import {
   fixIfBrokenVideo,
@@ -94,7 +95,9 @@ function formatSceneJsonToAssets(
   sceneJson: any
 ): { path: string; type: string; start: number; end: number }[] {
   return sceneJson.map((chunk: any) => ({
-    path: chunk.templateJson.path ? `../public/${chunk.templateJson.path}` : null,
+    path: chunk.templateJson.path
+      ? `/${String(chunk.templateJson.path).replace(/^public[\\/]/, "").replace(/\\/g, "/").replace(/^\/+/, "")}`
+      : null,
     type: chunk.templateJson.path?.includes(".mp4") ? "video" : "image",
     start: chunk.startTime,
     end: chunk.endTime,
@@ -133,6 +136,41 @@ type ChunkJson = {
 
 type SceneJson = ChunkJson[];
 
+function appendPipelineDebugLog(userVideoId: string, message: string) {
+  try {
+    const logDir = path.join(process.cwd(), "temp");
+    if (!fs.existsSync(logDir)) {
+      fs.mkdirSync(logDir, { recursive: true });
+    }
+    const timestamp = new Date().toISOString();
+    fs.appendFileSync(
+      path.join(logDir, `pipeline_debug_${userVideoId}.log`),
+      `[${timestamp}] ${message}\n`,
+      "utf8"
+    );
+  } catch (error) {
+    console.error("[videoGenerator] Failed to write pipeline debug log:", error);
+  }
+}
+
+function appendStyleToPrompt(prompt: string, style: string): string {
+  if (!style || style.trim().length === 0) return prompt;
+  const lowerPrompt = prompt.toLowerCase();
+  const cleanStyle = style.trim();
+  const lowerStyle = cleanStyle.toLowerCase();
+  
+  // If the prompt already contains the style name, assume it's integrated
+  const styleBase = lowerStyle.endsWith(" style") 
+    ? lowerStyle.substring(0, lowerStyle.length - 6).trim() 
+    : lowerStyle;
+  
+  if (lowerPrompt.includes(styleBase)) return prompt;
+  
+  // Predictably append style, ensuring we don't double the word "style"
+  const finalStyleSuffix = lowerStyle.endsWith(" style") ? cleanStyle : `${cleanStyle} style`;
+  return `${prompt.trim()}, ${finalStyleSuffix}`;
+}
+
 export async function callVideoGenerator(
   script: string,
   preferences: {
@@ -155,12 +193,13 @@ export async function callVideoGenerator(
   reference: string = ""
 ): Promise<{ videoUrl: string; chunks: any[] }> {
   console.log(`[videoGenerator] >>> STARTING Generator | Process: ${process.pid} | ID: ${user_video_id}`);
+  appendPipelineDebugLog(user_video_id, `START | animation=${Boolean(preferences.animation)} | reviewData=${Boolean(reviewData?.items?.length)} | vidGen=${vidGen}`);
   // Helper to safely call progress
-  const reportProgress = (p: number, s: string) => {
-    if (onProgress) onProgress(p, s);
+  const reportProgress = async (p: number, s: string) => {
+    if (onProgress) await onProgress(p, s);
   };
 
-  reportProgress(5, "Initializing video generation...");
+  await reportProgress(5, "Initializing video generation...");
 
   if (staticGen) {
     console.log("Static Generation Mode Enabled: Reading from debug_render_data.json");
@@ -175,9 +214,9 @@ export async function callVideoGenerator(
 
         console.log("Loaded render params:", JSON.stringify(renderParams, null, 2));
 
-        reportProgress(90, "Rendering static video...");
+        await reportProgress(90, "Rendering static video...");
         await renderPersonalizedVideo(renderParams);
-        reportProgress(100, "Video generated successfully!");
+        await reportProgress(100, "Video generated successfully!");
         return { videoUrl: `video-${renderParams.user_video_id}.mp4`, chunks: renderParams.chunks };
       } else {
         console.warn("Debug file not found. Falling back to normal generation.");
@@ -215,6 +254,9 @@ export async function callVideoGenerator(
 
 
   console.log("tts options ", tts_options);
+
+  const effectiveTheme = visualTheme?.trim() || "animated for kids explainer";
+  console.log(`Visual Style: "${effectiveTheme}"`);
   // let audioPath = `audio_${tts_options.user_video_id}.wav`;
   // Output: Audio file saved at: ./bhashini-audio/user_abcd_1234.wav
 
@@ -222,15 +264,17 @@ export async function callVideoGenerator(
 
   let audioPath: string | null = null;
   let transcriptData: any = null;
+  const audioFileName = `audio_${tts_options.user_video_id}.wav`;
+  const audioFilePath = path.join("public", audioFileName);
 
-  reportProgress(10, "Generating Audio...");
+  await reportProgress(10, "Generating Audio...");
 
   if (flow == "eleven") {
     ({ audioPath, transcriptData } = await generateSpeechWithTranscript(
       ELEVENLABS_API_KEY,
       tts_options.voiceId,
       tts_options.text,
-      `audio_${tts_options.user_video_id}.wav`,
+      audioFilePath,
     )
     )
   } else {
@@ -239,7 +283,7 @@ export async function callVideoGenerator(
       apiKey: AUDIO_API_KEY, // <-- Replace with your API key
       languageCode: tts_options.language,
       ssmlGender: tts_options.gender,
-      fileName: `audio_${tts_options.user_video_id}.wav`,
+      fileName: audioFilePath,
       name: tts_options.voiceId,
     });
 
@@ -247,7 +291,7 @@ export async function callVideoGenerator(
     console.log("done with audioPath");
     // 2. Audio to Text (ASR with word timestamps)
     transcriptData = await speechToText(
-      `audio_${tts_options.user_video_id}.wav`,
+      audioFilePath,
       {
         apiKey: TRANSCRIPT_API_KEY,
         languageCode: tts_options.language
@@ -278,7 +322,7 @@ export async function callVideoGenerator(
 
   // transcriptData: { text: string; words: { word: string; startTime: number; endTime: number }[] }
 
-  reportProgress(20, "Chunking Transcript...");
+  await reportProgress(20, "Chunking Transcript...");
 
   // 3. Chunk transcript via LLM structured output
   //   const chunkingStructure = {
@@ -371,7 +415,7 @@ Output only the array of chunk objects. Do not include any explanations or extra
 
   console.log("done with scriptContextSummary ", scriptContextSummary);
 
-  reportProgress(30, "Extracting Keywords...");
+  await reportProgress(30, "Extracting Keywords...");
   // 4. Batch Keyword Extraction with LLM
   console.log("Starting batch keyword extraction...");
 
@@ -402,10 +446,15 @@ Output only the array of chunk objects. Do not include any explanations or extra
   };
 
   const batchSystemPrompt = `You are a visual direction assistant. You will be given a list of script chunks and the overall story context.
-For each chunk, generate a specific visual description (prompt) to be used for image generation or image search.
-Decide whether to use Google Search (Real images/Specifics) or AI Generation (Generic/Creative).
-- Use Google Search (google_search: true) for: Famous people, specific real-world locations (like Taj Mahal), complex real-world events, or when photorealism of specific entities is critical.
-- Use AI Generation (google_search: false) for: Generic characters (e.g. "a boy reading"), illustrations, fantasy elements, emotions, or scenes where exact real-world fidelity isn't restrictive.
+From this script, we want an image prompt for each chunk, and this should be in the style of "${effectiveTheme}".
+
+Instructions:
+1. VERY IMPORTANT: All chunks are part of the SAME continuous story. Use the STORY CONTEXT to understand the characters, setting, and plot.
+2. For each chunk, generate a specific, descriptive visual prompt. The image generator does not know the story, so you MUST describe the subjects fully in EVERY prompt. DO NOT use pronouns like "he", "she", or "it". Instead of "He looks under the bed", write "A young boy looks under the bed".
+3. Maintain visual continuity. If the story is about a "red dragon", ensure "red dragon" is described in the prompt for any chunk where the dragon is visible.
+4. Decide whether to use Google Search (Real images/Specifics) or AI Generation (Generic/Creative).
+- Use Google Search (google_search: true) for: Famous people, specific real-world locations, complex real-world events.
+- Use AI Generation (google_search: false) for: Generic characters, illustrations, fantasy, or general scenes.
 
 Return a JSON object with a 'results' array containing an object for each chunk.`;
 
@@ -416,18 +465,18 @@ Return a JSON object with a 'results' array containing an object for each chunk.
   }
 
   const chunksPayload = chunks.map((c: any, i: number) => ({ index: i, text: c.chunk }));
-  const effectiveTheme = visualTheme?.trim() || 'animated for kids explainer';
   const referenceInstruction = reference?.trim()
     ? `\nSTYLE REFERENCE: ${reference.trim()}\nPlease incorporate the above style reference into all visual prompts.`
     : '';
 
   const batchUserPrompt = `
 STORY CONTEXT: "${scriptContextSummary}"
+VISUAL THEME: "${effectiveTheme}"
 
 CHUNKS:
 ${JSON.stringify(chunksPayload, null, 2)}
 
-Generate visual prompts with the visual style & direction: "${effectiveTheme}" for all chunks.${referenceInstruction}
+Action: From the story context above, generate an image prompt for each chunk in the style of "${effectiveTheme}". Ensure every prompt has enough context to stand alone (replace pronouns with character descriptions based on the story).
 
 
 Example visual prompts are :
@@ -473,7 +522,8 @@ Visual: Rahul (around 13 years old) sits comfortably in a beanbag chair surround
 
       if (batchResponse && batchResponse.results) {
         batchResponse.results.forEach((r: any) => {
-          batchKeywordsData[r.index] = r;
+          const finalPrompt = appendStyleToPrompt(r.visual_query, effectiveTheme);
+          batchKeywordsData[r.index] = { ...r, visual_query: finalPrompt };
         });
         console.log("Batch keywords generated successfully.");
       } else {
@@ -485,7 +535,7 @@ Visual: Rahul (around 13 years old) sits comfortably in a beanbag chair surround
   }
 
   // 5. Pre-process Batch Generation for AI chunks
-  reportProgress(40, "Generating Visuals (Batch)...");
+  await reportProgress(40, "Generating Visuals (Batch)...");
   console.log("Preparing batch generation requests...");
   const batchPrompts: string[] = [];
   const chunkIndicesForBatch: number[] = [];
@@ -493,20 +543,29 @@ Visual: Rahul (around 13 years old) sits comfortably in a beanbag chair surround
   for (const [chunk_index, chunk] of chunks.entries()) {
     const promptData = batchKeywordsData[chunk_index] || { visual_query: chunk.chunk, google_search: false };
     const reviewedItem = reviewedItems?.[chunk_index];
-    if (!hasReviewedPrompts && !promptData.google_search && !reviewedItem?.mediaPath) {
-      batchPrompts.push(promptData.visual_query);
+
+    const useGoogle = typeof reviewedItem?.useGoogle === "boolean" ? reviewedItem.useGoogle : promptData.google_search;
+    const currentPrompt = (reviewedItem?.prompt || promptData.visual_query).trim();
+
+    if (!useGoogle && !reviewedItem?.mediaPath) {
+      batchPrompts.push(currentPrompt);
       chunkIndicesForBatch.push(chunk_index);
     }
   }
+  console.log(`[videoGenerator] Batch prep summary | prompts=${batchPrompts.length} | chunkIndices=${JSON.stringify(chunkIndicesForBatch)}`);
 
   let batchResultsMap = new Map<string, string>();
-  if (batchPrompts.length > 0) {
+  const shouldUseNanoBatch = chunks.length > 2 && batchPrompts.length > 0;
+  if (shouldUseNanoBatch) {
     console.log(`Sending ${batchPrompts.length} prompts to Gemini Batch...`);
     try {
       batchResultsMap = await generateNanoBananaBatch(batchPrompts);
+      console.log(`[videoGenerator] Batch response summary | results=${batchResultsMap.size}`);
     } catch (e) {
       console.error("Batch generation failed completely:", e);
     }
+  } else if (batchPrompts.length > 0) {
+    console.log(`[videoGenerator] Skipping Nano batch because chunk count is ${chunks.length}. Using direct Nano fallback per chunk.`);
   }
 
   // 6. Iterate over chunks and generate media
@@ -514,7 +573,7 @@ Visual: Rahul (around 13 years old) sits comfortably in a beanbag chair surround
   let lastEndIndex = 0;
   for (const [chunk_index, chunk] of chunks.entries()) {
     const progressPercent = 40 + Math.floor(((chunk_index) / totalChunks) * 45); // 40% to 85%
-    reportProgress(progressPercent, `Generating Visuals for Scene ${chunk_index + 1}/${totalChunks}...`);
+    await reportProgress(progressPercent, `Generating Visuals for Scene ${chunk_index + 1}/${totalChunks}...`);
 
     console.log(`Processing chunk ${chunk_index}: ${chunk.chunk}`);
 
@@ -524,6 +583,7 @@ Visual: Rahul (around 13 years old) sits comfortably in a beanbag chair surround
     const useGoogle = typeof reviewedItem?.useGoogle === "boolean" ? reviewedItem.useGoogle : promptData.google_search;
 
     console.log(`Prompt: "${keywordsStr}", Google Search: ${useGoogle}`);
+    console.log(`[videoGenerator] Chunk start | chunk=${chunk_index} | reviewedMedia=${Boolean(reviewedItem?.mediaPath)} | animation=${Boolean(preferences.animation)} | vidGen=${vidGen}`);
 
     let mediaPath = "";
     let selectedUrl = "";
@@ -554,7 +614,7 @@ Visual: Rahul (around 13 years old) sits comfortably in a beanbag chair surround
       mediaPath = reviewedItem.mediaPath.replace(/^public[\\/]/, "");
       selectedUrl = reviewedItem.selectedUrl || reviewedItem.previewUrl || "";
       generated = true;
-      console.log(`Using reviewed media for chunk ${chunk_index}: ${mediaPath}`);
+      console.log(`[videoGenerator] Using reviewed media for chunk ${chunk_index}: path="${mediaPath}" selectedUrl="${selectedUrl}"`);
     }
 
     // Generation Logic
@@ -593,17 +653,18 @@ Visual: Rahul (around 13 years old) sits comfortably in a beanbag chair surround
       console.log("Checking AI Generation (NanoBanana Batch)...");
 
       // 1. Nano Banana (Batch Result)
-      if (batchResultsMap.has(keywordsStr)) {
-        const nanoPath = batchResultsMap.get(keywordsStr);
+      const sanitizedKey = keywordsStr.trim();
+      if (batchResultsMap.has(sanitizedKey)) {
+        const nanoPath = batchResultsMap.get(sanitizedKey);
         if (nanoPath) {
           mediaPath = nanoPath.replace(/^public[\\/]/, "");
           selectedUrl = "generated-nano-batch";
           tempFiles.push(nanoPath);
           generated = true;
-          console.log("Used Batch Generated Image:", mediaPath);
+          console.log(`[videoGenerator] ✓ Used Batch Generated Image for chunk ${chunk_index}: ${mediaPath}`);
         }
       } else {
-        console.warn("Batch result not found for this prompt. Proceeding to fallbacks.");
+        console.log(`[videoGenerator] No batch result for: "${sanitizedKey}"`);
       }
 
       // Note: We skip single-call NanoBanana because if batch failed for this specific prompt, 
@@ -687,7 +748,7 @@ Visual: Rahul (around 13 years old) sits comfortably in a beanbag chair surround
 
     if (!generated) {
       console.warn(`All generation/search methods failed for chunk: ${chunk_index}`);
-    } else if (preferences.animation && (!hasReviewedPrompts || Boolean(reviewedItem?.mediaPath))) {
+    } else if (preferences.animation && Boolean(mediaPath)) {
       // ----------------------------------------------------
       // NEW VIDEO GENERATION LOGIC (Veo or Freepik)
       // vidGen parameter: "veo" (default) or "freepik"
@@ -723,8 +784,16 @@ If yes, provide a specific video generation prompt describing the movement.`;
           modelName
         ]);
 
-        if (decisionResponse && decisionResponse.should_animate) {
-          console.log(`Animating chunk ${chunk_index} with prompt: ${decisionResponse.video_prompt}`);
+        const animationPrompt = decisionResponse?.video_prompt?.trim() || keywordsStr;
+        const llmSaysAnimate = Boolean(decisionResponse?.should_animate);
+        console.log(`[videoGenerator] Animation decision | chunk=${chunk_index} | userRequested=true | llmShouldAnimate=${llmSaysAnimate} | prompt="${animationPrompt}"`);
+
+        if (decisionResponse) {
+          if (!llmSaysAnimate) {
+            console.log(`[videoGenerator] LLM voted static for chunk ${chunk_index}, but animation toggle is enabled. Proceeding with forced animation.`);
+          } else {
+            console.log(`Animating chunk ${chunk_index} with prompt: ${animationPrompt}`);
+          }
 
           if (vidGen === "freepik") {
             // ====== FREEPIK VIDEO GENERATION ======
@@ -743,7 +812,7 @@ If yes, provide a specific video generation prompt describing the movement.`;
 
             const videoUrl = await generateFreepikVideo(
               "hailuo-02-768p",
-              decisionResponse.video_prompt || keywordsStr,
+              animationPrompt,
               imageInputForVideo
             );
 
@@ -758,6 +827,7 @@ If yes, provide a specific video generation prompt describing the movement.`;
                 tempFiles.push(vidPath);
 
                 console.log(`Video downloaded to: ${mediaPath}`);
+                console.log(`[videoGenerator] Animation applied | chunk=${chunk_index} | provider=freepik | finalMedia="${mediaPath}"`);
               } catch (err) {
                 console.error("Failed to download Freepik video:", err);
               }
@@ -787,7 +857,7 @@ If yes, provide a specific video generation prompt describing the movement.`;
 
             try {
               const veoOutputPath = `veo_video_${user_video_id}_${chunk_index}.mp4`;
-              console.log(`Generating Veo video with prompt: ${decisionResponse.video_prompt}`);
+              console.log(`Generating Veo video with prompt: ${animationPrompt}`);
 
               // await generateVeo3FastVideo({
               //   prompt: decisionResponse.video_prompt || keywordsStr,
@@ -799,26 +869,20 @@ If yes, provide a specific video generation prompt describing the movement.`;
               let veoOutputName = veoOutputPath.replace(/\.mp4$/, "");
 
 
-              await generateVeoVideo(
-                decisionResponse.video_prompt || keywordsStr,
+              const { localPath } = await generateVeoVideo(
+                animationPrompt,
                 veoOutputName,
                 imagePath || undefined
               );
-              // Move the video to public folder for consistency
-              const fs = require('fs');
-              const path = require('path');
-              const publicVidPath = `public/${veoOutputPath}`;
 
-              if (fs.existsSync(veoOutputPath)) {
-                fs.copyFileSync(veoOutputPath, publicVidPath);
-                fs.unlinkSync(veoOutputPath);
-              }
-
+              // generateVeoVideo already saves to public/ folder
               mediaPath = veoOutputPath;
-              selectedUrl = publicVidPath;
-              tempFiles.push(publicVidPath);
+              selectedUrl = `/${veoOutputPath}`;
+              tempFiles.push(localPath);
+              generated = true;
 
-              console.log(`Veo video generated and saved to: ${publicVidPath}`);
+              console.log(`Veo video generated and saved to: ${localPath}`);
+              console.log(`[videoGenerator] Animation applied | chunk=${chunk_index} | provider=veo | finalMedia="${mediaPath}"`);
             } catch (err) {
               console.error("Failed to generate Veo video:", err);
             }
@@ -826,7 +890,7 @@ If yes, provide a specific video generation prompt describing the movement.`;
             console.warn(`Unknown vidGen option: ${vidGen}. Defaulting to image (no animation).`);
           }
         } else {
-          console.log(`Skipping animation for chunk ${chunk_index} (LLM decided against it).`);
+          console.warn(`[videoGenerator] Animation decision unavailable for chunk ${chunk_index}. Keeping image asset.`);
         }
       } catch (err) {
         console.error("Error in video decision/generation flow:", err);
@@ -849,6 +913,11 @@ If yes, provide a specific video generation prompt describing the movement.`;
       templateJson: templateJson,
       tag: "",
     };
+    console.log(`[videoGenerator] Chunk result | chunk=${chunk_index} | templatePath="${chunkJson.templateJson.path}" | selectedUrl="${chunkJson.selectedUrl}" | isVideo=${/\.(mp4|mov|webm|avi)$/i.test(chunkJson.templateJson.path || "")}`);
+    appendPipelineDebugLog(
+      user_video_id,
+      `CHUNK_RESULT | chunk=${chunk_index} | templatePath=${chunkJson.templateJson.path || ""} | selectedUrl=${chunkJson.selectedUrl || ""} | isVideo=${/\.(mp4|mov|webm|avi)$/i.test(chunkJson.templateJson.path || "")}`
+    );
 
     // Append chunkJson to sceneJson
     sceneJson.push(chunkJson);
@@ -867,6 +936,7 @@ If yes, provide a specific video generation prompt describing the movement.`;
   transcriptData = convertSceneToAsset(transcriptData);
 
   console.log("assetJson is ", JSON.stringify(assetJson, null, 2));
+  console.log(`[videoGenerator] Asset summary before render | count=${assetJson.length} | assets=${JSON.stringify(assetJson.map((asset) => ({ path: asset.path, type: asset.type, start: asset.start, end: asset.end })))}`);
 
   // let transcriptData = [
   // { "word": "have", "start": 0.0, "end": 0.2 },
@@ -911,7 +981,7 @@ If yes, provide a specific video generation prompt describing the movement.`;
   }
 
   // 5. Call video creator API with sceneJson and audioPath
-  reportProgress(90, "Rendering Final Video...");
+  await reportProgress(90, "Rendering Final Video...");
   // const finalVideoPath = await renderPersonalizedVideo({
   // user_video_id: tts_options.user_video_id,
   // words: transcriptData,
@@ -935,6 +1005,8 @@ If yes, provide a specific video generation prompt describing the movement.`;
     words: transcriptData,
     assets: assetJson,
     options: {
+      animation: Boolean(preferences.animation),
+      vidGen,
       subtitles: preferences.subtitles,
       wordsPerLine: 3,
       subtitleStyle: {
@@ -942,12 +1014,20 @@ If yes, provide a specific video generation prompt describing the movement.`;
         highlightColor: "#FF0",
         normalColor: "#FFF",
       },
-      logoUrl: "logo.png",
-      audioUrl: "../audio_" + tts_options.user_video_id + ".wav",
+      logoUrl: "/logo.png",
+      audioUrl: "/" + audioFileName,
     },
   };
+  console.log(`[videoGenerator] Render params summary | userVideoId=${renderParams.user_video_id} | chunks=${renderParams.chunks.length} | assets=${renderParams.assets.length} | animation=${renderParams.options.animation} | vidGen=${renderParams.options.vidGen}`);
+  console.log(`[videoGenerator] Render asset paths | ${JSON.stringify(renderParams.assets.map((asset) => ({ path: asset.path, type: asset.type })))}`);
+  appendPipelineDebugLog(
+    user_video_id,
+    `RENDER_ASSETS | ${JSON.stringify(renderParams.assets.map((asset) => ({ path: asset.path, type: asset.type, start: asset.start, end: asset.end })))}`
+  );
 
   saveDataAsJSON(renderParams, "debug_render_data.json");
+  console.log(`[videoGenerator] debug_render_data.json written for ${renderParams.user_video_id}`);
+  appendPipelineDebugLog(user_video_id, `DEBUG_JSON_WRITTEN | file=debug_render_data.json`);
 
   await renderPersonalizedVideo(renderParams);
   let finalVideoPath = `video-${tts_options.user_video_id}.mp4`;

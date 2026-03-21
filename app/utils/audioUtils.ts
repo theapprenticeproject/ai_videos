@@ -1,4 +1,5 @@
 import * as fs from "fs";
+import * as path from "path";
 import { ElevenLabsClient, play } from '@elevenlabs/elevenlabs-js';
 import { execSync } from "child_process";
 
@@ -45,8 +46,13 @@ export async function textToSpeech(
     throw new Error("No audio content received from API.");
   }
 
+  const outputDir = path.dirname(fileName);
+  if (outputDir && outputDir !== "." && !fs.existsSync(outputDir)) {
+    fs.mkdirSync(outputDir, { recursive: true });
+  }
+
   // Save to a temporary file first
-  const tempFileName = `temp_${fileName}`;
+  const tempFileName = path.join(outputDir, `temp_${path.basename(fileName)}`);
   fs.writeFileSync(tempFileName, Buffer.from(data.audioContent, "base64"));
   
   // Convert to standard WAV (48kHz, 16-bit, stereo)
@@ -96,19 +102,32 @@ export async function generateSpeechWithTranscript(
 ): Promise<SpeechResult> {
   const client = new ElevenLabsClient({ apiKey });
 
-  console.log(`🎤 Generating: "${text}"`);
+  const outputDir = path.dirname(filename);
+  if (outputDir && outputDir !== "." && !fs.existsSync(outputDir)) {
+    fs.mkdirSync(outputDir, { recursive: true });
+  }
+
+  console.log(`[ELEVENLABS] Request start. voiceId=${voiceId} textChars=${text.length}`);
   
-  const response = await client.textToSpeech.convertWithTimestamps(voiceId, {
-    text,
-    modelId: "eleven_multilingual_v2",
-    outputFormat: "mp3_44100_128",
-  });
+  let response;
+  try {
+    response = await client.textToSpeech.convertWithTimestamps(voiceId, {
+      text,
+      modelId: "eleven_multilingual_v2",
+      outputFormat: "mp3_44100_128",
+    });
+  } catch (error) {
+    console.error(`[ELEVENLABS] Request failed before audio write. voiceId=${voiceId}`);
+    throw error;
+  }
 
   // ✅ SAVE AUDIO FILE TEMPORARILY
   const audioBase64 = response.audioBase64!;
   const audioBuffer = Buffer.from(audioBase64, "base64");
-  const tempFilename = `temp_${filename}`;
+  const tempFilename = path.join(outputDir, `temp_${path.basename(filename)}`);
   fs.writeFileSync(tempFilename, audioBuffer);
+  const alignedChars = response.alignment?.characters?.length ?? 0;
+  console.log(`[ELEVENLABS] Response received. audioBytes=${audioBuffer.length} alignedChars=${alignedChars}`);
   
   // ✅ CONVERT TO WAV 48kHz, 16-bit, stereo
   console.log(`⚙️ Converting ${tempFilename} to standard WAV (48kHz, 16-bit, stereo)...`);

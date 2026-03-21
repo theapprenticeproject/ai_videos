@@ -1,8 +1,10 @@
 import React, { useState, useCallback, useEffect } from 'react';
 import { ChevronRight, ChevronLeft, Play, Edit3, Settings, Video, Sparkles, ArrowRight, LayoutGrid } from 'lucide-react';
+import { useUser } from '@clerk/nextjs';
 import { callLlm, callStructuredLlm } from './llm';
 import { promptFormation } from './prompts';
 import { LLM_API_KEY } from './constant';
+import toast from 'react-hot-toast';
 import data from '../dynamication.json'
 
 interface FormData {
@@ -21,6 +23,8 @@ interface FormData {
     reviewPrompts?: boolean;
   };
 }
+
+type FormPreferences = FormData["preferences"];
 
 type ReviewWord = {
   word: string;
@@ -41,6 +45,7 @@ interface ReviewItem {
   previewUrl: string;
   selectedUrl: string;
   baselineChunkText?: string;
+  status?: 'idle' | 'loading' | 'error';
 }
 
 interface ReviewData {
@@ -220,10 +225,10 @@ const PromptInputStep = ({
         </div>
 
         <datalist id="model-suggestions">
-          <option value="gemini-2.0-flash-lite" />
+          <option value="gemini-2.5-flash" />
+          <option value="gemini-2.5-pro" />
           <option value="gemini-2.0-flash" />
           <option value="gemini-1.5-flash" />
-          <option value="gemini-1.5-pro" />
         </datalist>
 
         <div className="flex justify-center mt-6 border-t pt-6">
@@ -551,11 +556,12 @@ const ReviewStep = ({
   onSubmit,
   isLoading,
   busyChunkId,
-  reviewAction
+  reviewAction,
+  viewMode
 }: {
   reviewData: ReviewData;
   setReviewData: React.Dispatch<React.SetStateAction<ReviewData | null>>;
-  preferences: FormData["preferences"];
+  preferences: FormPreferences;
   onBack: () => void;
   onRechunk: () => void;
   onInsertChunk: (chunkId: number) => void;
@@ -569,227 +575,269 @@ const ReviewStep = ({
   isLoading: boolean;
   busyChunkId: number | null;
   reviewAction: 'prepare' | 'rechunk' | 'refreshChanged' | 'refreshAll' | null;
-}) => (
-  <div className="max-w-6xl mx-auto space-y-6">
-    <div className="text-center mb-8">
-      <h2 className="text-2xl font-bold text-gray-900 mb-2">Review Before Final Render</h2>
-      <p className="text-gray-600">Adjust chunking and prompts only if you need extra control. The normal pipeline stays unchanged when these toggles are off.</p>
-    </div>
+  viewMode: 'chunks' | 'visuals';
+}) => {
+  const isPendingImages = viewMode === 'visuals' && 
+    reviewData.items.some(item => !item.previewUrl && !item.mediaPath && item.prompt && item.status !== 'error');
 
-    {preferences.reviewChunks && (
-      <div className="bg-gray-50 p-6 rounded-lg space-y-4">
-        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-          <div>
-            <h3 className="font-medium text-gray-900">Chunk Review</h3>
-            <p className="text-sm text-gray-500">Adjust chunk boundaries using the timed words below. Word sequence always stays in transcript order.</p>
-          </div>
-          <div className="flex items-center gap-3">
-            <label className="text-sm text-gray-700">Max words per chunk</label>
-            <input
-              type="number"
-              min={4}
-              max={30}
-              value={reviewData.chunkingMaxWords}
-              onChange={(e) => setReviewData(prev => prev ? ({
-                ...prev,
-                chunkingMaxWords: Number(e.target.value) || 15
-              }) : prev)}
-              className="w-24 px-3 py-2 border border-gray-300 rounded-lg"
-            />
-            <button
-              type="button"
-              onClick={onRechunk}
-              disabled={reviewAction === 'rechunk' || isLoading}
-              className="px-4 py-2 rounded-lg border border-blue-200 text-blue-700 bg-white hover:bg-blue-50 disabled:opacity-50 transition-colors"
-            >
-              {reviewAction === 'rechunk' ? 'Rebuilding Chunks...' : 'Rebuild Chunks'}
-            </button>
-          </div>
+  return (
+    <div className="max-w-6xl mx-auto space-y-6 animate-in fade-in duration-500">
+      <div className="text-center mb-8">
+        <h2 className="text-2xl font-bold text-gray-900 mb-2">Review Before Final Render</h2>
+        <p className="text-gray-600">Adjust chunking and prompts only if you need extra control. The normal pipeline stays unchanged when these toggles are off.</p>
+      </div>
+
+      {isPendingImages && (
+        <div className="bg-blue-50 border border-blue-200 text-blue-700 rounded-lg px-6 py-3 flex items-center space-x-3 animate-pulse">
+          <div className="animate-spin w-4 h-4 border-2 border-blue-600 border-t-transparent rounded-full"></div>
+          <p className="text-sm font-medium">Generating image previews... Please wait until all previews are ready before creating the final video.</p>
         </div>
+      )}
+
+      {viewMode === 'visuals' && reviewData.items.some(item => item.status === 'error') && (
+        <div className="bg-red-50 border border-red-200 text-red-700 rounded-lg px-6 py-3 flex items-center space-x-3">
+          <div className="w-2 h-2 bg-red-600 rounded-full"></div>
+          <p className="text-sm font-medium">Some image generation failed. You can manually retry failed chunks using the regenerate button.</p>
+        </div>
+      )}
+
+      {viewMode === 'chunks' && (
+        <div className="bg-gray-50 p-6 rounded-lg space-y-4">
+          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+            <div>
+              <h3 className="font-medium text-gray-900">Chunk Review</h3>
+              <p className="text-sm text-gray-500">Adjust chunk boundaries using the timed words below. Word sequence always stays in transcript order.</p>
+            </div>
+            <div className="flex items-center gap-3">
+              <label className="text-sm text-gray-700">Max words per chunk</label>
+              <input
+                type="number"
+                min={4}
+                max={30}
+                value={reviewData.chunkingMaxWords}
+                onChange={(e) => setReviewData(prev => prev ? ({
+                  ...prev,
+                  chunkingMaxWords: Number(e.target.value) || 15
+                }) : prev)}
+                className="w-24 px-3 py-2 border border-gray-300 rounded-lg"
+              />
+              <button
+                type="button"
+                onClick={onRechunk}
+                disabled={reviewAction === 'rechunk' || isLoading}
+                className="px-4 py-2 rounded-lg border border-blue-200 text-blue-700 bg-white hover:bg-blue-50 disabled:opacity-50 transition-colors"
+              >
+                {reviewAction === 'rechunk' ? 'Rebuilding Chunks...' : 'Rebuild Chunks'}
+              </button>
+            </div>
+          </div>
 
 
-        <div className="space-y-3">
-          {reviewData.items.map((item, index) => (
-            <div key={item.chunkId} className="bg-white border border-gray-200 rounded-lg p-4 space-y-2">
-              <div className="flex items-center justify-between text-sm text-gray-500">
-                <span>Chunk {index + 1}</span>
-                <span>{item.startTime.toFixed(2)}s - {item.endTime.toFixed(2)}s</span>
-              </div>
-              <div className="w-full px-4 py-3 border border-gray-200 rounded-lg bg-gray-50 text-sm text-gray-800 min-h-[72px]">
-                {item.chunkText || 'No words in this chunk yet.'}
-              </div>
-              <div className="rounded-lg border border-gray-200 bg-gray-50 p-3 space-y-2">
-                <div className="text-xs font-medium text-gray-500 uppercase tracking-wide">Word-Level Timeline</div>
+          <div className="space-y-3">
+            {reviewData.items.map((item, index) => (
+              <div key={item.chunkId} className="bg-white border border-gray-200 rounded-lg p-4 space-y-2">
+                <div className="flex items-center justify-between text-sm text-gray-500">
+                  <span>Chunk {index + 1}</span>
+                  <span>{item.startTime.toFixed(2)}s - {item.endTime.toFixed(2)}s</span>
+                </div>
+                <div className="w-full px-4 py-3 border border-gray-200 rounded-lg bg-gray-50 text-sm text-gray-800 min-h-[72px]">
+                  {item.chunkText || 'No words in this chunk yet.'}
+                </div>
+                <div className="rounded-lg border border-gray-200 bg-gray-50 p-3 space-y-2">
+                  <div className="text-xs font-medium text-gray-500 uppercase tracking-wide">Word-Level Timeline</div>
+                  <div className="flex flex-wrap gap-2">
+                    {item.words.length > 0 ? item.words.map((word, wordIndex) => (
+                      <div
+                        key={`${item.chunkId}-${wordIndex}-${word.startTime}`}
+                        className="inline-flex items-center gap-2 rounded-full border border-gray-200 bg-white px-2 py-1 text-xs text-gray-700 shadow-sm"
+                      >
+                        <span className="font-medium text-sm text-gray-900">{word.word}</span>
+                        <span className="text-[10px] text-gray-500">{word.startTime.toFixed(2)}-{word.endTime.toFixed(2)}s</span>
+                        <button
+                          type="button"
+                          onClick={() => onMoveWord(item.chunkId, wordIndex, 'prev')}
+                          disabled={index === 0 || wordIndex !== 0}
+                          className="rounded border border-gray-200 px-1.5 py-0.5 text-[10px] text-gray-600 hover:bg-gray-50 disabled:opacity-30"
+                        >
+                          Prev
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => onMoveWord(item.chunkId, wordIndex, 'next')}
+                          disabled={index === reviewData.items.length - 1 || wordIndex !== item.words.length - 1}
+                          className="rounded border border-gray-200 px-1.5 py-0.5 text-[10px] text-gray-600 hover:bg-gray-50 disabled:opacity-30"
+                        >
+                          Next
+                        </button>
+                      </div>
+                    )) : (
+                      <div className="text-sm text-gray-500">No words assigned to this chunk.</div>
+                    )}
+                  </div>
+                </div>
                 <div className="flex flex-wrap gap-2">
-                  {item.words.length > 0 ? item.words.map((word, wordIndex) => (
-                    <div
-                      key={`${item.chunkId}-${wordIndex}-${word.startTime}`}
-                      className="inline-flex items-center gap-2 rounded-full border border-gray-200 bg-white px-2 py-1 text-xs text-gray-700 shadow-sm"
-                    >
-                      <span className="font-medium text-sm text-gray-900">{word.word}</span>
-                      <span className="text-[10px] text-gray-500">{word.startTime.toFixed(2)}-{word.endTime.toFixed(2)}s</span>
-                      <button
-                        type="button"
-                        onClick={() => onMoveWord(item.chunkId, wordIndex, 'prev')}
-                        disabled={index === 0 || wordIndex !== 0}
-                        className="rounded border border-gray-200 px-1.5 py-0.5 text-[10px] text-gray-600 hover:bg-gray-50 disabled:opacity-30"
-                      >
-                        Prev
-                      </button>
-                      <button
-                        type="button"
-                        onClick={() => onMoveWord(item.chunkId, wordIndex, 'next')}
-                        disabled={index === reviewData.items.length - 1 || wordIndex !== item.words.length - 1}
-                        className="rounded border border-gray-200 px-1.5 py-0.5 text-[10px] text-gray-600 hover:bg-gray-50 disabled:opacity-30"
-                      >
-                        Next
-                      </button>
-                    </div>
-                  )) : (
-                    <div className="text-sm text-gray-500">No words assigned to this chunk.</div>
-                  )}
+                  <button
+                    type="button"
+                    onClick={() => onInsertChunk(item.chunkId)}
+                    className="px-3 py-2 rounded-lg border border-gray-200 text-gray-700 bg-white hover:bg-gray-50 transition-colors text-sm"
+                  >
+                    Insert New Below
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => onMergeWithNext(item.chunkId)}
+                    disabled={index === reviewData.items.length - 1}
+                    className="px-3 py-2 rounded-lg border border-gray-200 text-gray-700 bg-white hover:bg-gray-50 disabled:opacity-40 transition-colors text-sm"
+                  >
+                    Merge With Next
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => onDeleteChunk(item.chunkId)}
+                    disabled={reviewData.items.length === 1}
+                    className="px-3 py-2 rounded-lg border border-red-200 text-red-700 bg-white hover:bg-red-50 disabled:opacity-40 transition-colors text-sm"
+                  >
+                    Delete Chunk
+                  </button>
                 </div>
               </div>
-              <div className="flex flex-wrap gap-2">
-                <button
-                  type="button"
-                  onClick={() => onInsertChunk(item.chunkId)}
-                  className="px-3 py-2 rounded-lg border border-gray-200 text-gray-700 bg-white hover:bg-gray-50 transition-colors text-sm"
-                >
-                  Insert New Below
-                </button>
-                <button
-                  type="button"
-                  onClick={() => onMergeWithNext(item.chunkId)}
-                  disabled={index === reviewData.items.length - 1}
-                  className="px-3 py-2 rounded-lg border border-gray-200 text-gray-700 bg-white hover:bg-gray-50 disabled:opacity-40 transition-colors text-sm"
-                >
-                  Merge With Next
-                </button>
-                <button
-                  type="button"
-                  onClick={() => onDeleteChunk(item.chunkId)}
-                  disabled={reviewData.items.length === 1}
-                  className="px-3 py-2 rounded-lg border border-red-200 text-red-700 bg-white hover:bg-red-50 disabled:opacity-40 transition-colors text-sm"
-                >
-                  Delete Chunk
-                </button>
-              </div>
+            ))}
+          </div>
+        </div>
+      )}
+
+      {viewMode === 'visuals' && (
+        <div className="bg-gray-50 p-6 rounded-lg space-y-4">
+          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+            <div>
+              <h3 className="font-medium text-gray-900">Image Prompt Review</h3>
+              <p className="text-sm text-gray-500">Preview every chunk image, edit the prompt, and regenerate only that chunk when needed.</p>
             </div>
-          ))}
-        </div>
-      </div>
-    )}
-
-    {preferences.reviewPrompts && (
-      <div className="bg-gray-50 p-6 rounded-lg space-y-4">
-        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-          <div>
-            <h3 className="font-medium text-gray-900">Image Prompt Review</h3>
-            <p className="text-sm text-gray-500">Preview every chunk image, edit the prompt, and regenerate only that chunk when needed.</p>
+            <div className="flex flex-wrap gap-3">
+              <button
+                type="button"
+                onClick={onRefreshPrompts}
+                disabled={Boolean(reviewAction) || isLoading}
+                className="px-4 py-2 rounded-lg border border-blue-200 text-blue-700 bg-white hover:bg-blue-50 disabled:opacity-50 transition-colors"
+              >
+                {reviewAction === 'refreshChanged' ? 'Refreshing Changed...' : 'Refresh Changed Prompts & Images'}
+              </button>
+              <button
+                type="button"
+                onClick={onRefreshAllPrompts}
+                disabled={Boolean(reviewAction) || isLoading}
+                className="px-4 py-2 rounded-lg border border-gray-200 text-gray-700 bg-white hover:bg-gray-50 disabled:opacity-50 transition-colors"
+              >
+                {reviewAction === 'refreshAll' ? 'Refreshing All...' : 'Refresh All Prompts & Images'}
+              </button>
+            </div>
           </div>
-          <div className="flex flex-wrap gap-3">
-            <button
-              type="button"
-              onClick={onRefreshPrompts}
-              disabled={Boolean(reviewAction) || isLoading}
-              className="px-4 py-2 rounded-lg border border-blue-200 text-blue-700 bg-white hover:bg-blue-50 disabled:opacity-50 transition-colors"
-            >
-              {reviewAction === 'refreshChanged' ? 'Refreshing Changed...' : 'Refresh Changed Prompts & Images'}
-            </button>
-            <button
-              type="button"
-              onClick={onRefreshAllPrompts}
-              disabled={Boolean(reviewAction) || isLoading}
-              className="px-4 py-2 rounded-lg border border-gray-200 text-gray-700 bg-white hover:bg-gray-50 disabled:opacity-50 transition-colors"
-            >
-              {reviewAction === 'refreshAll' ? 'Refreshing All...' : 'Refresh All Prompts & Images'}
-            </button>
-          </div>
-        </div>
 
-        {(reviewAction === 'refreshChanged' || reviewAction === 'refreshAll') && (
-          <div className="bg-blue-50 border border-blue-200 text-blue-700 rounded-lg px-4 py-3 text-sm">
-            {reviewAction === 'refreshChanged'
-              ? 'Refreshing prompts and images only for changed chunks...'
-              : 'Refreshing prompts and images for all chunks...'}
-          </div>
-        )}
+          {(reviewAction === 'refreshChanged' || reviewAction === 'refreshAll') && (
+            <div className="bg-blue-50 border border-blue-200 text-blue-700 rounded-lg px-4 py-3 text-sm">
+              {reviewAction === 'refreshChanged'
+                ? 'Refreshing prompts and images only for changed chunks...'
+                : 'Refreshing prompts and images for all chunks...'}
+            </div>
+          )}
 
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-          {reviewData.items.map((item, index) => (
-            <div key={item.chunkId} className="bg-white border border-gray-200 rounded-lg overflow-hidden">
-              <div className="aspect-video bg-gray-100 flex items-center justify-center">
-                {item.previewUrl ? (
-                  <img src={item.previewUrl} alt={`Preview ${index + 1}`} className="w-full h-full object-cover" />
-                ) : (
-                  <div className="text-sm text-gray-500">No preview generated</div>
-                )}
-              </div>
-              <div className="p-4 space-y-3">
-                <div className="text-sm font-medium text-gray-900">Chunk {index + 1}</div>
-                <div className="text-xs text-gray-500">{item.chunkText}</div>
-                <textarea
-                  value={item.prompt}
-                  onChange={(e) => setReviewData(prev => prev ? ({
-                    ...prev,
-                    items: prev.items.map((current) =>
-                      current.chunkId === item.chunkId ? { ...current, prompt: e.target.value } : current
-                    )
-                  }) : prev)}
-                  rows={4}
-                  className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-none"
-                />
-                <label className="flex items-center space-x-2 text-sm text-gray-700">
-                  <input
-                    type="checkbox"
-                    checked={item.useGoogle}
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+            {reviewData.items.map((item, index) => (
+              <div key={item.chunkId} className="bg-white border border-gray-200 rounded-lg overflow-hidden">
+                <div className="aspect-video bg-gray-100 flex items-center justify-center relative">
+                  {item.previewUrl ? (
+                    <img src={item.previewUrl} alt={`Preview ${index + 1}`} className="w-full h-full object-cover" />
+                  ) : (
+                    <div className="flex flex-col items-center">
+                      <div className="animate-spin w-6 h-6 border-2 border-blue-600 border-t-transparent rounded-full mb-2 opacity-50"></div>
+                      <div className="text-sm text-gray-500">Loading preview...</div>
+                    </div>
+                  )}
+                  {busyChunkId === item.chunkId && (
+                    <div className="absolute inset-0 bg-white/40 flex items-center justify-center backdrop-blur-[1px]">
+                      <div className="animate-spin w-6 h-6 border-2 border-blue-600 border-t-transparent rounded-full"></div>
+                    </div>
+                  )}
+                </div>
+                <div className="p-4 space-y-3">
+                  <div className="text-sm font-medium text-gray-900">Chunk {index + 1}</div>
+                  <div className="text-xs text-gray-500">{item.chunkText}</div>
+                  <textarea
+                    value={item.prompt}
                     onChange={(e) => setReviewData(prev => prev ? ({
                       ...prev,
                       items: prev.items.map((current) =>
-                        current.chunkId === item.chunkId ? { ...current, useGoogle: e.target.checked } : current
+                        current.chunkId === item.chunkId ? { ...current, prompt: e.target.value } : current
                       )
                     }) : prev)}
-                    className="w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500"
+                    rows={4}
+                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-none"
                   />
-                  <span>Use Google image search for this chunk</span>
-                </label>
-                <button
-                  type="button"
-                  onClick={() => onRegenerateImage(item.chunkId)}
-                  disabled={busyChunkId === item.chunkId || Boolean(reviewAction) || isLoading}
-                  className="w-full px-4 py-2 rounded-lg bg-blue-600 text-white hover:bg-blue-700 disabled:opacity-50 transition-colors"
-                >
-                  {busyChunkId === item.chunkId ? "Regenerating..." : "Regenerate This Image"}
-                </button>
+                  <label className="flex items-center space-x-2 text-sm text-gray-700">
+                    <input
+                      type="checkbox"
+                      checked={item.useGoogle}
+                      onChange={(e) => setReviewData(prev => prev ? ({
+                        ...prev,
+                        items: prev.items.map((current) =>
+                          current.chunkId === item.chunkId ? { ...current, useGoogle: e.target.checked } : current
+                        )
+                      }) : prev)}
+                      className="w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500"
+                    />
+                    <span>Use Google image search</span>
+                  </label>
+                  <button
+                    type="button"
+                    onClick={() => onRegenerateImage(item.chunkId)}
+                    disabled={busyChunkId !== null || Boolean(reviewAction) || isLoading}
+                    className="w-full px-4 py-2 rounded-lg bg-blue-600 text-white hover:bg-blue-700 disabled:opacity-50 transition-colors"
+                  >
+                    {busyChunkId === item.chunkId ? "Regenerating..." : "Regenerate This Image"}
+                  </button>
+                </div>
               </div>
-            </div>
-          ))}
+            ))}
+          </div>
         </div>
-      </div>
-    )}
+      )}
 
-    <div className="flex space-x-4">
-      <button
-        type="button"
-        onClick={onBack}
-        className="flex items-center space-x-2 px-6 py-3 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors"
-      >
-        <ChevronLeft className="w-5 h-5" />
-        <span>Back to Preferences</span>
-      </button>
-      <button
-        type="button"
-        onClick={onSubmit}
-        disabled={isLoading}
-        className="flex-1 bg-blue-600 text-white px-6 py-3 rounded-lg font-medium hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors flex items-center justify-center space-x-2"
-      >
-        <span>{isLoading ? "Creating Video..." : "Create Final Video"}</span>
-        <ArrowRight className="w-5 h-5" />
-      </button>
+      <div className="flex space-x-4">
+        <button
+          type="button"
+          onClick={onBack}
+          className="flex items-center space-x-2 px-6 py-3 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors"
+        >
+          <ChevronLeft className="w-5 h-5" />
+          <span>Back to Preferences</span>
+        </button>
+        <button
+          type="button"
+          onClick={onSubmit}
+          disabled={isLoading || isPendingImages || busyChunkId !== null || !!reviewAction}
+          className="flex-1 bg-blue-600 text-white px-6 py-3 rounded-lg font-medium hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors flex items-center justify-center space-x-2"
+        >
+          {isLoading ? (
+            <>
+              <div className="animate-spin w-5 h-5 border-2 border-white border-t-transparent rounded-full"></div>
+              <span>Creating Video...</span>
+            </>
+          ) : isPendingImages ? (
+            <>
+              <div className="animate-spin w-5 h-5 border-2 border-white border-t-transparent rounded-full opacity-50"></div>
+              <span>Loading Previews...</span>
+            </>
+          ) : (
+            <>
+              <span>{viewMode === 'chunks' && preferences.reviewPrompts ? 'Continue to Visuals' : 'Create Final Video'}</span>
+              <ArrowRight className="w-5 h-5" />
+            </>
+          )}
+        </button>
+      </div>
     </div>
-  </div>
-);
+  );
+};
 
 // Result Step Component
 const ResultStep = ({
@@ -877,8 +925,16 @@ const ResultStep = ({
 
 // Helper function
 const cleanNarrationStrictly = (text: string): string => {
-  const unwantedChars = /[•\*\:\;\'\"""'']/g;
-  return text.replace(unwantedChars, "");
+  return text
+    // Remove unwanted characters including hyphens
+    .replace(/[•\*\:\;\'\"“”‘’\-]/g, "")
+    // Remove any punctuation other than ! , . (like ?)
+    .replace(/[^\w\s!,\.]/g, "")
+    // Remove space before allowed punctuation
+    .replace(/\s+([!,\.])/g, "$1")
+    // Reduce multiple spaces
+    .replace(/\s+/g, " ")
+    .trim();
 };
 
 // Progress Bar Component
@@ -1011,6 +1067,13 @@ const normalizeReviewData = (data: ReviewData): ReviewData => {
   };
 };
 
+const areVisualReviewAssetsReady = (data: ReviewData | null): boolean => {
+  if (!data || !Array.isArray(data.items) || data.items.length === 0) {
+    return false;
+  }
+  return data.items.every((item) => Boolean(item.previewUrl || item.mediaPath));
+};
+
 const PromptToVideoApp: React.FC = () => {
   const [currentStep, setCurrentStep] = useState(0);
   const [isScriptLoading, setIsScriptLoading] = useState(false);
@@ -1039,6 +1102,39 @@ const PromptToVideoApp: React.FC = () => {
   const [videoUrl, setVideoUrl] = useState<string | null>(null);
   const [videoHistory, setVideoHistory] = useState<any[]>([]);
   const [reviewData, setReviewData] = useState<ReviewData | null>(null);
+  const { user } = useUser();
+
+  // Listen for the widget to open review mode
+  useEffect(() => {
+    const handleOpenReviewMode = (e: any) => {
+      const { job } = e.detail;
+      const reviewChunksEnabled = Boolean(job?.params?.preferences?.reviewChunks);
+      const nextReviewData = job.reviewDataReady ? normalizeReviewData(job.reviewDataReady) : null;
+
+      if (!reviewChunksEnabled && !areVisualReviewAssetsReady(nextReviewData)) {
+        toast("Image previews are still generating. Open review once all previews are ready.", {
+          icon: "⏳",
+          duration: 4000,
+        });
+        return;
+      }
+
+      if (job.params?.formData) {
+        setFormData(job.params.formData);
+      }
+      if (nextReviewData) {
+        setReviewData(nextReviewData);
+      }
+      if (reviewChunksEnabled) {
+        setCurrentStep(3);
+      } else {
+        setCurrentStep(4);
+      }
+    };
+    window.addEventListener('open-review-mode', handleOpenReviewMode);
+    return () => window.removeEventListener('open-review-mode', handleOpenReviewMode);
+  }, []);
+
   useEffect(() => {
     const history = localStorage.getItem('video_creation_history');
     if (history) {
@@ -1051,32 +1147,47 @@ const PromptToVideoApp: React.FC = () => {
   }, []);
 
   const reviewEnabled = Boolean(formData.preferences.reviewChunks || formData.preferences.reviewPrompts);
-  const steps = reviewEnabled ? [
+  const steps = [
     { id: 'prompt', title: 'Prompt Input', icon: Edit3 },
     { id: 'script', title: 'Script Verification', icon: Settings },
     { id: 'preferences', title: 'User Preferences', icon: Settings },
-    { id: 'review', title: 'Review', icon: Sparkles },
-    { id: 'result', title: 'Video Result', icon: Video }
-  ] : [
-    { id: 'prompt', title: 'Prompt Input', icon: Edit3 },
-    { id: 'script', title: 'Script Verification', icon: Settings },
-    { id: 'preferences', title: 'User Preferences', icon: Settings },
-    { id: 'result', title: 'Video Result', icon: Video }
   ];
-  const stepIndicatorIndex = reviewEnabled
-    ? currentStep
-    : currentStep === 4
-      ? 3
-      : currentStep;
+  if (formData.preferences.reviewChunks) {
+    steps.push({ id: 'chunks', title: 'Chunk Review', icon: LayoutGrid });
+  }
+  if (formData.preferences.reviewPrompts) {
+    steps.push({ id: 'visuals', title: 'Visual Review', icon: Sparkles });
+  }
+  steps.push({ id: 'result', title: 'Video Result', icon: Video });
+
+  const getStepIndicatorIndex = () => {
+    if (currentStep <= 2) return currentStep;
+    if (currentStep === 5) return steps.length - 1;
+    
+    // For Step 3 (Chunks) or Step 4 (Visuals)
+    if (currentStep === 3) {
+      return steps.findIndex(s => s.id === 'chunks');
+    }
+    if (currentStep === 4) {
+      return steps.findIndex(s => s.id === 'visuals');
+    }
+    return currentStep;
+  };
+  const stepIndicatorIndex = getStepIndicatorIndex();
 
   const handlePromptSubmit = async () => {
     if (!formData.prompt.trim()) return;
 
     setIsScriptLoading(true);
     try {
-      let script = await callLlm(LLM_API_KEY, "write video script refering examples with correct punctuations and pauses by comma , in required language english/hindi or hinglish", promptFormation(formData.prompt, "scriptFormation", formData), [], formData.modelName || "gemini-2.0-flash-lite");
+      let script = await callLlm(LLM_API_KEY, "write video script refering examples with correct punctuations and pauses by comma , in required language english/hindi or hinglish", promptFormation(formData.prompt, "scriptFormation", formData), [], "gemini-2.5-flash");
 
-      // script = cleanNarrationStrictly(script);
+      // Clean conversational filler and markdown
+      script = script.replace(/here is the script[\s\w:]*/i, '')
+                     .replace(/^[*\s-]+/gm, '') // Remove starting asterisks or hyphens
+                     .replace(/\*/g, '') // Remove all asterisks
+                     .trim();
+
       if (script.length === 0) {
         script = `Scene 1: ${formData.prompt}\n\nThis is a sample script generated from your prompt. You can edit this script to match your vision perfectly.\n\nScene 2: Additional content based on your requirements...`;
       }
@@ -1115,16 +1226,25 @@ const PromptToVideoApp: React.FC = () => {
 
   const submitFinalRender = useCallback(async (activeReviewData: ReviewData | null) => {
     setIsRenderLoading(true);
-    setProgress(5);
-    setStatusText("Queuing render job...");
 
     try {
       const userVideoId = activeReviewData?.userVideoId || `user_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
+      
+      let userIdStr = user?.id || null;
+      if (!userIdStr && typeof window !== 'undefined') {
+        userIdStr = localStorage.getItem('anonymous_user_id');
+        if (!userIdStr) {
+          userIdStr = `anon_${Date.now()}_${Math.random().toString(36).substring(2)}`;
+          localStorage.setItem('anonymous_user_id', userIdStr);
+        }
+      }
+
       const payload = {
         script: formData.script,
         preferences: formData.preferences,
         contentClass: formData.contentClass,
         user_video_id: userVideoId,
+        userId: userIdStr,
         modelName: formData.modelName,
         visualTheme: formData.visualTheme,
         reference: formData.reference,
@@ -1145,61 +1265,40 @@ const PromptToVideoApp: React.FC = () => {
       const { jobId } = await response.json();
       if (!jobId) throw new Error("No jobId returned from server");
 
-      setStatusText("Job queued - waiting for worker...");
+      // Dispatch event to wake up the widget
+      if (typeof window !== 'undefined') {
+        window.dispatchEvent(new Event('video-job-started'));
+      }
+      
+      // Reset immediately, we are firing and forgetting
+      toast.success("Your video is rendering in the background! Check the status widget in the bottom right corner.", { duration: 5000 });
+      resetForm();
 
-      const POLL_INTERVAL = 2000;
-      const MAX_WAIT_MS = 30 * 60 * 1000;
-      const startedAt = Date.now();
-
-      await new Promise<void>((resolve, reject) => {
-        const poll = async () => {
-          if (Date.now() - startedAt > MAX_WAIT_MS) {
-            reject(new Error("Job timed out after 30 minutes"));
-            return;
-          }
-
-          try {
-            const statusRes = await fetch(`/api/queue?jobId=${encodeURIComponent(jobId)}`);
-            if (!statusRes.ok) {
-              setTimeout(poll, POLL_INTERVAL);
-              return;
-            }
-
-            const job = await statusRes.json();
-            if (typeof job.progress === 'number') setProgress(job.progress);
-            if (job.statusMessage) setStatusText(job.statusMessage);
-
-            if (job.status === 'done') {
-              const finalVideoUrl = job.videoUrl ? `/${job.videoUrl}`.replace(/^\/+/, '/') : `/video-${jobId}.mp4`;
-              setVideoUrl(finalVideoUrl);
-              persistVideoResult(jobId, finalVideoUrl);
-              setCurrentStep(4);
-              resolve();
-            } else if (job.status === 'failed') {
-              reject(new Error(job.error || "Rendering failed"));
-            } else {
-              setTimeout(poll, POLL_INTERVAL);
-            }
-          } catch (e) {
-            console.error("Polling error:", e);
-            setTimeout(poll, POLL_INTERVAL);
-          }
-        };
-        poll();
-      });
     } catch (error: any) {
       console.error("Error generating video:", error);
-      alert("Error generating video: " + error.message);
+      toast.error("Error generating video: " + error.message);
     } finally {
       setIsRenderLoading(false);
     }
-  }, [formData, persistVideoResult]);
+  }, [formData, user?.id]);
 
-  const requestReviewPlan = useCallback(async (options?: { manualChunks?: string[]; chunkingMaxWords?: number }) => {
+  const requestReviewPlan = useCallback(async (options?: { manualChunks?: string[]; chunkingMaxWords?: number; sync?: boolean }) => {
     const userVideoId = reviewData?.userVideoId || `user_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
-    const response = await fetch('/api/review-plan', {
+    const useSync = options?.sync === true;
+    const url = useSync ? '/api/review-plan?sync=true' : '/api/review-plan';
+    
+    let userIdStr = user?.id || null;
+    if (!userIdStr && typeof window !== 'undefined') {
+      userIdStr = localStorage.getItem('anonymous_user_id');
+      if (!userIdStr) {
+        userIdStr = `anon_${Date.now()}_${Math.random().toString(36).substring(2)}`;
+        localStorage.setItem('anonymous_user_id', userIdStr);
+      }
+    }
+
+    const response = await fetch(url, {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+      headers: { 'Content-Type': 'application/json', 'x-user-id': userIdStr || 'anonymous' },
       body: JSON.stringify({
         script: formData.script,
         preferences: formData.preferences,
@@ -1210,6 +1309,7 @@ const PromptToVideoApp: React.FC = () => {
         reference: formData.reference,
         chunkingMaxWords: options?.chunkingMaxWords ?? reviewData?.chunkingMaxWords ?? 15,
         manualChunks: options?.manualChunks,
+        formData: formData, // passing local state to the background job
       }),
     });
 
@@ -1222,22 +1322,26 @@ const PromptToVideoApp: React.FC = () => {
   }, [formData, reviewData]);
 
   const handlePreferencesSubmit = async () => {
+    const reviewEnabled = Boolean(formData.preferences.reviewChunks || formData.preferences.reviewPrompts);
     if (!formData.script || !formData.preferences) {
-      alert("Please ensure your script and preferences are provided.");
+      toast.error("Please ensure your script and preferences are provided.");
       return;
     }
 
     if (reviewEnabled) {
-      setReviewAction('prepare');
+      setIsRenderLoading(true);
       try {
-        const preparedReviewData = normalizeReviewData(await requestReviewPlan());
-        setReviewData(preparedReviewData);
-        setCurrentStep(3);
+        await requestReviewPlan({ sync: false });
+        if (typeof window !== 'undefined') {
+          window.dispatchEvent(new Event('video-job-started'));
+        }
+        toast.success("Your review plan is being prepared in the background! Check the status widget in the bottom right corner.", { duration: 5000 });
+        resetForm();
       } catch (error: any) {
         console.error("Error preparing review data:", error);
-        alert("Error preparing review data: " + error.message);
+        toast.error("Error preparing review data: " + error.message);
       } finally {
-        setReviewAction(null);
+        setIsRenderLoading(false);
       }
       return;
     }
@@ -1249,10 +1353,10 @@ const PromptToVideoApp: React.FC = () => {
     if (!reviewData) return;
     setReviewAction('rechunk');
     try {
-      const refreshed = normalizeReviewData(await requestReviewPlan({ chunkingMaxWords: reviewData.chunkingMaxWords }));
+      const refreshed = normalizeReviewData(await requestReviewPlan({ chunkingMaxWords: reviewData.chunkingMaxWords, sync: true }));
       setReviewData(refreshed);
     } catch (error: any) {
-      alert("Error rebuilding chunks: " + error.message);
+      toast.error("Error rebuilding chunks: " + error.message);
     } finally {
       setReviewAction(null);
     }
@@ -1266,7 +1370,7 @@ const PromptToVideoApp: React.FC = () => {
       .map((item) => item.chunkId);
 
     if (changedChunkIds.length === 0) {
-      alert("No chunk text changes found. Use 'Refresh All Prompts & Images' if you want to regenerate everything.");
+      toast.error("No chunk text changes found. Use 'Refresh All Prompts & Images' if you want to regenerate everything.");
       return;
     }
 
@@ -1280,6 +1384,7 @@ const PromptToVideoApp: React.FC = () => {
           modelName: formData.modelName,
           items: reviewData.items,
           changedChunkIds,
+          visualTheme: formData.visualTheme,
         }),
       });
 
@@ -1302,11 +1407,12 @@ const PromptToVideoApp: React.FC = () => {
             ...item,
             ...updated,
             baselineChunkText: item.chunkText,
+            status: 'idle',
           };
         }),
       }) : prev);
     } catch (error: any) {
-      alert("Error refreshing changed prompts: " + error.message);
+      toast.error("Error refreshing changed prompts: " + error.message);
     } finally {
       setReviewAction(null);
     }
@@ -1319,10 +1425,11 @@ const PromptToVideoApp: React.FC = () => {
       const refreshed = normalizeReviewData(await requestReviewPlan({
         manualChunks: reviewData.items.map((item) => item.chunkText),
         chunkingMaxWords: reviewData.chunkingMaxWords,
+        sync: true,
       }));
       setReviewData(refreshed);
     } catch (error: any) {
-      alert("Error refreshing all prompts: " + error.message);
+      toast.error("Error refreshing all prompts: " + error.message);
     } finally {
       setReviewAction(null);
     }
@@ -1356,12 +1463,75 @@ const PromptToVideoApp: React.FC = () => {
     });
   };
 
+  const handleTransitionToVisuals = async () => {
+    if (!reviewData) return;
+    setReviewAction('prepare');
+    try {
+      let userIdStr = user?.id || null;
+      if (!userIdStr && typeof window !== 'undefined') {
+        userIdStr = localStorage.getItem('anonymous_user_id');
+        if (!userIdStr) {
+          userIdStr = `anon_${Date.now()}_${Math.random().toString(36).substring(2)}`;
+          localStorage.setItem('anonymous_user_id', userIdStr);
+        }
+      }
+
+      const preferencesForVisuals = {
+        ...formData.preferences,
+        reviewChunks: false,
+        reviewPrompts: true,
+      };
+      const formDataForVisuals = {
+        ...formData,
+        preferences: preferencesForVisuals,
+      };
+
+      const response = await fetch('/api/review-plan', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'x-user-id': userIdStr || 'anonymous' },
+        body: JSON.stringify({
+          script: reviewData.script,
+          preferences: preferencesForVisuals,
+          contentClass: formData.contentClass,
+          user_video_id: reviewData.userVideoId,
+          modelName: formData.modelName,
+          visualTheme: formData.visualTheme,
+          reference: formData.reference,
+          chunkingMaxWords: reviewData.chunkingMaxWords,
+          manualChunks: reviewData.items.map((item) => item.chunkText),
+          formData: formDataForVisuals,
+        }),
+      });
+
+      if (!response.ok) {
+        const errBody = await response.json().catch(() => ({}));
+        throw new Error(errBody.error || response.statusText);
+      }
+      if (typeof window !== 'undefined') {
+        window.dispatchEvent(new Event('video-job-started'));
+      }
+      toast.success("Visual review is being prepared in the background! Check the status widget in the bottom right corner.", { duration: 5000 });
+      resetForm();
+    } catch (error: any) {
+      console.error("Error preparing visual review:", error);
+      toast.error("Error preparing visual review: " + error.message);
+    } finally {
+      setReviewAction(null);
+    }
+  };
+
   const handleRegenerateImage = async (chunkId: number) => {
     if (!reviewData) return;
-    const target = reviewData.items.find((item) => item.chunkId === chunkId);
-    if (!target) return;
+    const targetIdx = reviewData.items.findIndex((item) => item.chunkId === chunkId);
+    if (targetIdx === -1) return;
+    const target = reviewData.items[targetIdx];
 
     setBusyChunkId(chunkId);
+    setReviewData(prev => prev ? ({
+      ...prev,
+      items: prev.items.map(item => item.chunkId === chunkId ? { ...item, status: 'loading' } : item)
+    }) : prev);
+
     try {
       const response = await fetch('/api/review-image', {
         method: 'POST',
@@ -1387,16 +1557,105 @@ const PromptToVideoApp: React.FC = () => {
                 mediaPath: updatedAsset.mediaPath,
                 previewUrl: updatedAsset.previewUrl,
                 selectedUrl: updatedAsset.selectedUrl,
+                status: 'idle',
               }
             : item
         )
       }) : prev);
     } catch (error: any) {
-      alert("Error regenerating image: " + error.message);
+      console.error("Error regenerating image for chunk", chunkId, error);
+      setReviewData(prev => prev ? ({
+        ...prev,
+        items: prev.items.map(item => item.chunkId === chunkId ? { ...item, status: 'error' } : item)
+      }) : prev);
+      toast.error("Error regenerating image: " + error.message);
     } finally {
       setBusyChunkId(null);
     }
   };
+
+  const handleGeneratePendingImages = async () => {
+    if (!reviewData) return;
+    const pendingItems = reviewData.items.filter(
+      (item) => !item.previewUrl && item.prompt && item.status !== 'error' && item.status !== 'loading'
+    );
+    if (pendingItems.length === 0) return;
+
+    setBusyChunkId(-1);
+    setReviewData(prev => prev ? ({
+      ...prev,
+      items: prev.items.map((item) =>
+        pendingItems.some((pending) => pending.chunkId === item.chunkId)
+          ? { ...item, status: 'loading' }
+          : item
+      )
+    }) : prev);
+
+    try {
+      const response = await fetch('/api/review-prompts', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          script: reviewData.script,
+          modelName: formData.modelName,
+          items: reviewData.items,
+          visualTheme: formData.visualTheme,
+          changedChunkIds: pendingItems.map((item) => item.chunkId),
+          promptsOnly: false,
+        }),
+      });
+
+      if (!response.ok) {
+        const errBody = await response.json().catch(() => ({}));
+        throw new Error(errBody.error || response.statusText);
+      }
+
+      const { items: updatedItems } = await response.json();
+      const updatedMap = new Map<number, any>(updatedItems.map((item: any) => [item.chunkId, item]));
+
+      setReviewData(prev => prev ? ({
+        ...prev,
+        items: prev.items.map((item) => {
+          const updated = updatedMap.get(item.chunkId);
+          if (!updated) return item;
+          return {
+            ...item,
+            prompt: updated.prompt || item.prompt,
+            useGoogle: typeof updated.useGoogle === 'boolean' ? updated.useGoogle : item.useGoogle,
+            reasoning: updated.reasoning || item.reasoning,
+            mediaPath: updated.mediaPath || '',
+            previewUrl: updated.previewUrl || '',
+            selectedUrl: updated.selectedUrl || '',
+            status: updated.previewUrl || updated.mediaPath ? 'idle' : 'error',
+          };
+        }),
+      }) : prev);
+    } catch (error: any) {
+      console.error("Error generating pending preview images:", error);
+      setReviewData(prev => prev ? ({
+        ...prev,
+        items: prev.items.map((item) =>
+          pendingItems.some((pending) => pending.chunkId === item.chunkId)
+            ? { ...item, status: 'error' }
+            : item
+        )
+      }) : prev);
+      toast.error("Error generating preview images: " + error.message);
+    } finally {
+      setBusyChunkId(null);
+    }
+  };
+
+  // Add automatic lazy loading of images
+  useEffect(() => {
+    // ONLY trigger lazy loading in Step 4 (Visual Review)
+    if (currentStep === 4 && reviewData && busyChunkId === null && !reviewAction) {
+      const nextChunk = reviewData.items.find(item => !item.previewUrl && item.prompt && item.status !== 'error' && item.status !== 'loading');
+      if (nextChunk) {
+        handleGeneratePendingImages();
+      }
+    }
+  }, [currentStep, reviewData, busyChunkId, reviewAction]);
 
   const handleInsertChunk = (chunkId: number) => {
     setReviewData(prev => {
@@ -1541,45 +1800,42 @@ const PromptToVideoApp: React.FC = () => {
                 isLoading={Boolean(reviewAction === 'prepare' || isRenderLoading)}
                 loadingLabel={reviewEnabled ? 'Preparing Review...' : 'Creating Video...'}
               />
-              {isRenderLoading && (
-                <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
-                  <div className="bg-white p-8 rounded-xl shadow-2xl max-w-md w-full mx-4">
-                    <div className="text-center mb-6">
-                      <div className="animate-spin w-12 h-12 border-4 border-blue-600 border-t-transparent rounded-full mx-auto mb-4"></div>
-                      <h3 className="text-xl font-bold text-gray-900">Creating Your Video</h3>
-                      <p className="text-gray-600 mt-2">Please wait while we render the final video.</p>
-                    </div>
-                    <ProgressBar progress={progress} status={statusText} />
-                  </div>
-                </div>
-              )}
             </>
           )}
-          {currentStep === 3 && (
-            reviewData ? (
-              <ReviewStep
-                reviewData={reviewData}
-                setReviewData={setReviewData}
-                preferences={formData.preferences}
-                onBack={() => setCurrentStep(2)}
-                onRechunk={handleRechunk}
-                onInsertChunk={handleInsertChunk}
-                onDeleteChunk={handleDeleteChunk}
-                onMergeWithNext={handleMergeWithNext}
-                onRefreshPrompts={handleRefreshPrompts}
-                onRefreshAllPrompts={handleRefreshAllPrompts}
-                onMoveWord={handleMoveWord}
-                onRegenerateImage={handleRegenerateImage}
-                onSubmit={() => submitFinalRender(reviewData)}
-                isLoading={isRenderLoading}
-                busyChunkId={busyChunkId}
-                reviewAction={reviewAction}
-              />
-            ) : (
-              <div className="text-center text-gray-500 py-12">No review data loaded yet.</div>
-            )
+          {(currentStep === 3 || currentStep === 4) && reviewData && (
+            <ReviewStep
+              reviewData={reviewData}
+              setReviewData={setReviewData}
+              preferences={formData.preferences}
+              onBack={() => {
+                if (currentStep === 4 && formData.preferences.reviewChunks) {
+                  setCurrentStep(3);
+                } else {
+                  setCurrentStep(2);
+                }
+              }}
+              onRechunk={handleRechunk}
+              onInsertChunk={handleInsertChunk}
+              onDeleteChunk={handleDeleteChunk}
+              onMergeWithNext={handleMergeWithNext}
+              onRefreshPrompts={handleRefreshPrompts}
+              onRefreshAllPrompts={handleRefreshAllPrompts}
+              onMoveWord={handleMoveWord}
+              onRegenerateImage={handleRegenerateImage}
+              onSubmit={() => {
+                if (currentStep === 3 && formData.preferences.reviewPrompts) {
+                  handleTransitionToVisuals();
+                } else {
+                  submitFinalRender(reviewData);
+                }
+              }}
+              isLoading={isRenderLoading}
+              busyChunkId={busyChunkId}
+              reviewAction={reviewAction}
+              viewMode={currentStep === 3 ? 'chunks' : 'visuals'}
+            />
           )}
-          {currentStep === 4 && (
+          {currentStep === 5 && (
             <ResultStep
               videoUrl={videoUrl}
               onReset={resetForm}

@@ -21,11 +21,12 @@ import './loadEnv.mjs';
 // — Static import (resolved by tsx/esm at startup) ——————————————————————
 import { callVideoGenerator } from '../app/videoGenerator.ts';
 import { uploadFinalVideoToGCS } from '../app/mediaApis/vertex.ts';
+import { prepareVideoReviewData, refreshReviewPromptsForChunks } from '../app/videoReview.ts';
 
 import { fileURLToPath } from 'url';
 import path from 'path';
 import fs from 'fs';
-import { writeJob, getJobsByStatus, purgeOldJobs } from './jobStore.mjs';
+import { writeJob, getJob, getJobsByStatus, purgeOldJobs } from './jobStore.mjs';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const ROOT = path.resolve(__dirname, '..');
@@ -41,6 +42,10 @@ let lastPurgeAt   = Date.now();
 async function processJob(job) {
   const { jobId, params } = job;
   activeRenders++;
+  const isStoppedOrDeleted = () => {
+    const current = getJob(jobId);
+    return !current || current.status === 'aborted';
+  };
 
   console.log(`[worker] Starting job ${jobId} | PID: ${process.pid} | active: ${activeRenders}/${MAX_CONCURRENT}`);
 
@@ -65,6 +70,67 @@ async function processJob(job) {
       visualTheme = '',
       reference = '',
     } = params;
+    console.log(`[worker] Job params | jobId=${jobId} | animation=${Boolean(preferences?.animation)} | reviewChunks=${Boolean(preferences?.reviewChunks)} | reviewPrompts=${Boolean(preferences?.reviewPrompts)} | vidGen=${vidGen}`);
+
+    // Handle review plan generation as a background job
+    if (params.type === 'review_plan') {
+      console.log(`[worker] Processing review_plan for job ${jobId}`);
+      writeJob(jobId, { statusMessage: 'Generating chunks & image prompts...' });
+      
+      let reviewDataLoc = await prepareVideoReviewData({
+        script,
+        preferences,
+        contentClass,
+        user_video_id,
+        modelName,
+        flow,
+        chunkingMaxWords: params.chunkingMaxWords || 15,
+        manualChunks: Array.isArray(params.manualChunks) ? params.manualChunks : undefined,
+        visualTheme,
+      });
+
+      if (isStoppedOrDeleted()) {
+        console.log(`[worker] Job ${jobId} stopped/deleted before review plan completion.`);
+        return;
+      }
+
+      const shouldGenerateVisualReviewImages = Boolean(preferences?.reviewPrompts) && !Boolean(preferences?.reviewChunks);
+      if (shouldGenerateVisualReviewImages) {
+        writeJob(jobId, {
+          statusMessage: 'Generating image previews for visual review...',
+          progress: 70,
+        });
+        const changedChunkIds = reviewDataLoc.items.map((item) => item.chunkId);
+        const updatedItems = await refreshReviewPromptsForChunks({
+          script: reviewDataLoc.script,
+          items: reviewDataLoc.items,
+          changedChunkIds,
+          modelName,
+          visualTheme,
+          promptsOnly: false,
+        });
+
+        const updatedMap = new Map(updatedItems.map((item) => [item.chunkId, item]));
+        reviewDataLoc = {
+          ...reviewDataLoc,
+          items: reviewDataLoc.items.map((item) => updatedMap.get(item.chunkId) || item),
+        };
+      }
+
+      if (isStoppedOrDeleted()) {
+        console.log(`[worker] Job ${jobId} stopped/deleted before review image completion.`);
+        return;
+      }
+
+      writeJob(jobId, {
+        status: 'done',
+        progress: 100,
+        statusMessage: 'Review ready. Click to open.',
+        reviewDataReady: reviewDataLoc,
+        finishedAt: Date.now(),
+      });
+      return;
+    }
 
     const { videoUrl, chunks } = await callVideoGenerator(
       script,
@@ -73,7 +139,20 @@ async function processJob(job) {
       user_video_id,
       flow,
       rebuild,
-      (progress, statusMessage) => {
+      async (progress, statusMessage) => {
+        // Check for pause or abort signals
+        while (true) {
+          const currentJob = getJob(jobId);
+          if (!currentJob || currentJob.status === 'aborted') {
+            throw new Error('JOB_ABORTED');
+          }
+          if (currentJob.status === 'paused') {
+            // Wait while paused
+            await new Promise(r => setTimeout(r, 2000));
+            continue;
+          }
+          break;
+        }
         writeJob(jobId, { progress, statusMessage });
       },
       modelName,
@@ -82,6 +161,11 @@ async function processJob(job) {
       visualTheme,
       reference
     );
+
+    if (isStoppedOrDeleted()) {
+      console.log(`[worker] Job ${jobId} stopped/deleted before upload.`);
+      return;
+    }
 
     const localFinalPath = path.join(ROOT, 'public', videoUrl);
     console.log(`[worker] Uploading final video to GCS...`);
@@ -112,6 +196,11 @@ async function processJob(job) {
       console.log(`[worker] Deleted local final video: ${localFinalPath}`);
     }
 
+    if (isStoppedOrDeleted()) {
+      console.log(`[worker] Job ${jobId} stopped/deleted before final status write.`);
+      return;
+    }
+
     console.log(`[worker] Job ${jobId} completed -> ${gcsUrl}`);
     writeJob(jobId, {
       status: 'done',
@@ -124,6 +213,11 @@ async function processJob(job) {
     });
 
   } catch (err) {
+    const currentJob = getJob(jobId);
+    if (currentJob?.status === 'aborted' || err.message === 'JOB_ABORTED') {
+      console.log(`[worker] Job ${jobId} was aborted by user.`);
+      return;
+    }
     const errorMsg = err?.message || String(err);
     console.error(`[worker] Job ${jobId} FAILED:`, errorMsg);
     writeJob(jobId, {

@@ -11,6 +11,8 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createJob, getJob } from "../../../workers/jobStore.mjs";
 
+export const maxDuration = 60;
+
 export async function POST(request: NextRequest) {
   try {
     const { searchParams } = new URL(request.url);
@@ -22,6 +24,7 @@ export async function POST(request: NextRequest) {
       preferences,
       contentClass,
       user_video_id,
+      userId,
       modelName = "gemini-2.0-flash-lite",
       rebuild = false,
       flow = "eleven",
@@ -98,7 +101,7 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    const job = createJob(jobId, {
+    const job = createJob(jobId, userId, {
       script,
       preferences,
       contentClass,

@@ -41,9 +41,10 @@ TONE & STYLE:
 - Avoid textbook-style explanations and heavy jargon.
 
 STRICT OUTPUT RULE:
-- Output ONLY the narration.
+- Output ONLY the narration. NO conversational filler before or after (e.g., do NOT say "Here is the script" or "Sure").
+- Absolutely NO markdown formatting. Do NOT use asterisks (*) for bold/italics, underscores (_), or hyphens (-).
 - No headings, no bullet points, no labels, no symbols.
-- No emojis, hashtags, or special characters.
+- No emojis, hashtags, or special characters. Output plain spoken text only.
 
 STRUCTURE (follow naturally, do NOT label sections):
 

@@ -200,7 +200,8 @@ export function getTimestampsForPhrase(
           const startTime = transcriptWords[startIndex].startTime;
           const endTime = transcriptWords[endIndex].endTime;
 
-          console.log(`✅ Smart Window match: "${phrase}" -> found first ${windowSize} words at indices ${startIndex}-${endIndex}`);
+          const isPerfect = windowSize === phraseWords.length;
+          console.log(`${isPerfect ? '✅ Perfect match' : '✅ Smart Window match'}: "${phrase}" -> found ${isPerfect ? 'all ' + windowSize : 'first ' + windowSize} words at indices ${startIndex}-${endIndex}`);
           return { startTime, endTime, startIndex, endIndex };
         }
       }

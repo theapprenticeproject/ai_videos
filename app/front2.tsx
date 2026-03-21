@@ -5,6 +5,7 @@ import { ChevronRight, ChevronLeft, Play, Edit3, Settings, Video, Sparkles, Arro
 import { callLlm, callStructuredLlm } from './llm';
 import { promptFormation } from './prompts';
 import { LLM_API_KEY } from './constant';
+import toast from 'react-hot-toast';
 import data from '../dynamication.json'
 
 interface FormData {
@@ -16,6 +17,7 @@ interface FormData {
     subtitles: boolean;
     style: string;
     avatar: string;
+    animation: boolean;
   };
 }
 
@@ -428,6 +430,18 @@ const PreferencesStep = ({
           <label className="flex items-center space-x-3">
             <input
               type="checkbox"
+              checked={formData.preferences.animation}
+              onChange={(e) => setFormData(prev => ({
+                ...prev,
+                preferences: { ...prev.preferences, animation: e.target.checked }
+              }))}
+              className="w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500"
+            />
+            <span className="text-gray-700">Enable video animation (Veo)</span>
+          </label>
+          <label className="flex items-center space-x-3">
+            <input
+              type="checkbox"
               checked={formData.preferences.subtitles}
               onChange={(e) => setFormData(prev => ({
                 ...prev,
@@ -582,9 +596,16 @@ const ResultStep = ({
 );
 
 const cleanNarrationStrictly = (text: string): string => {
-  // Regular expression to match unwanted characters
-  const unwantedChars = /[•\*\:\;\'\"“”‘’]/g;  // Bullet, asterisk, colon, semicolon, quotes
-  return text.replace(unwantedChars, "");  // Replace with an empty string
+  return text
+    // Remove unwanted characters including hyphens
+    .replace(/[•\*\:\;\'\"“”‘’\-]/g, "")
+    // Remove any punctuation other than ! , . (like ?)
+    .replace(/[^\w\s!,\.]/g, "")
+    // Remove space before allowed punctuation
+    .replace(/\s+([!,\.])/g, "$1")
+    // Reduce multiple spaces
+    .replace(/\s+/g, " ")
+    .trim();
 };
 const detectLanguage = async (text: string): Promise<string> => {
   let scriptLangSchema = {
@@ -638,7 +659,8 @@ const PromptToVideoApp: React.FC = () => {
     preferences: {
       subtitles: false,
       style: 'slideshow',
-      avatar: 'female'
+      avatar: 'female',
+      animation: false
     }
   });
   const [videoUrl, setVideoUrl] = useState<string | null>(null);
@@ -676,7 +698,11 @@ const PromptToVideoApp: React.FC = () => {
 
       // console.log("generating script ",LLM_API_KEY);
       // let script  = "";
-      let script = await callLlm(LLM_API_KEY, "systemPrompt", promptFormation(formData.prompt, "scriptFormation", formData), [], formData.modelName || "gemini-2.0-flash-lite");
+      let script = await callLlm(LLM_API_KEY, "systemPrompt", promptFormation(formData.prompt, "scriptFormation", formData), [], "gemini-2.5-flash");
+      script = script.replace(/here is the script[\s\w:]*/i, '')
+                     .replace(/^[*\s-]+/gm, '')
+                     .replace(/\*/g, '')
+                     .trim();
       // let script = await callStructuredLlm( LLM_API_KEY, "systemPrompt", promptFormation(formData.prompt,"scriptFormation", formData),scriptSchema);
       //  console.log("data is ", script)
       // let scriptLang = script.language || "english";
@@ -702,7 +728,7 @@ const PromptToVideoApp: React.FC = () => {
 
   const handlePreferencesSubmit = async () => {
     if (!formData.script || !formData.preferences) {
-      alert("Please ensure your script and preferences are provided.");
+      toast.error("Please ensure your script and preferences are provided.");
       return;
     }
 
@@ -793,7 +819,7 @@ const PromptToVideoApp: React.FC = () => {
 
     } catch (error: any) {
       console.error("Error generating video:", error);
-      alert("Error generating video: " + error.message);
+      toast.error("Error generating video: " + error.message);
     } finally {
       setIsLoading(false);
     }
@@ -810,7 +836,8 @@ const PromptToVideoApp: React.FC = () => {
       preferences: {
         subtitles: false,
         style: 'slideshow',
-        avatar: 'female'
+        avatar: 'female',
+        animation: false
       }
     });
   };
