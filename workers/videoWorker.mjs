@@ -96,24 +96,29 @@ async function processJob(job) {
 
       const shouldGenerateVisualReviewImages = Boolean(preferences?.reviewPrompts) && !Boolean(preferences?.reviewChunks);
       if (shouldGenerateVisualReviewImages) {
+        const reviewItems = Array.isArray(reviewDataLoc?.items) ? reviewDataLoc.items : [];
+        if (reviewItems.length === 0) {
+          throw new Error('Review plan generated without items; cannot prepare visual previews.');
+        }
         writeJob(jobId, {
           statusMessage: 'Generating image previews for visual review...',
           progress: 70,
         });
-        const changedChunkIds = reviewDataLoc.items.map((item) => item.chunkId);
+        const changedChunkIds = reviewItems.map((item) => item.chunkId);
         const updatedItems = await refreshReviewPromptsForChunks({
           script: reviewDataLoc.script,
-          items: reviewDataLoc.items,
+          items: reviewItems,
           changedChunkIds,
           modelName,
           visualTheme,
           promptsOnly: false,
         });
 
-        const updatedMap = new Map(updatedItems.map((item) => [item.chunkId, item]));
+        const safeUpdatedItems = Array.isArray(updatedItems) ? updatedItems : [];
+        const updatedMap = new Map(safeUpdatedItems.map((item) => [item.chunkId, item]));
         reviewDataLoc = {
           ...reviewDataLoc,
-          items: reviewDataLoc.items.map((item) => updatedMap.get(item.chunkId) || item),
+          items: reviewItems.map((item) => updatedMap.get(item.chunkId) || item),
         };
       }
 

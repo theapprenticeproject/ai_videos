@@ -1420,10 +1420,17 @@ const PromptToVideoApp: React.FC = () => {
 
   const handleRefreshAllPrompts = async () => {
     if (!reviewData) return;
+    const manualChunks = Array.isArray(reviewData.items)
+      ? reviewData.items.map((item) => item.chunkText)
+      : [];
+    if (manualChunks.length === 0) {
+      toast.error("No review chunks found. Please regenerate review data.");
+      return;
+    }
     setReviewAction('refreshAll');
     try {
       const refreshed = normalizeReviewData(await requestReviewPlan({
-        manualChunks: reviewData.items.map((item) => item.chunkText),
+        manualChunks,
         chunkingMaxWords: reviewData.chunkingMaxWords,
         sync: true,
       }));
@@ -1465,6 +1472,13 @@ const PromptToVideoApp: React.FC = () => {
 
   const handleTransitionToVisuals = async () => {
     if (!reviewData) return;
+    const manualChunks = Array.isArray(reviewData.items)
+      ? reviewData.items.map((item) => item.chunkText)
+      : [];
+    if (manualChunks.length === 0) {
+      toast.error("No chunks available for visual review.");
+      return;
+    }
     setReviewAction('prepare');
     try {
       let userIdStr = user?.id || null;
@@ -1498,7 +1512,7 @@ const PromptToVideoApp: React.FC = () => {
           visualTheme: formData.visualTheme,
           reference: formData.reference,
           chunkingMaxWords: reviewData.chunkingMaxWords,
-          manualChunks: reviewData.items.map((item) => item.chunkText),
+          manualChunks,
           formData: formDataForVisuals,
         }),
       });
