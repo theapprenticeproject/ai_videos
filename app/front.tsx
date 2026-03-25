@@ -21,6 +21,7 @@ interface FormData {
     animation?: boolean;
     reviewChunks?: boolean;
     reviewPrompts?: boolean;
+    visualReviewMode: 'full' | 'prompts_only';
   };
 }
 
@@ -507,6 +508,42 @@ const PreferencesStep = ({
         </div>
       </div>
 
+      {formData.preferences.reviewPrompts && (
+        <div className="bg-gray-50 p-6 rounded-lg">
+          <h3 className="font-medium text-gray-900 mb-4">Visual Review Mode</h3>
+          <div className="grid grid-cols-2 gap-3">
+            <button
+              type="button"
+              onClick={() => setFormData(prev => ({
+                ...prev,
+                preferences: { ...prev.preferences, visualReviewMode: 'full' }
+              }))}
+              className={`p-3 rounded-lg border-2 transition-all duration-200 flex flex-col items-center text-center ${formData.preferences.visualReviewMode === 'full'
+                ? 'border-blue-500 bg-blue-50 text-blue-700 shadow-sm'
+                : 'border-gray-200 hover:border-gray-300 bg-white'
+                }`}
+            >
+              <span className="font-bold text-sm">Full Generation</span>
+              <span className="text-[10px] mt-1 opacity-60">Generate both prompts and preview images (Standard)</span>
+            </button>
+            <button
+              type="button"
+              onClick={() => setFormData(prev => ({
+                ...prev,
+                preferences: { ...prev.preferences, visualReviewMode: 'prompts_only' }
+              }))}
+              className={`p-3 rounded-lg border-2 transition-all duration-200 flex flex-col items-center text-center ${formData.preferences.visualReviewMode === 'prompts_only'
+                ? 'border-blue-500 bg-blue-50 text-blue-700 shadow-sm'
+                : 'border-gray-200 hover:border-gray-300 bg-white'
+                }`}
+            >
+              <span className="font-bold text-sm">Prompts Only</span>
+              <span className="text-[10px] mt-1 opacity-60">Fast preview. Generate images manually for specific chunks later.</span>
+            </button>
+          </div>
+        </div>
+      )}
+
       <div className="flex space-x-4">
         <button
           type="button"
@@ -551,6 +588,7 @@ const ReviewStep = ({
   onMergeWithNext,
   onRefreshPrompts,
   onRefreshAllPrompts,
+  onGeneratePendingImages,
   onMoveWord,
   onRegenerateImage,
   onSubmit,
@@ -569,6 +607,7 @@ const ReviewStep = ({
   onMergeWithNext: (chunkId: number) => void;
   onRefreshPrompts: () => void;
   onRefreshAllPrompts: () => void;
+  onGeneratePendingImages: () => void;
   onMoveWord: (chunkId: number, wordIndex: number, direction: 'prev' | 'next') => void;
   onRegenerateImage: (chunkId: number) => void;
   onSubmit: () => void;
@@ -578,6 +617,7 @@ const ReviewStep = ({
   viewMode: 'chunks' | 'visuals';
 }) => {
   const isPendingImages = viewMode === 'visuals' && 
+    preferences.visualReviewMode !== 'prompts_only' &&
     reviewData.items.some(item => !item.previewUrl && !item.mediaPath && item.prompt && item.status !== 'error');
 
   return (
@@ -591,6 +631,22 @@ const ReviewStep = ({
         <div className="bg-blue-50 border border-blue-200 text-blue-700 rounded-lg px-6 py-3 flex items-center space-x-3 animate-pulse">
           <div className="animate-spin w-4 h-4 border-2 border-blue-600 border-t-transparent rounded-full"></div>
           <p className="text-sm font-medium">Generating image previews... Please wait until all previews are ready before creating the final video.</p>
+        </div>
+      )}
+
+      {viewMode === 'visuals' && preferences.visualReviewMode === 'prompts_only' && reviewData.items.some(item => !item.previewUrl) && (
+        <div className="bg-amber-50 border border-amber-200 text-amber-700 rounded-lg px-6 py-3 flex items-center justify-between">
+          <div className="flex items-center space-x-3">
+            <Settings className="w-5 h-5 text-amber-600" />
+            <p className="text-sm font-medium">You are in "Prompts Only" mode. Some images are missing. You can generate them individually or all at once.</p>
+          </div>
+          <button
+            onClick={onGeneratePendingImages}
+            disabled={Boolean(reviewAction) || isLoading}
+            className="px-4 py-1.5 bg-amber-600 text-white rounded-md text-sm font-medium hover:bg-amber-700 disabled:opacity-50"
+          >
+            {reviewAction === 'refreshAll' ? 'Generating All...' : 'Generate All Images'}
+          </button>
         </div>
       )}
 
@@ -747,6 +803,20 @@ const ReviewStep = ({
                 <div className="aspect-video bg-gray-100 flex items-center justify-center relative">
                   {item.previewUrl ? (
                     <img src={item.previewUrl} alt={`Preview ${index + 1}`} className="w-full h-full object-cover" />
+                  ) : preferences.visualReviewMode === 'prompts_only' ? (
+                    <div className="flex flex-col items-center p-4 text-center">
+                      <div className="w-12 h-12 bg-gray-200 rounded-full flex items-center justify-center mb-2">
+                        <Video className="w-6 h-6 text-gray-400" />
+                      </div>
+                      <div className="text-xs text-gray-500">Image not generated yet</div>
+                      <button
+                        onClick={() => onRegenerateImage(item.chunkId)}
+                        disabled={busyChunkId !== null || Boolean(reviewAction) || isLoading}
+                        className="mt-2 text-xs text-blue-600 font-semibold hover:underline"
+                      >
+                        Generate now
+                      </button>
+                    </div>
                   ) : (
                     <div className="flex flex-col items-center">
                       <div className="animate-spin w-6 h-6 border-2 border-blue-600 border-t-transparent rounded-full mb-2 opacity-50"></div>
@@ -1097,21 +1167,22 @@ const PromptToVideoApp: React.FC = () => {
         animation: false,
         reviewChunks: false,
         reviewPrompts: false,
+        visualReviewMode: 'full',
       }
   });
   const [videoUrl, setVideoUrl] = useState<string | null>(null);
   const [videoHistory, setVideoHistory] = useState<any[]>([]);
   const [reviewData, setReviewData] = useState<ReviewData | null>(null);
   const { user } = useUser();
-
   // Listen for the widget to open review mode
   useEffect(() => {
     const handleOpenReviewMode = (e: any) => {
       const { job } = e.detail;
       const reviewChunksEnabled = Boolean(job?.params?.preferences?.reviewChunks);
+      const isPromptsOnly = job?.params?.preferences?.visualReviewMode === 'prompts_only';
       const nextReviewData = job.reviewDataReady ? normalizeReviewData(job.reviewDataReady) : null;
 
-      if (!reviewChunksEnabled && !areVisualReviewAssetsReady(nextReviewData)) {
+      if (!reviewChunksEnabled && !isPromptsOnly && !areVisualReviewAssetsReady(nextReviewData)) {
         toast("Image previews are still generating. Open review once all previews are ready.", {
           icon: "⏳",
           duration: 4000,
@@ -1662,14 +1733,15 @@ const PromptToVideoApp: React.FC = () => {
 
   // Add automatic lazy loading of images
   useEffect(() => {
-    // ONLY trigger lazy loading in Step 4 (Visual Review)
-    if (currentStep === 4 && reviewData && busyChunkId === null && !reviewAction) {
+    // ONLY trigger lazy loading in Step 4 (Visual Review) and not in 'prompts_only' mode
+    const isPromptsOnly = formData.preferences?.visualReviewMode === 'prompts_only';
+    if (currentStep === 4 && reviewData && busyChunkId === null && !reviewAction && !isPromptsOnly) {
       const nextChunk = reviewData.items.find(item => !item.previewUrl && item.prompt && item.status !== 'error' && item.status !== 'loading');
       if (nextChunk) {
         handleGeneratePendingImages();
       }
     }
-  }, [currentStep, reviewData, busyChunkId, reviewAction]);
+  }, [currentStep, reviewData, busyChunkId, reviewAction, formData.preferences?.visualReviewMode]);
 
   const handleInsertChunk = (chunkId: number) => {
     setReviewData(prev => {
@@ -1748,6 +1820,7 @@ const PromptToVideoApp: React.FC = () => {
       return syncReviewTimings({ ...prev, items });
     });
   };
+
   const resetForm = () => {
     setCurrentStep(0);
     setVideoUrl(null);
@@ -1766,6 +1839,7 @@ const PromptToVideoApp: React.FC = () => {
         animation: false,
         reviewChunks: false,
         reviewPrompts: false,
+        visualReviewMode: 'full',
       }
     });
   };
@@ -1834,6 +1908,7 @@ const PromptToVideoApp: React.FC = () => {
               onMergeWithNext={handleMergeWithNext}
               onRefreshPrompts={handleRefreshPrompts}
               onRefreshAllPrompts={handleRefreshAllPrompts}
+              onGeneratePendingImages={handleGeneratePendingImages}
               onMoveWord={handleMoveWord}
               onRegenerateImage={handleRegenerateImage}
               onSubmit={() => {

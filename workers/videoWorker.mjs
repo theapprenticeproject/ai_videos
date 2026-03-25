@@ -100,8 +100,9 @@ async function processJob(job) {
         if (reviewItems.length === 0) {
           throw new Error('Review plan generated without items; cannot prepare visual previews.');
         }
+        const isPromptsOnly = preferences?.visualReviewMode === 'prompts_only';
         writeJob(jobId, {
-          statusMessage: 'Generating image previews for visual review...',
+          statusMessage: isPromptsOnly ? 'Generating visual prompts...' : 'Generating image previews for visual review...',
           progress: 70,
         });
         const changedChunkIds = reviewItems.map((item) => item.chunkId);
@@ -111,7 +112,7 @@ async function processJob(job) {
           changedChunkIds,
           modelName,
           visualTheme,
-          promptsOnly: false,
+          promptsOnly: preferences?.visualReviewMode === 'prompts_only',
         });
 
         const safeUpdatedItems = Array.isArray(updatedItems) ? updatedItems : [];

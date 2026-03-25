@@ -24,6 +24,7 @@ export type ReviewPreferences = {
   animation?: boolean;
   reviewChunks?: boolean;
   reviewPrompts?: boolean;
+  visualReviewMode?: 'full' | 'prompts_only';
 };
 
 // Reverting to simple style appending logic as per user request

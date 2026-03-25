@@ -167,8 +167,9 @@ export default function VideoProductionWidget() {
         {activeJobs.map(job => {
           const isReviewPlan = job.params?.type === 'review_plan';
           const isVisualReview = Boolean(job.params?.preferences?.reviewPrompts) && !Boolean(job.params?.preferences?.reviewChunks);
+          const isPromptsOnly = job.params?.preferences?.visualReviewMode === 'prompts_only';
           const reviewItems = Array.isArray(job.reviewDataReady?.items) ? job.reviewDataReady.items : [];
-          const visualsReady = !isVisualReview || (reviewItems.length > 0 && reviewItems.every((item: any) => Boolean(item.previewUrl || item.mediaPath)));
+          const visualsReady = !isVisualReview || isPromptsOnly || (reviewItems.length > 0 && reviewItems.every((item: any) => Boolean(item.previewUrl || item.mediaPath)));
 
           return (
           <div key={job.jobId} className="bg-white/60 backdrop-blur-md border border-gray-100 shadow-sm rounded-2xl p-4 relative group hover:bg-white/90 hover:shadow-md transition-all duration-300">
