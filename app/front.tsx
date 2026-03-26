@@ -1,5 +1,5 @@
 import React, { useState, useCallback, useEffect } from 'react';
-import { ChevronRight, ChevronLeft, Play, Edit3, Settings, Video, Sparkles, ArrowRight, LayoutGrid } from 'lucide-react';
+import { ChevronRight, ChevronLeft, Play, Edit3, Settings, Video, Sparkles, ArrowRight, LayoutGrid, Loader2 } from 'lucide-react';
 import { useUser } from '@clerk/nextjs';
 import { callLlm, callStructuredLlm } from './llm';
 import { promptFormation } from './prompts';
@@ -348,7 +348,8 @@ const PreferencesStep = ({
   onBack,
   onSubmit,
   isLoading,
-  loadingLabel = 'Creating Video...'
+  loadingLabel = 'Creating Video...',
+  onFastForward
 }: {
   formData: FormData;
   setFormData: React.Dispatch<React.SetStateAction<FormData>>;
@@ -356,6 +357,7 @@ const PreferencesStep = ({
   onSubmit: () => void;
   isLoading: boolean;
   loadingLabel?: string;
+  onFastForward?: () => void;
 }) => {
   const [showStyles, setShowStyles] = useState(false);
 
@@ -523,8 +525,8 @@ const PreferencesStep = ({
                 : 'border-gray-200 hover:border-gray-300 bg-white'
                 }`}
             >
-              <span className="font-bold text-sm">Full Generation</span>
-              <span className="text-[10px] mt-1 opacity-60">Generate both prompts and preview images (Standard)</span>
+              <span className="font-bold text-sm">Full generation</span>
+              <span className="text-[10px] mt-1 opacity-60">Generate images first and then review them.</span>
             </button>
             <button
               type="button"
@@ -537,8 +539,8 @@ const PreferencesStep = ({
                 : 'border-gray-200 hover:border-gray-300 bg-white'
                 }`}
             >
-              <span className="font-bold text-sm">Prompts Only</span>
-              <span className="text-[10px] mt-1 opacity-60">Fast preview. Generate images manually for specific chunks later.</span>
+              <span className="font-bold text-sm">Review First</span>
+              <span className="text-[10px] mt-1 opacity-60">Review the prompts for image generation before images are generated.</span>
             </button>
           </div>
         </div>
@@ -566,7 +568,11 @@ const PreferencesStep = ({
             </>
           ) : (
             <>
-              <span>Create Video</span>
+              <span>
+                {Boolean(formData.preferences.reviewChunks || formData.preferences.reviewPrompts) 
+                  ? 'Create Video' 
+                  : 'Fast Forward Video Generation'}
+              </span>
               <ArrowRight className="w-5 h-5" />
             </>
           )}
@@ -638,14 +644,18 @@ const ReviewStep = ({
         <div className="bg-amber-50 border border-amber-200 text-amber-700 rounded-lg px-6 py-3 flex items-center justify-between">
           <div className="flex items-center space-x-3">
             <Settings className="w-5 h-5 text-amber-600" />
-            <p className="text-sm font-medium">You are in "Prompts Only" mode. Some images are missing. You can generate them individually or all at once.</p>
+            <div className="text-left">
+              <p className="text-sm font-medium">You are in "Review First" mode. Some images are missing. You can generate them individually or all at once.</p>
+              <p className="text-[11px] font-bold text-amber-800/80 mt-0.5">Pro tip: Review and edit all image prompts and generate them at once for a faster image generation.</p>
+            </div>
           </div>
           <button
             onClick={onGeneratePendingImages}
             disabled={Boolean(reviewAction) || isLoading}
-            className="px-4 py-1.5 bg-amber-600 text-white rounded-md text-sm font-medium hover:bg-amber-700 disabled:opacity-50"
+            className="px-4 py-1.5 bg-amber-600 text-white rounded-md text-sm font-medium hover:bg-amber-700 disabled:opacity-50 flex items-center gap-2"
           >
-            {reviewAction === 'refreshAll' ? 'Generating All...' : 'Generate All Images'}
+            {(reviewAction === 'refreshAll' || busyChunkId === -1) && <Loader2 className="w-4 h-4 animate-spin" />}
+            {(reviewAction === 'refreshAll' || busyChunkId === -1) ? 'Generating All...' : 'Generate All Images'}
           </button>
         </div>
       )}
@@ -774,16 +784,18 @@ const ReviewStep = ({
                 type="button"
                 onClick={onRefreshPrompts}
                 disabled={Boolean(reviewAction) || isLoading}
-                className="px-4 py-2 rounded-lg border border-blue-200 text-blue-700 bg-white hover:bg-blue-50 disabled:opacity-50 transition-colors"
+                className="px-4 py-2 rounded-lg border border-blue-200 text-blue-700 bg-white hover:bg-blue-50 disabled:opacity-50 transition-colors flex items-center gap-2"
               >
+                {reviewAction === 'refreshChanged' && <Loader2 className="w-4 h-4 animate-spin" />}
                 {reviewAction === 'refreshChanged' ? 'Refreshing Changed...' : 'Refresh Changed Prompts & Images'}
               </button>
               <button
                 type="button"
                 onClick={onRefreshAllPrompts}
                 disabled={Boolean(reviewAction) || isLoading}
-                className="px-4 py-2 rounded-lg border border-gray-200 text-gray-700 bg-white hover:bg-gray-50 disabled:opacity-50 transition-colors"
+                className="px-4 py-2 rounded-lg border border-gray-200 text-gray-700 bg-white hover:bg-gray-50 disabled:opacity-50 transition-colors flex items-center gap-2"
               >
+                {reviewAction === 'refreshAll' && <Loader2 className="w-4 h-4 animate-spin" />}
                 {reviewAction === 'refreshAll' ? 'Refreshing All...' : 'Refresh All Prompts & Images'}
               </button>
             </div>
@@ -861,8 +873,9 @@ const ReviewStep = ({
                     type="button"
                     onClick={() => onRegenerateImage(item.chunkId)}
                     disabled={busyChunkId !== null || Boolean(reviewAction) || isLoading}
-                    className="w-full px-4 py-2 rounded-lg bg-blue-600 text-white hover:bg-blue-700 disabled:opacity-50 transition-colors"
+                    className="w-full px-4 py-2 rounded-lg bg-blue-600 text-white hover:bg-blue-700 disabled:opacity-50 transition-colors flex items-center justify-center gap-2"
                   >
+                    {busyChunkId === item.chunkId && <Loader2 className="w-4 h-4 animate-spin" />}
                     {busyChunkId === item.chunkId ? "Regenerating..." : "Regenerate This Image"}
                   </button>
                 </div>
@@ -1419,6 +1432,14 @@ const PromptToVideoApp: React.FC = () => {
 
     await submitFinalRender(null);
   };
+  
+  const handleFastForward = async () => {
+    if (!formData.script || !formData.preferences) {
+      toast.error("Please ensure your script and preferences are provided.");
+      return;
+    }
+    await submitFinalRender(null);
+  };
 
   const handleRechunk = async () => {
     if (!reviewData) return;
@@ -1887,6 +1908,7 @@ const PromptToVideoApp: React.FC = () => {
                 onSubmit={handlePreferencesSubmit}
                 isLoading={Boolean(reviewAction === 'prepare' || isRenderLoading)}
                 loadingLabel={reviewEnabled ? 'Preparing Review...' : 'Creating Video...'}
+                onFastForward={handleFastForward}
               />
             </>
           )}
