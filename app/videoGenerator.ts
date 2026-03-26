@@ -204,8 +204,6 @@ export async function callVideoGenerator(
   if (staticGen) {
     console.log("Static Generation Mode Enabled: Reading from debug_render_data.json");
     try {
-      const fs = require('fs');
-      const path = require('path');
       const debugFilePath = path.join(process.cwd(), 'debug_render_data.json');
 
       if (fs.existsSync(debugFilePath)) {
@@ -269,40 +267,52 @@ export async function callVideoGenerator(
 
   await reportProgress(10, "Generating Audio...");
 
-  if (flow == "eleven") {
-    ({ audioPath, transcriptData } = await generateSpeechWithTranscript(
-      ELEVENLABS_API_KEY,
-      tts_options.voiceId,
-      tts_options.text,
-      audioFilePath,
-    )
-    )
-  } else {
-    // 1. Text to Audio (TTS)
-    audioPath = await textToSpeech(tts_options.text, {
-      apiKey: AUDIO_API_KEY, // <-- Replace with your API key
-      languageCode: tts_options.language,
-      ssmlGender: tts_options.gender,
-      fileName: audioFilePath,
-      name: tts_options.voiceId,
-    });
-
-
-    console.log("done with audioPath");
-    // 2. Audio to Text (ASR with word timestamps)
-    transcriptData = await speechToText(
-      audioFilePath,
-      {
-        apiKey: TRANSCRIPT_API_KEY,
-        languageCode: tts_options.language
-      },
-      script.split(" ")
-    );
-
+  const transcriptCachePath = `${audioFilePath}.json`;
+  if (fs.existsSync(audioFilePath) && fs.existsSync(transcriptCachePath)) {
+    console.log(`[videoGenerator] Audio and transcript cache found for ${user_video_id}. Skipping generation.`);
+    audioPath = audioFilePath;
+    tempFiles.push(transcriptCachePath); // Mark for cleanup
+    try {
+      transcriptData = JSON.parse(fs.readFileSync(transcriptCachePath, 'utf8'));
+    } catch (e) {
+      console.warn(`[videoGenerator] Failed to read cached transcript for ${user_video_id}. Falling back to generation.`);
+      audioPath = null; // trigger re-generation
+    }
   }
 
+  if (!audioPath) {
+    if (flow == "eleven") {
+      ({ audioPath, transcriptData } = await generateSpeechWithTranscript(
+        ELEVENLABS_API_KEY,
+        tts_options.voiceId,
+        tts_options.text,
+        audioFilePath,
+      ));
+    } else {
+      // 1. Text to Audio (TTS)
+      audioPath = await textToSpeech(tts_options.text, {
+        apiKey: AUDIO_API_KEY,
+        languageCode: tts_options.language,
+        ssmlGender: tts_options.gender,
+        fileName: audioFilePath,
+        name: tts_options.voiceId,
+      });
 
-  tempFiles.push(audioPath);
+      console.log("done with audioPath");
+      // 2. Audio to Text (ASR with word timestamps)
+      transcriptData = await speechToText(
+        audioFilePath,
+        {
+          apiKey: TRANSCRIPT_API_KEY,
+          languageCode: tts_options.language
+        },
+        script.split(" ")
+      );
+    }
+  }
+
+  tempFiles.push(audioPath!);
+  tempFiles.push(`${audioPath}.json`); // Cleanup transcript JSON too
 
   console.log("transcription data is ", transcriptData);
 
@@ -614,6 +624,9 @@ Visual: Rahul (around 13 years old) sits comfortably in a beanbag chair surround
       mediaPath = reviewedItem.mediaPath.replace(/^public[\\/]/, "");
       selectedUrl = reviewedItem.selectedUrl || reviewedItem.previewUrl || "";
       generated = true;
+      // Add to tempFiles for deletion after video is made
+      const fullMediaPath = path.join(process.cwd(), 'public', mediaPath);
+      tempFiles.push(fullMediaPath);
       console.log(`[videoGenerator] Using reviewed media for chunk ${chunk_index}: path="${mediaPath}" selectedUrl="${selectedUrl}"`);
     }
 
@@ -1048,6 +1061,22 @@ If yes, provide a specific video generation prompt describing the movement.`;
   //   headers: { "Content-Type": "application/json" },
   //   body: JSON.stringify({ words, assets, options })
   // });
+  console.log(`[videoGenerator] Performing cleanup for jobId=${user_video_id}...`);
+  
+  // Ensure all assets used in the video are added to tempFiles for deletion
+  // (Excluding the final output video which is already not in assetJson as a public/ path)
+  if (Array.isArray(assetJson)) {
+    for (const asset of assetJson) {
+      if (asset.path) {
+        // Construct the full path. Most are already in public/
+        const fullPath = path.join(process.cwd(), 'public', asset.path);
+        if (!tempFiles.includes(fullPath)) {
+          tempFiles.push(fullPath);
+        }
+      }
+    }
+  }
+
   deleteFiles(tempFiles);
   return { videoUrl: finalVideoPath, chunks: sceneJson };
 }

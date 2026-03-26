@@ -65,7 +65,7 @@ export default function GalleryPage() {
                             onClick={() => window.location.href = '/'}
                             className="bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700 transition-colors"
                         >
-                            Create Video
+                            Fast Forward Video Generation
                         </button>
                     </div>
                 ) : (

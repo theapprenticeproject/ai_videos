@@ -1,7 +1,9 @@
 import { NextRequest, NextResponse } from "next/server";
+export const dynamic = "force-dynamic";
+export const revalidate = 0;
 import { prepareVideoReviewData } from "../../videoReview";
 
-export const maxDuration = 60;
+export const maxDuration = 300; // 5 minutes (300 seconds)
 
 export async function POST(request: NextRequest) {
   try {

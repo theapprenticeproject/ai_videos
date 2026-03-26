@@ -1,70 +1,105 @@
 {
-  "user_video_id": "user_1774054375117_eivhrq8cs",
+  "user_video_id": "user_1774516269229_ge0xyu83z",
   "chunks": [
     {
       "chunkId": 0,
-      "chunkText": "in given script ai is very useful",
-      "keywords": "vyberpunk style. A glowing holographic interface displaying data streams and complex algorithms floats in the air, overlaid on a bustling cityscape. Robotic arms with intricate circuitry extend from a central AI core, manipulating data. The background features neon signs, cybernetic enhancements on the people, and flying vehicles.",
+      "chunkText": "man was dancing in a party hall",
+      "keywords": "An animated illustration for kids explainer: A man, wearing a suit and smiling, is dancing joyfully in a large party hall. The hall is brightly lit with colorful decorations, balloons, and streamers., animated for kids explainer style",
       "startTime": 0,
-      "endTime": 0.697,
+      "endTime": 1.904,
       "words": [
         {
-          "word": "ai",
+          "word": "man",
           "startTime": 0,
-          "endTime": 0.313
+          "endTime": 0.279
         },
         {
-          "word": "is",
-          "startTime": 0.383,
-          "endTime": 0.464
+          "word": "was",
+          "startTime": 0.337,
+          "endTime": 0.441
         },
         {
-          "word": "very",
-          "startTime": 0.511,
-          "endTime": 0.697
+          "word": "dancing",
+          "startTime": 0.499,
+          "endTime": 0.848
+        },
+        {
+          "word": "in",
+          "startTime": 0.894,
+          "endTime": 0.94
+        },
+        {
+          "word": "a",
+          "startTime": 0.975,
+          "endTime": 1.01
+        },
+        {
+          "word": "party",
+          "startTime": 1.057,
+          "endTime": 1.324
+        },
+        {
+          "word": "hall",
+          "startTime": 1.37,
+          "endTime": 1.904
         }
       ],
-      "selectedUrl": "/veo_video_user_1774054375117_eivhrq8cs_0.mp4",
+      "selectedUrl": "generated-nano-single",
       "alternateUrls": [],
       "template": "slideshow",
       "templateJson": {
-        "path": "veo_video_user_1774054375117_eivhrq8cs_0.mp4"
+        "path": "generated_nano_1774516321590_8272.png"
       },
       "tag": ""
     }
   ],
   "words": [
     {
-      "word": "ai",
+      "word": "man",
       "start": 0,
-      "end": 0.313
+      "end": 0.279
     },
     {
-      "word": "is",
-      "start": 0.383,
-      "end": 0.464
+      "word": "was",
+      "start": 0.337,
+      "end": 0.441
     },
     {
-      "word": "very",
-      "start": 0.511,
-      "end": 0.697
+      "word": "dancing",
+      "start": 0.499,
+      "end": 0.848
     },
     {
-      "word": "useful",
-      "start": 0.755,
-      "end": 1.44
+      "word": "in",
+      "start": 0.894,
+      "end": 0.94
+    },
+    {
+      "word": "a",
+      "start": 0.975,
+      "end": 1.01
+    },
+    {
+      "word": "party",
+      "start": 1.057,
+      "end": 1.324
+    },
+    {
+      "word": "hall",
+      "start": 1.37,
+      "end": 1.904
     }
   ],
   "assets": [
     {
-      "path": "/veo_video_user_1774054375117_eivhrq8cs_0_fixed.mp4",
-      "type": "video",
+      "path": "/generated_nano_1774516321590_8272.png",
+      "type": "image",
       "start": 0,
-      "end": 1.439646
+      "end": 1.904042
     }
   ],
   "options": {
-    "animation": true,
+    "animation": false,
     "vidGen": "veo",
     "subtitles": false,
     "wordsPerLine": 3,
@@ -74,6 +109,6 @@
       "normalColor": "#FFF"
     },
     "logoUrl": "/logo.png",
-    "audioUrl": "/audio_user_1774054375117_eivhrq8cs.wav"
+    "audioUrl": "/audio_user_1774516269229_ge0xyu83z.wav"
   }
 }

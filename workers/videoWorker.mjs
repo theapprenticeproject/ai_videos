@@ -138,6 +138,47 @@ async function processJob(job) {
       return;
     }
 
+    // Handle background batch preview generation
+    if (params.type === 'preview_batch') {
+      const { reviewData, modelName, visualTheme } = params;
+      console.log(`[worker] Processing preview_batch for job ${jobId}`);
+      writeJob(jobId, { statusMessage: 'Generating pending image previews in the background...' });
+
+      const pendingItems = reviewData.items.filter(
+        (item) => !item.previewUrl && item.prompt && item.status !== 'error' && item.status !== 'loading'
+      );
+      
+      const updatedItems = await refreshReviewPromptsForChunks({
+        script: reviewData.script,
+        items: reviewData.items,
+        changedChunkIds: pendingItems.map(item => item.chunkId),
+        modelName,
+        visualTheme,
+        promptsOnly: false,
+      });
+
+      if (isStoppedOrDeleted()) {
+        console.log(`[worker] Job ${jobId} stopped/deleted before preview batch completion.`);
+        return;
+      }
+
+      const safeUpdatedItems = Array.isArray(updatedItems) ? updatedItems : [];
+      const updatedMap = new Map(safeUpdatedItems.map((item) => [item.chunkId, item]));
+      const finalReviewData = {
+        ...reviewData,
+        items: reviewData.items.map((item) => updatedMap.get(item.chunkId) || item),
+      };
+
+      writeJob(jobId, {
+        status: 'done',
+        progress: 100,
+        statusMessage: 'All previews generated! Click to review.',
+        reviewDataReady: finalReviewData,
+        finishedAt: Date.now(),
+      });
+      return;
+    }
+
     const { videoUrl, chunks } = await callVideoGenerator(
       script,
       preferences,

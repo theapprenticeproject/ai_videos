@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { refreshReviewPromptsForChunks } from "../../videoReview";
+export const maxDuration = 300; // 5 minutes (300 seconds)
 
 export async function POST(request: NextRequest) {
   try {

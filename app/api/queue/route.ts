@@ -3,9 +3,12 @@
  * POST /api/queue             → enqueue a new render job (same as POST /api/render)
  */
 import { NextRequest, NextResponse } from 'next/server';
+export const dynamic = 'force-dynamic';
+export const revalidate = 0;
 import fs from 'fs';
 import path from 'path';
 import { createJob, getJob, getJobsByUser, pauseJob, resumeJob, abortJob, deleteJob } from '../../../workers/jobStore.mjs';
+export const maxDuration = 300; // 5 minutes (300 seconds)
 
 function safeDeleteFile(filePath: string) {
   try {

@@ -568,11 +568,7 @@ const PreferencesStep = ({
             </>
           ) : (
             <>
-              <span>
-                {Boolean(formData.preferences.reviewChunks || formData.preferences.reviewPrompts) 
-                  ? 'Create Video' 
-                  : 'Fast Forward Video Generation'}
-              </span>
+              <span>Fast Forward Video Generation</span>
               <ArrowRight className="w-5 h-5" />
             </>
           )}
@@ -912,7 +908,7 @@ const ReviewStep = ({
             </>
           ) : (
             <>
-              <span>{viewMode === 'chunks' && preferences.reviewPrompts ? 'Continue to Visuals' : 'Create Final Video'}</span>
+              <span>{viewMode === 'chunks' && preferences.reviewPrompts ? 'Continue to Visuals' : 'Fast Forward Video Generation'}</span>
               <ArrowRight className="w-5 h-5" />
             </>
           )}
@@ -1430,7 +1426,7 @@ const PromptToVideoApp: React.FC = () => {
       return;
     }
 
-    await submitFinalRender(null);
+    await submitFinalRender(reviewData);
   };
   
   const handleFastForward = async () => {
@@ -1438,7 +1434,7 @@ const PromptToVideoApp: React.FC = () => {
       toast.error("Please ensure your script and preferences are provided.");
       return;
     }
-    await submitFinalRender(null);
+    await submitFinalRender(reviewData); 
   };
 
   const handleRechunk = async () => {
@@ -1686,6 +1682,45 @@ const PromptToVideoApp: React.FC = () => {
       (item) => !item.previewUrl && item.prompt && item.status !== 'error' && item.status !== 'loading'
     );
     if (pendingItems.length === 0) return;
+
+    // For large batches (more than 2), switch to background job (popup view)
+    if (pendingItems.length > 2) {
+      console.log(`[front] Batch of ${pendingItems.length} images; switching to background job (popup view).`);
+      setReviewAction('prepare');
+      try {
+        let userIdStr = user?.id || null;
+        if (!userIdStr && typeof window !== 'undefined') {
+          userIdStr = localStorage.getItem('anonymous_user_id');
+        }
+
+        const response = await fetch('/api/review-batch', {
+          method: 'POST',
+          headers: { 
+            'Content-Type': 'application/json',
+            'x-user-id': userIdStr || 'anonymous'
+          },
+          body: JSON.stringify({
+            reviewData,
+            modelName: formData.modelName,
+            visualTheme: formData.visualTheme,
+          }),
+        });
+
+        if (!response.ok) {
+          throw new Error(await response.text());
+        }
+
+        window.dispatchEvent(new Event('video-job-started'));
+        toast.success("Background generation started! Previews will appear soon. Check the status widget.", { duration: 5000 });
+        resetForm();
+      } catch (error: any) {
+        console.error("Error starting background batch:", error);
+        toast.error("Error starting background batch: " + error.message);
+      } finally {
+        setReviewAction(null);
+      }
+      return;
+    }
 
     setBusyChunkId(-1);
     setReviewData(prev => prev ? ({

@@ -107,6 +107,17 @@ export async function generateSpeechWithTranscript(
     fs.mkdirSync(outputDir, { recursive: true });
   }
 
+  const transcriptCachePath = `${filename}.json`;
+  if (fs.existsSync(filename) && fs.existsSync(transcriptCachePath)) {
+    console.log(`[ELEVENLABS] Cache hit for ${filename}. Skipping API call.`);
+    try {
+      const cachedData = JSON.parse(fs.readFileSync(transcriptCachePath, 'utf8'));
+      return { audioPath: filename, transcriptData: cachedData };
+    } catch (e) {
+      console.warn(`[ELEVENLABS] Failed to read cached transcript at ${transcriptCachePath}. Re-generating.`);
+    }
+  }
+
   console.log(`[ELEVENLABS] Request start. voiceId=${voiceId} textChars=${text.length}`);
   
   let response;
@@ -181,6 +192,15 @@ export async function generateSpeechWithTranscript(
   wordsArray.forEach((wordInfo, i) => {
     console.log(`${i + 1}. "${wordInfo.word}" → ${wordInfo.startTime.toFixed(2)}s - ${wordInfo.endTime.toFixed(2)}s`);
   });
+
+  // Save transcript cache
+  try {
+    const transcriptCachePath = `${filename}.json`;
+    fs.writeFileSync(transcriptCachePath, JSON.stringify(wordsArray, null, 2), 'utf8');
+    console.log(`✅ Transcript cache saved: ${transcriptCachePath}`);
+  } catch (e) {
+    console.warn(`[ELEVENLABS] Failed to save transcript cache: ${e}`);
+  }
 
   return { audioPath: filename, transcriptData:wordsArray };
 }

@@ -36,7 +36,7 @@ export default function VideoProductionWidget() {
     }
 
     try {
-      const res = await fetch(`/api/queue?userId=${encodeURIComponent(userId)}`);
+      const res = await fetch(`/api/queue?userId=${encodeURIComponent(userId)}&_t=${Date.now()}`);
       if (res.ok) {
         const data = await res.json();
         const hidden = JSON.parse(localStorage.getItem('hidden_video_jobs') || '[]');
@@ -164,9 +164,9 @@ export default function VideoProductionWidget() {
       </div>
       
       <div className="max-h-[60vh] overflow-y-auto p-4 space-y-3 custom-scrollbar">
-        {activeJobs.map(job => {
-          const isReviewPlan = job.params?.type === 'review_plan';
-          const isVisualReview = Boolean(job.params?.preferences?.reviewPrompts) && !Boolean(job.params?.preferences?.reviewChunks);
+          {activeJobs.map(job => {
+          const isReviewPlan = job.params?.type === 'review_plan' || job.params?.type === 'preview_batch';
+          const isVisualReview = (Boolean(job.params?.preferences?.reviewPrompts) && !Boolean(job.params?.preferences?.reviewChunks)) || job.params?.type === 'preview_batch';
           const isPromptsOnly = job.params?.preferences?.visualReviewMode === 'prompts_only';
           const reviewItems = Array.isArray(job.reviewDataReady?.items) ? job.reviewDataReady.items : [];
           const visualsReady = !isVisualReview || isPromptsOnly || (reviewItems.length > 0 && reviewItems.every((item: any) => Boolean(item.previewUrl || item.mediaPath)));
