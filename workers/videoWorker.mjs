@@ -75,7 +75,7 @@ async function processJob(job) {
     // Handle review plan generation as a background job
     if (params.type === 'review_plan') {
       console.log(`[worker] Processing review_plan for job ${jobId}`);
-      writeJob(jobId, { statusMessage: 'Generating chunks & image prompts...' });
+      writeJob(jobId, { statusMessage: 'Generating chunks...' });
       
       let reviewDataLoc = await prepareVideoReviewData({
         script,
