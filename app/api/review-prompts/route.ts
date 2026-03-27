@@ -12,6 +12,7 @@ export async function POST(request: NextRequest) {
       modelName = "gemini-2.0-flash-lite",
       visualTheme = "",
       promptsOnly = false,
+      recreateImagesOnly = false,
     } = body;
 
     if (typeof script !== "string" || !Array.isArray(items)) {
@@ -25,6 +26,7 @@ export async function POST(request: NextRequest) {
       modelName,
       visualTheme,
       promptsOnly,
+      recreateImagesOnly,
     });
 
     return NextResponse.json({ items: refreshedItems });

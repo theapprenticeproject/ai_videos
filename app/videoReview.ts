@@ -463,9 +463,10 @@ export async function refreshReviewPromptsForChunks(input: {
   modelName?: string;
   visualTheme?: string;
   promptsOnly?: boolean;
+  recreateImagesOnly?: boolean;
 }) {
-  const { script, items, changedChunkIds, modelName = "gemini-2.0-flash-lite", visualTheme = "", promptsOnly = false } = input;
-  console.log(`[videoReview] refreshReviewPromptsForChunks start | changed=${changedChunkIds.length} | totalItems=${items.length} | promptsOnly=${promptsOnly} | visualTheme="${visualTheme}"`);
+  const { script, items, changedChunkIds, modelName = "gemini-2.0-flash-lite", visualTheme = "", promptsOnly = false, recreateImagesOnly = false } = input;
+  console.log(`[videoReview] refreshReviewPromptsForChunks start | changed=${changedChunkIds.length} | totalItems=${items.length} | promptsOnly=${promptsOnly} | visualTheme="${visualTheme}" | recreateImagesOnly=${recreateImagesOnly}`);
 
   const changedIdSet = new Set(changedChunkIds);
   const changedEntries = items.filter((item) => changedIdSet.has(item.chunkId));
@@ -474,7 +475,20 @@ export async function refreshReviewPromptsForChunks(input: {
   }
 
   const chunks = changedEntries.map((item) => ({ chunk: item.chunkText }));
-  const promptMap = await buildPromptSuggestions(chunks, script, modelName, visualTheme);
+  let promptMap: Record<number, { visual_query: string; google_search: boolean; reasoning: string }> = {};
+  
+  if (recreateImagesOnly) {
+    // Use existing prompts from items instead of asking LLM
+    changedEntries.forEach((item, index) => {
+      promptMap[index] = {
+        visual_query: item.prompt,
+        google_search: item.useGoogle,
+        reasoning: "Manually edited by user",
+      };
+    });
+  } else {
+    promptMap = await buildPromptSuggestions(chunks, script, modelName, visualTheme);
+  }
 
   const updatedItems: ReviewPlanItem[] = [];
 
