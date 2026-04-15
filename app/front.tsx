@@ -1,5 +1,5 @@
 import React, { useState, useCallback, useEffect } from 'react';
-import { ChevronRight, ChevronLeft, Play, Edit3, Settings, Video, Sparkles, ArrowRight, LayoutGrid, Loader2, Flame } from 'lucide-react';
+import { ChevronRight, ChevronLeft, Play, Edit3, Settings, Video, Sparkles, ArrowRight, LayoutGrid, Loader2, Flame, Copy } from 'lucide-react';
 import { useUser } from '@clerk/nextjs';
 import { callLlm, callStructuredLlm } from './llm';
 import { promptFormation } from './prompts';
@@ -9,6 +9,8 @@ import data from '../dynamication.json'
 
 interface FormData {
   prompt: string;
+  title: string;
+  description: string;
   modelName: string;
   contentClass: string;
   script: string;
@@ -57,6 +59,18 @@ interface ReviewData {
   transcriptWords: ReviewWord[];
   items: ReviewItem[];
 }
+
+const deriveVideoTitle = (text: string): string => {
+  const cleaned = text.replace(/\s+/g, ' ').trim();
+  if (!cleaned) return '';
+  return cleaned.length > 80 ? `${cleaned.slice(0, 77).trim()}...` : cleaned;
+};
+
+const deriveVideoDescription = (text: string): string => {
+  const cleaned = text.replace(/\s+/g, ' ').trim();
+  if (!cleaned) return '';
+  return cleaned.length > 180 ? `${cleaned.slice(0, 177).trim()}...` : cleaned;
+};
 
 // Helper function to detect language
 const detectLanguage = async (text: string): Promise<string> => {
@@ -159,10 +173,11 @@ const PromptInputStep = ({
             onChange={(e) => {
               setFormData(prev => ({ ...prev, modelName: e.target.value }));
             }}
-            placeholder="For default it is: gemini-2.0-flash-lite"
+            placeholder="Default: gemini-2.5-flash"
             list="model-suggestions"
             className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
           />
+          <p className="mt-2 text-xs text-gray-500">If you leave this blank, the app now defaults to an India-friendly script generation flow on `gemini-2.5-flash`.</p>
         </div>
         <div>
           <label className="block text-sm font-medium text-gray-700 mb-2">
@@ -187,13 +202,19 @@ const PromptInputStep = ({
           <textarea
             value={formData.prompt}
             onChange={(e) => {
-              setFormData(prev => ({ ...prev, prompt: e.target.value }));
+              const nextPrompt = e.target.value;
+              setFormData(prev => ({
+                ...prev,
+                prompt: nextPrompt,
+                title: prev.title || deriveVideoTitle(nextPrompt),
+              }));
             }}
             placeholder="Describe your video idea in detail... (e.g., 'A peaceful morning scene with coffee and sunrise')"
             rows={6}
             className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-none"
             style={{ fontSize: '16px' }}
           />
+          <p className="mt-2 text-xs text-gray-500">Scripts default to Indian classroom and real-life context unless you explicitly ask for a different style or region.</p>
         </div>
 
         <div className="flex space-x-4">
@@ -267,14 +288,67 @@ const ScriptVerificationStep = ({
     </div>
 
     <div className="space-y-6">
+      <div className="grid gap-4 md:grid-cols-2">
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-2">
+            Video Name
+          </label>
+          <input
+            type="text"
+            value={formData.title}
+            onChange={(e) => {
+              setFormData(prev => ({ ...prev, title: e.target.value }));
+            }}
+            placeholder="Give this video a short name"
+            className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+          />
+        </div>
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-2">
+            Video Description
+          </label>
+          <input
+            type="text"
+            value={formData.description}
+            onChange={(e) => {
+              setFormData(prev => ({ ...prev, description: e.target.value }));
+            }}
+            placeholder="Short description for gallery and results"
+            className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+          />
+        </div>
+      </div>
+
       <div>
-        <label className="block text-sm font-medium text-gray-700 mb-2">
-          Generated Script
-        </label>
+        <div className="flex items-center justify-between gap-3 mb-2">
+          <label className="block text-sm font-medium text-gray-700">
+            Generated Script
+          </label>
+          <button
+            type="button"
+            onClick={async () => {
+              try {
+                await navigator.clipboard.writeText(formData.script || '');
+                toast.success('Script copied');
+              } catch (error) {
+                toast.error('Unable to copy script');
+              }
+            }}
+            className="inline-flex items-center gap-2 rounded-lg border border-blue-200 bg-blue-50 px-3 py-1.5 text-xs font-medium text-blue-700 hover:bg-blue-100 transition-colors"
+          >
+            <Copy className="w-3.5 h-3.5" />
+            Copy Script
+          </button>
+        </div>
         <textarea
           value={formData.script}
           onChange={(e) => {
-            setFormData(prev => ({ ...prev, script: e.target.value }));
+            const nextScript = e.target.value;
+            setFormData(prev => ({
+              ...prev,
+              script: nextScript,
+              description: prev.description || deriveVideoDescription(nextScript),
+            }));
           }}
           rows={12}
           className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-none font-mono text-sm"
@@ -883,12 +957,20 @@ const ResultStep = ({
   videoUrl,
   onReset,
   prompt,
-  script
+  script,
+  title,
+  description,
+  onMetadataChange,
+  onSaveMetadata,
 }: {
   videoUrl: string | null;
   onReset: () => void;
   prompt: string;
   script: string;
+  title: string;
+  description: string;
+  onMetadataChange: (field: 'title' | 'description', value: string) => void;
+  onSaveMetadata: () => void;
 }) => (
   <div className="max-w-4xl mx-auto">
     <div className="text-center mb-8">
@@ -923,12 +1005,49 @@ const ResultStep = ({
           <Sparkles className="w-5 h-5 mr-2" />
           Video Details
         </h3>
+        <div className="grid gap-4 md:grid-cols-2">
+          <div>
+            <h4 className="text-sm font-bold text-blue-800 mb-1">Video Name:</h4>
+            <input
+              value={title}
+              onChange={(e) => onMetadataChange('title', e.target.value)}
+              className="w-full rounded-lg border border-blue-200 bg-white px-3 py-2 text-sm text-gray-700"
+              placeholder="Video name"
+            />
+          </div>
+          <div>
+            <h4 className="text-sm font-bold text-blue-800 mb-1">Video Description:</h4>
+            <input
+              value={description}
+              onChange={(e) => onMetadataChange('description', e.target.value)}
+              className="w-full rounded-lg border border-blue-200 bg-white px-3 py-2 text-sm text-gray-700"
+              placeholder="Video description"
+            />
+          </div>
+        </div>
         <div>
           <h4 className="text-sm font-bold text-blue-800 mb-1">Original Prompt:</h4>
           <p className="text-sm text-gray-700 italic">"{prompt || 'No prompt provided'}"</p>
         </div>
         <div>
-          <h4 className="text-sm font-bold text-blue-800 mb-1">Script Chunks:</h4>
+          <div className="mb-2 flex items-center justify-between gap-3">
+            <h4 className="text-sm font-bold text-blue-800">Script Chunks:</h4>
+            <button
+              type="button"
+              onClick={async () => {
+                try {
+                  await navigator.clipboard.writeText(script || '');
+                  toast.success('Script copied');
+                } catch (error) {
+                  toast.error('Unable to copy script');
+                }
+              }}
+              className="inline-flex items-center gap-2 rounded-lg border border-blue-200 bg-white px-3 py-1.5 text-xs font-medium text-blue-700 hover:bg-blue-100 transition-colors"
+            >
+              <Copy className="w-3.5 h-3.5" />
+              Copy Script
+            </button>
+          </div>
           <div className="max-h-40 overflow-y-auto space-y-2 pr-2 custom-scrollbar">
             {(script || '').split(/\n\n|Scene/).filter(Boolean).map((chunk, i) => (
               <div key={i} className="text-xs bg-white p-2 rounded border border-blue-200 text-gray-600">
@@ -946,6 +1065,13 @@ const ResultStep = ({
           className="flex items-center space-x-2 px-6 py-3 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors"
         >
           <span>Create Another Video</span>
+        </button>
+        <button
+          type="button"
+          onClick={onSaveMetadata}
+          className="px-6 py-3 border border-blue-200 rounded-lg bg-white text-blue-700 hover:bg-blue-50 transition-colors"
+        >
+          Save Details
         </button>
         {videoUrl && (
           <a
@@ -1122,10 +1248,13 @@ const PromptToVideoApp: React.FC = () => {
   const [busyChunkId, setBusyChunkId] = useState<number | null>(null);
   const [progress, setProgress] = useState(0);
   const [statusText, setStatusText] = useState("Preparing render...");
+  const [lastCompletedVideoId, setLastCompletedVideoId] = useState<string | null>(null);
 
   const [formData, setFormData] = useState<FormData>({
     prompt: '',
-    modelName: '',
+    title: '',
+    description: '',
+    modelName: 'gemini-2.5-flash',
     contentClass: 'low',
     script: '',
     visualTheme: '',
@@ -1221,7 +1350,8 @@ const PromptToVideoApp: React.FC = () => {
 
     setIsScriptLoading(true);
     try {
-      let script = await callLlm(LLM_API_KEY, "write video script refering examples with correct punctuations and pauses by comma , in required language english/hindi or hinglish", promptFormation(formData.prompt, "scriptFormation", formData), [], "gemini-2.5-flash");
+      const selectedModel = formData.modelName.trim() || 'gemini-2.5-flash';
+      let script = await callLlm(LLM_API_KEY, "write video script refering examples with correct punctuations and pauses by comma , in required language english/hindi or hinglish", promptFormation(formData.prompt, "scriptFormation", formData), [], selectedModel);
 
       // Clean conversational filler and markdown
       script = script.replace(/here is the script[\s\w:]*/i, '')
@@ -1233,13 +1363,22 @@ const PromptToVideoApp: React.FC = () => {
         script = `Scene 1: ${formData.prompt}\n\nThis is a sample script generated from your prompt. You can edit this script to match your vision perfectly.\n\nScene 2: Additional content based on your requirements...`;
       }
 
-      setFormData(prev => ({ ...prev, script: script }));
+      setFormData(prev => ({
+        ...prev,
+        modelName: prev.modelName || selectedModel,
+        script,
+        title: prev.title || deriveVideoTitle(prev.prompt),
+        description: prev.description || deriveVideoDescription(script),
+      }));
       setCurrentStep(1);
     } catch (error) {
       console.error('Error generating script:', error);
       setFormData(prev => ({
         ...prev,
-        script: `Scene 1: ${formData.prompt}\n\nThis is a sample script generated from your prompt. You can edit this script to match your vision perfectly.\n\nScene 2: Additional content based on your requirements...`
+        modelName: prev.modelName || 'gemini-2.5-flash',
+        script: `Scene 1: ${formData.prompt}\n\nThis is a sample script generated from your prompt. You can edit this script to match your vision perfectly.\n\nScene 2: Additional content based on your requirements...`,
+        title: prev.title || deriveVideoTitle(prev.prompt),
+        description: prev.description || deriveVideoDescription(`Scene 1: ${formData.prompt}`),
       }));
       setCurrentStep(1);
     } finally {
@@ -1248,8 +1387,11 @@ const PromptToVideoApp: React.FC = () => {
   };
 
   const persistVideoResult = useCallback((jobId: string, finalVideoUrl: string) => {
+    setLastCompletedVideoId(jobId);
     const newVideo = {
       id: jobId,
+      title: formData.title,
+      description: formData.description,
       prompt: formData.prompt,
       script: formData.script,
       videoUrl: finalVideoUrl,
@@ -1264,6 +1406,34 @@ const PromptToVideoApp: React.FC = () => {
     localStorage.setItem('last_video_prompt', formData.prompt);
     localStorage.setItem('last_video_script', formData.script);
   }, [formData, videoHistory]);
+
+  const handleSaveResultMetadata = useCallback(async () => {
+    if (!lastCompletedVideoId) {
+      toast.error('This video is not ready for metadata saving yet.');
+      return;
+    }
+
+    try {
+      const response = await fetch('/api/videos', {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          id: lastCompletedVideoId,
+          title: formData.title,
+          description: formData.description,
+        }),
+      });
+
+      if (!response.ok) {
+        const errBody = await response.json().catch(() => ({}));
+        throw new Error(errBody.error || response.statusText);
+      }
+
+      toast.success('Video details saved');
+    } catch (error: any) {
+      toast.error(`Unable to save details: ${error.message}`);
+    }
+  }, [formData.description, formData.title, lastCompletedVideoId]);
 
   const submitFinalRender = useCallback(async (activeReviewData: ReviewData | null, forcedFormData?: FormData) => {
     setIsRenderLoading(true);
@@ -1282,6 +1452,9 @@ const PromptToVideoApp: React.FC = () => {
       }
 
       const payload = {
+        prompt: activeFormData.prompt,
+        title: activeFormData.title || deriveVideoTitle(activeFormData.prompt),
+        description: activeFormData.description || deriveVideoDescription(activeFormData.script),
         script: activeFormData.script,
         preferences: activeFormData.preferences,
         contentClass: activeFormData.contentClass,
@@ -1867,9 +2040,11 @@ const PromptToVideoApp: React.FC = () => {
     setReviewData(null);
     setFormData({
       prompt: '',
+      title: '',
+      description: '',
       contentClass: 'low',
       script: '',
-      modelName: 'gemini-2.0-flash-lite',
+      modelName: 'gemini-2.5-flash',
       visualTheme: '',
       reference: '',
       preferences: {
@@ -1981,6 +2156,12 @@ const PromptToVideoApp: React.FC = () => {
               onReset={resetForm}
               prompt={formData.prompt}
               script={formData.script}
+              title={formData.title}
+              description={formData.description}
+              onMetadataChange={(field, value) => {
+                setFormData(prev => ({ ...prev, [field]: value }));
+              }}
+              onSaveMetadata={handleSaveResultMetadata}
             />
           )}
         </div>

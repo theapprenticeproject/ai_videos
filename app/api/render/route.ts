@@ -23,6 +23,7 @@ export async function POST(request: NextRequest) {
 
     const {
       script,
+      prompt = "",
       preferences,
       contentClass,
       user_video_id,
@@ -34,6 +35,8 @@ export async function POST(request: NextRequest) {
       reviewData = null,
       visualTheme = "",
       reference = "",
+      title = "",
+      description = "",
     } = body;
 
     // Validate required fields
@@ -105,6 +108,7 @@ export async function POST(request: NextRequest) {
 
     const job = createJob(jobId, userId, {
       script,
+      prompt,
       preferences,
       contentClass,
       user_video_id,
@@ -115,6 +119,8 @@ export async function POST(request: NextRequest) {
       reviewData,
       visualTheme,
       reference,
+      title,
+      description,
     });
 
     console.log(`[api/render] Enqueued job ${jobId} | PID: ${process.pid}`);

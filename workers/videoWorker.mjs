@@ -22,6 +22,7 @@ import './loadEnv.mjs';
 import { callVideoGenerator } from '../app/videoGenerator.ts';
 import { uploadFinalVideoToGCS } from '../app/mediaApis/vertex.ts';
 import { prepareVideoReviewData, refreshReviewPromptsForChunks } from '../app/videoReview.ts';
+import { upsertVideoRecord, buildDefaultVideoTitle, buildDefaultVideoDescription } from '../app/utils/videoLibrary.ts';
 
 import { fileURLToPath } from 'url';
 import path from 'path';
@@ -59,6 +60,7 @@ async function processJob(job) {
   try {
     const {
       script,
+      prompt = '',
       preferences,
       contentClass,
       user_video_id,
@@ -69,6 +71,8 @@ async function processJob(job) {
       reviewData = null,
       visualTheme = '',
       reference = '',
+      title = '',
+      description = '',
     } = params;
     console.log(`[worker] Job params | jobId=${jobId} | animation=${Boolean(preferences?.animation)} | reviewChunks=${Boolean(preferences?.reviewChunks)} | reviewPrompts=${Boolean(preferences?.reviewPrompts)} | vidGen=${vidGen}`);
 
@@ -218,24 +222,19 @@ async function processJob(job) {
     console.log(`[worker] Uploading final video to GCS...`);
     const gcsUrl = await uploadFinalVideoToGCS(localFinalPath, videoUrl);
     
-    // Update gallery.json track
-    const galleryDbPath = path.join(ROOT, 'public', 'final_videos.json');
-    let galleryDb = [];
-    if (fs.existsSync(galleryDbPath)) {
-      try {
-        galleryDb = JSON.parse(fs.readFileSync(galleryDbPath, 'utf8'));
-      } catch (e) {
-        console.error("Failed to parse galleryDB:", e);
-      }
-    }
-    galleryDb.push({
+    upsertVideoRecord({
+      id: jobId,
       filename: videoUrl,
       gcsUrl,
-      prompt: params.prompt || "",
-      chunks: chunks,
-      createdAt: Date.now()
+      prompt,
+      script,
+      chunks,
+      createdAt: Date.now(),
+      userId: job.userId,
+      title: title || buildDefaultVideoTitle(prompt || script),
+      description: description || buildDefaultVideoDescription(script || prompt),
+      modelName,
     });
-    fs.writeFileSync(galleryDbPath, JSON.stringify(galleryDb, null, 2));
 
     // Delete local final video
     if (fs.existsSync(localFinalPath)) {
@@ -255,7 +254,10 @@ async function processJob(job) {
       statusMessage: 'Video generated successfully!',
       videoUrl: gcsUrl,
       chunks, // Save chunks
-      prompt: params.prompt, // Save prompt from params
+      prompt,
+      script,
+      title: title || buildDefaultVideoTitle(prompt || script),
+      description: description || buildDefaultVideoDescription(script || prompt),
       finishedAt: Date.now(),
     });
 

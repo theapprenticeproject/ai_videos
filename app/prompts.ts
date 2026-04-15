@@ -16,7 +16,7 @@ export function promptFormation(query:string, promptType: string, paramJson: Rec
 
   switch (promptType) {
     case "scriptFormation": {
-      const classKey = getClassKey(paramJson.contentclass);
+      const classKey = getClassKey(paramJson.contentClass ?? paramJson.contentclass);
       const context = scriptFewShot[classKey];
    
 let fprompt = `
@@ -26,9 +26,11 @@ Your task is to write a **natural, spoken narration-only script** for a short ed
 "${query}"
 
 LANGUAGE RULE:
+- Default to an Indian classroom context, Indian daily-life references, and Indian learner-friendly voiceover style.
 - First, understand the language of the topic and example scripts.
-- If the topic or examples use Hinglish, write in Hinglish.
-- Otherwise, write in clear, simple English.
+- If the user explicitly asks for another geography, culture, or accent, follow that instruction.
+- If the topic or examples use Hinglish, Hindi, or mixed Hindi-English phrasing, write in natural Hinglish.
+- Otherwise, write in clear, simple Indian English.
 - Match the same tone, vocabulary level, and flow as the examples.
 
 SCRIPT LENGTH:
@@ -70,6 +72,7 @@ IMPORTANT:
 - Blend them naturally into the story.
 - The learning should support understanding and application.
 - Keep everything smooth, human, and spoken.
+- Prefer Indian examples, names, places, school situations, rupee-based examples, or home/school/community references unless the user clearly asks otherwise.
 
 
 `;
